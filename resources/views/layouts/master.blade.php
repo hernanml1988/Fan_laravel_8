@@ -109,7 +109,7 @@
                         <ul class="nav" id="side-menu">
                              @if ($miuser->user_role == 1 || $miuser->user_role == 2) 
                             <li @if ($menu == "ingreso") class="activo" @endif>
-                                <a href="{{ url('ingreso') }}"><i class="fa fa-plus-square fa-fw"></i> Registro</a>
+                                <a href="{{ Route('registro.index') }}"><i class="fa fa-plus-square fa-fw"></i> Registro</a>
                             </li>
                             @endif
                             
@@ -117,34 +117,34 @@
                             	<a href="" style="background-color:inherit !important"><i class="fa fa-history fa-fw"></i> Historial<span class="fa arrow"></span></a>
                             	<ul class="nav nav-second-level">
                                     <li @if ($menu == "historial") class="activo" @endif>
-                                        <a href="{{ url('historial') }}"><i class="fa fa-list-alt fa-fw"></i> Registros</a>
+                                        <a href="{{ route('historial.index') }}"><i class="fa fa-list-alt fa-fw"></i> Registros</a>
                                     </li>
                                     @if ($miuser->user_role == 1)
                                     <li @if ($menu == "descargas") class="activo" @endif>
-                                        <a href="{{ url('descargas') }}"><i class="fa fa-download fa-fw"></i>  Descargas</a>
+                                        <a href="{{ route('historial.descarga') }}"><i class="fa fa-download fa-fw"></i>  Descargas</a>
                                     </li>
                                     @endif
                                 </ul>
                             </li>
                             
                             <li class="">
-                            	<a href="" style="background-color:inherit !important"><i class="fas fa-map-marked-alt"></i> Mapas<span class="fa arrow"></span></a>
+                            	<a href="" style="background-color:inherit !important"><i class="fa-regular fa-location-dot"></i> Mapas<span class="fa arrow"></span></a>
                             	<ul class="nav nav-second-level">
                                     <li @if ($menu == "mapa") class="activo" @endif>
-                                        <a href="{{ url('mapa') }}"><i class="fas fa-map-marker-alt"></i> Interno</a>
+                                        <a href="{{ Route('mapa.index') }}"><i class="fas fa-map-marker-alt"></i> Interno</a>
                                     </li>
                                     <li @if ($menu == "colaborativo") class="activo" @endif>
-                                        <a href="{{ url('colaborativo') }}"><i class="fas fa-globe-americas"></i>  Colaborativo</a>
+                                        <a href="{{ Route('mapa.colab') }}"><i class="fas fa-globe-americas"></i>  Colaborativo</a>
                                     </li>
                                 </ul>
                             </li>
                             
                             @if ($miuser->user_role == 1)
                            	<li @if ($menu == "informe") class="activo" @endif>
-                                <a href="{{ url('informe') }}"><i class="fa fa-bar-chart"></i>  Informe</a>
+                                <a href="{{ Route('informe.index') }}"><i class="fa fa-bar-chart"></i>  Informe</a>
                             </li>
                             <li @if ($menu == "declaracion") class="activo" @endif>
-                                <a href="{{ url('declaracion') }}"><i class="far fa-check-square fa-fw"></i>  Declaración</a>
+                                <a href="{{ Route('declaracion.index') }}"><i class="far fa-check-square fa-fw"></i>  Declaración</a>
                                  <span class="badge" id="badge2_declarar" style="background-color: firebrick;color: white;position: absolute;right: 10px;top: 11px;padding: 2px 6px;background-color: #1ABB9C!important; cursor:pointer;">-
                                 </span>
                             </li>
@@ -152,7 +152,7 @@
                             
                             @if ($miuser->user_role == 1)
                             <li @if ($menu == "configuracion") class="activo" @endif>
-                                <a href="{{ url('configuracion') }}"><i class="fa fa-gear fa-fw"></i> Configuración</a>
+                                <a href="{{ Route('config.index') }}"><i class="fa fa-gear fa-fw"></i> Configuración</a>
                             </li>
                             @endif
                             

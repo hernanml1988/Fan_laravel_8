@@ -31,13 +31,11 @@ class WelcomeController extends Controller
         $this->cambiar_bd($miuser->IDempresa);
         
         if($miuser->user_role == 1){
-            $centro = Centro::all();
-            $permisos = Permisos::all(); 
-            $menu = 'ingreso';         
-            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
+            
+            return view('registro_editor');
         }else if ($miuser->user_role == 3){
             $menu = 'historial';
-            return view('historial', ['miuser' => $miuser, 'menu' => $menu]);
+            return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
         }else if ($miuser->user_role == 2){
             $centro = Centro::all();
             $permisos = Permisos::all(); 

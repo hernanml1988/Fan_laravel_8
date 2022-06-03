@@ -1,4 +1,5 @@
 @extends('layouts/master')
+@section('title', '- Informe')
 <style>
     @media (min-width: 992px){
         .tile_count .tile_stats_count {

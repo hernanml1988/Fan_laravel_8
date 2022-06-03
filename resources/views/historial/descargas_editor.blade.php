@@ -1,5 +1,5 @@
 @extends('layouts/master')
-
+@section('title', '- Descarga')
 
 @section('content')
 

@@ -1,5 +1,5 @@
 @extends('layouts/master')
-
+@section('title', '- Configuración')
 <style>
     #map {
       width: 100%;

@@ -1,5 +1,5 @@
 @extends('layouts/master')
-
+@section('title', '- Mapa Colaborativo')
 <style>
     body { padding-right: 0 !important }
      #map {

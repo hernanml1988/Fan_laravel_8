@@ -1,5 +1,7 @@
 @extends('layouts/master')
 
+@section('title', '- Registro')
+
 <style type="text/css"> 
 .multiselect.dropdown-toggle {
     text-align: left;

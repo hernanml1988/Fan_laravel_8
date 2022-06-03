@@ -1,5 +1,5 @@
 @extends('layouts/master')
-
+@section('title', '- Reporte')
 <style>
     .table_blue th{
       background: #34495ef0 !important;

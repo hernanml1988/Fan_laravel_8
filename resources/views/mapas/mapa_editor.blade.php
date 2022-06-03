@@ -1,4 +1,5 @@
 @extends('layouts/master')
+@section('title', '- Mapa Interno')
 <style>
     #map {
       width: 100%;

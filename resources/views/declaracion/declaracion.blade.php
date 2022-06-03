@@ -1,4 +1,5 @@
 @extends('layouts/master')
+@section('title', '- Declaración')
 <style>
 	body{
 	padding-right:0px !important;

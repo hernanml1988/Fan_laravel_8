@@ -9,7 +9,7 @@
     <meta http-equiv="expires" content="0">
     <meta name="description" content="Partner Tecnológico">
     <meta name="author" content="GTR Gestión">
-    <title>GTR Fan</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
+    <title>GTR Fan @yield('title')</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
     
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ asset('css/metisMenu.css') }}" rel="stylesheet">

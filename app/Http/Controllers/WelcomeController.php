@@ -34,7 +34,7 @@ class WelcomeController extends Controller
             $centro = Centro::all();
             $permisos = Permisos::all(); 
             $menu = 'ingreso';         
-            return view('administrador', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
+            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
         }else if ($miuser->user_role == 3){
             $menu = 'historial';
             return view('historial', ['miuser' => $miuser, 'menu' => $menu]);

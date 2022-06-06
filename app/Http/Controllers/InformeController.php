@@ -14,15 +14,7 @@ class InformeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu ='informe';
-        $currentUser = $miuser;
-        $nombre = $miuser->first_name." ".$miuser->last_name;
-        return view('informe/informe',  ['menu' => $menu, 'nombre' => $nombre, 'currentUser' => $currentUser, 'miuser'=> $miuser]);
-    }
+    
 
     /**
      * Show the form for creating a new resource.

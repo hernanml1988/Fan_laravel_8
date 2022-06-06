@@ -12,21 +12,13 @@ use Illuminate\Support\Facades\Auth;
 
 class RegistroController extends Controller
 {
+   
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $centro = Centro::all();
-            $permisos = Permisos::all(); 
-            $menu = 'ingreso';         
-            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
-        
-    }
+    
 
     /**
      * Show the form for creating a new resource.

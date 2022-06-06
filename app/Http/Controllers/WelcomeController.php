@@ -31,8 +31,10 @@ class WelcomeController extends Controller
         $this->cambiar_bd($miuser->IDempresa);
         
         if($miuser->user_role == 1){
-            
-            return view('registro_editor');
+            $centro = Centro::all();
+            $permisos = Permisos::all(); 
+            $menu = 'ingreso';
+            return view('registro_editor', ['centro' => $centro, 'permisos'=>$permisos, 'miuser'=>$miuser, 'menu'=>$menu]);
         }else if ($miuser->user_role == 3){
             $menu = 'historial';
             return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
@@ -52,7 +54,72 @@ class WelcomeController extends Controller
 
         //return view('home', compact("centro"));
     }
-   
+    public function indexRegistro()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $centro = Centro::all();
+            $permisos = Permisos::all(); 
+            $menu = 'ingreso';         
+            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
+        
+    }
+    public function indexConfiguracion()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $menu = 'configuracion';
+        $currentUser= $miuser;
+        return view('configuracion/configuracion_editor', ['miuser' => $miuser, 'menu'=> $menu, 'currentUser'=> $currentUser]);
+    }
+    public function indexDeclaracion()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $menu ='declaracion';
+        $currentUser = $miuser;
+        return view('declaracion/declaracion', ['menu'=>$menu, 'miuser' => $miuser, 'currentUser'=> $currentUser]);
+    }
+    public function indexHistorial()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+    
+        $menu = 'historial';
+        return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
+    }
+    public function descargas_editor()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        
+        $menu="descargas";
+        return view('historial/descargas_editor', ['miuser' => $miuser, 'menu'=> $menu]);
+    }
+    public function indexInforme()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $menu ='informe';
+        $currentUser = $miuser;
+        $nombre = $miuser->first_name." ".$miuser->last_name;
+        return view('informe/informe',  ['menu' => $menu, 'nombre' => $nombre, 'currentUser' => $currentUser, 'miuser'=> $miuser]);
+    }
+    public function indexMapa()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $menu = 'mapa';
+        return view('mapas/mapa_editor', ['miuser' => $miuser, 'menu' =>$menu]);
+    }
+
+    public function mapa_colab_editor()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $menu = 'colaborativo';
+        return view('mapas/mapa_colab_editor', ['miuser' => $miuser, 'menu' =>$menu]);
+    }
 
     private function cambiar_bd($id_empresa){
         $tipo = env('APP_TIPO');

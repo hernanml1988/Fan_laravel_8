@@ -14,20 +14,8 @@ class HistorialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu = 'historial';
-        return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
-    }
-    public function descargas_editor()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu="descargas";
-        return view('historial/descargas_editor', ['miuser' => $miuser, 'menu'=> $menu]);
-    }
+    
+   
 
     /**
      * Show the form for creating a new resource.

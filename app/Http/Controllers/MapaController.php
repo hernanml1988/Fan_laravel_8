@@ -13,20 +13,8 @@ class MapaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu = 'mapa';
-        return view('mapas/mapa_editor', ['miuser' => $miuser, 'menu' =>$menu]);
-    }
-    public function mapa_colab_editor()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu = 'colaborativo';
-        return view('mapas/mapa_colab_editor', ['miuser' => $miuser, 'menu' =>$menu]);
-    }
+   
+    
 
 
     /**

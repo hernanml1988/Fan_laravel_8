@@ -14,14 +14,7 @@ class DeclaracionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu ='declaracion';
-        $currentUser = $miuser;
-        return view('declaracion/declaracion', ['menu'=>$menu, 'miuser' => $miuser, 'currentUser'=> $currentUser]);
-    }
+    
 
     /**
      * Show the form for creating a new resource.

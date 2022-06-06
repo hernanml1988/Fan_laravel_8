@@ -14,14 +14,7 @@ class ConfiguracionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        $menu = 'configuracion';
-        $currentUser= $miuser;
-        return view('configuracion/configuracion_editor', ['miuser' => $miuser, 'menu'=> $menu, 'currentUser'=> $currentUser]);
-    }
+    
 
     /**
      * Show the form for creating a new resource.

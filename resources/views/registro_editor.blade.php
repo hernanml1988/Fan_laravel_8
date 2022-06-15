@@ -1,6 +1,9 @@
+
+
 @extends('layouts/master')
 
 @section('title', '- Registro')
+
 
 <style type="text/css"> 
 .multiselect.dropdown-toggle {
@@ -56,8 +59,7 @@ ul.ui-autocomplete {
 
 @section('content')
 
-	
-    
+
     
 	<div id="">
         
@@ -82,7 +84,7 @@ ul.ui-autocomplete {
                 <!--<label for="file-upload" class="custom-file-upload">
                     <i class="fa fa-upload"></i> Carga Automática
                 </label>-->
-                
+               
                
             </div>
             <div class="row">
@@ -90,13 +92,28 @@ ul.ui-autocomplete {
                     <div class="panel-heading" >
                         <div class="row text-center">
                         	
-                            <span class="text-center" style="display:inline; font-weight:bold"> H I S T O R IA L  &emsp; D E &emsp; R E G I S T R O S</span>
+                            <span class="text-center" style="display:inline; font-weight:bold"> R E G I S T R O S &emsp; F A N</span>
                             
                         </div>
                         <div class="row" style="padding-top:9px;">
-                            <div class="text-center">
+							<div class="row" style="padding-top:9px;">
+								<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-xs-10 col-xs-offset-1">
+									<select id="opcionescentros" style="display:inline; width:100%" class="form-control" name="select" >
+										@foreach ($centro as $c)
+											@foreach ($permisos as $p)
+												@if ($p->IDcentro == $c->IDcentro)
+													<option value="{{$c->IDcentro}} ">{{$c->Nombre}} </option>
+												@endif
+											@endforeach
+											
+										@endforeach
+									</select>
+								</div>
+							</div>
+
+                            {{-- <div class="text-center">
                                 <select id="opcionescentros" class="form-control multipleselect_single" size="1" style="display:inline; width:100%" >
-                                    @foreach ($centro as $c)
+                                    @foreach ($centros as $c)
                                          @foreach ($permisos as $p)
                                             @if($p->IDcentro == $c->IDcentro)
                                                 <option value ="{{$c->IDcentro}}" >{{$c->Nombre}}</option>
@@ -104,7 +121,7 @@ ul.ui-autocomplete {
                                          @endforeach
                                     @endforeach
                                 </select> 
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                         <div class="panel-body"> 
@@ -127,9 +144,10 @@ ul.ui-autocomplete {
                     
                             <div class="dataTable_wrapper">
                                 
-                                <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{ url('ingreso-editor/load_registro') }}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" data-click-to-select="true" data-single-select="true"  data-row-style="rowStyle" id="dataTables" >
+                                <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('load.registro')}}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" data-click-to-select="true" data-single-select="true"  data-row-style="rowStyle" id="dataTables" >
                                     <thead>
                                         <tr >
+											
                                          
                                          	<th data-checkbox="true" ></th>
                                             <th data-formatter="runningFormatterhistorialreporte" data-switchable="false" data-width = "35px" >#</th>
@@ -145,7 +163,7 @@ ul.ui-autocomplete {
                                             <th data-field="Laboratorio" data-formatter="formatearLaboratorio" data-switchable="true" data-visible="false" data-width = "100">Registro</th>
                                             <th data-field="Firma" data-sortable="false" data-visible="true" data-width = "100px">Firma</th>
                                             
-											<th data-field="IDmedicion" data-sortable="false" data-visible="false" data-width = "35px">ID</th>
+											<th data-field="id" data-sortable="false" data-visible="false" data-width = "35px">ID</th>
                                     	</tr>  
                                     </thead>
                                     
@@ -317,7 +335,7 @@ ul.ui-autocomplete {
                                 
                                 <div class="dataTable_wrapper" style="margin-top:25px;" id="Diatomeas-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table" data-url="{{ url('vistas/load_diatomeas') }}" data-filter-control="true" data-query-params="queryParams"  data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladiatomeas" >
+                                    <table cellSpacing="0" data-toggle="table" data-url="{{ Route('load.diatomeas') }}" data-filter-control="true" data-query-params="queryParams"  data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladiatomeas" >
                                         <thead>
                                             <tr>
                                                 <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -338,7 +356,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="Dinoflagelados">
                                 <div class="dataTable_wrapper" style="margin-top:25px;" id="Dinoflagelados-form">
                                     
-                                        <table cellSpacing="0" data-toggle="table"  data-url="{{ url('vistas/load_dinoflagelados') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladinoflagelados" >
+                                        <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.dinoflagelados') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladinoflagelados" >
                                             <thead>
                                                 <tr>
                                                     <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -357,7 +375,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="OEspecies">
                             	<div class="dataTable_wrapper" style="margin-top:25px;" id="OEspecies-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ url('vistas/load_oespecies') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tablaoespecies" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.oespecies') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tablaoespecies" >
                                         <thead>
                                             <tr>
                                                 <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -375,7 +393,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="PAmbientales">
                             	<div class="dataTable_wrapper" style="margin-top:25px;" id="PAmbientales-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ url('vistas/load_pambientales') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientales" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.pambientales') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientales" >
                                         <thead>
                                             <tr>
                                             	<th data-field="Grupo" data-align= "center" data-valign = "middle" data-width = "243px"></th>
@@ -387,7 +405,7 @@ ul.ui-autocomplete {
                                     </table>
                               	</div>
                               	<div class="dataTable_wrapper" style="margin-top:25px;" id="PAmbientalesotros-form">  
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ url('vistas/load_pambientalesotros') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientalesotros" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.pambientalesotros') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientalesotros" >
                                         <thead>
                                             <tr>
                                                 <th data-field="Grupo" data-align= "center" data-valign = "middle" data-width = "231px"></th>
@@ -435,7 +453,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:15px;"> REGISTRO DIARIO</h4>
                   </div>
                   <div class="modal-body">
@@ -828,7 +846,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button id="closeeditup" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel"> EDITAR REGISTRO DIARIO</h4>
                    	<output id="idcentroeditreporte" class="hidden"></output>
                     <output id="idmedicioneditreporte" class="hidden"></output>
@@ -1137,7 +1155,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:15px;"> REGISTRO DIARIO </h4>
                     <output id="idmedicionverreporte" class="hidden"></output>
                   </div>
@@ -1369,7 +1387,7 @@ ul.ui-autocomplete {
                         <div id="footerprint" class="modal-footer text-center"  >
                             <div class="text-center" style="font-size:16px; margin-top:15px;">Atte.</div>
                             <br/>
-                            <img src="GTRgestion.png" class="center-block"/>
+                            <img src="{{asset('img/GTRgestion.png')}}" class="center-block"/>
                             <div class="text-center" style="font-size:16px; margin-bottom:15px;">www.gtrgestion.cl</div>
                       	</div>
                         
@@ -1386,7 +1404,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:14px;"> <output id="nombreespecieimagen" style="display:inline; text-transform:uppercase; font-size:20px !important;"></output> </h4>
                   </div>
                   <div class="modal-body">
@@ -1436,7 +1454,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button id="" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">CARGA AUTOMÁTICA</h4>
                   </div>
                   <div class="modal-body">
@@ -1519,7 +1537,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button id="closeupnoexiste" type="button" class="close" data-dismiss="" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">ESPECIE NO ENCONTRADA</h4>
                   </div>
                   <div class="modal-body">
@@ -1555,7 +1573,7 @@ ul.ui-autocomplete {
                 <div class="modal-content">
                   <div class="modal-header">
                     <button id="closeupsiepnoexiste" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="{{ asset('GTR_Fan.png') }}" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">CÓDIGO SIEP NO ENCONTRADO</h4>
                   </div>
                   <div class="modal-body">
@@ -1592,7 +1610,7 @@ ul.ui-autocomplete {
                 <div class="modal-dialog " role="document" >
                     <div class="modal-content" style="height:120px; width:400px; alignment-adjust:central">
                         <div class="modal-body center-block text-center">
-                             <img src='loader.gif' /><h5 id="loadingtext"> Loading... Please Wait </h5>
+                             <img src='{{ asset('img/loader.gif') }}' /><h5 id="loadingtext"> Loading... Please Wait </h5>
                         </div>
                      </div>
                 </div>
@@ -1610,7 +1628,7 @@ ul.ui-autocomplete {
 	var user_id = {{$miuser->id}};
 	var id_empresa = {{$miuser->IDempresa}};
 	
-	var role = {{$miuser->user_role_fan}};
+	var role = {{$miuser->user_role}};
 	roles(role);
 	
 	var dataTables = $('#dataTables');

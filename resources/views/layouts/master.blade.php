@@ -11,6 +11,7 @@
     <meta name="author" content="GTR Gestión">
     <title>GTR Fan @yield('title')</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
     
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ asset('css/metisMenu.css') }}" rel="stylesheet">
         <link href="{{ asset('css/timeline.css') }}" rel="stylesheet">
@@ -185,6 +186,7 @@
 
     </div>
             
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('js/bootstrap.min.js')}}"></script>

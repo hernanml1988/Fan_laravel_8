@@ -42,17 +42,15 @@ class WelcomeController extends Controller
             $centro = Centro::all();
             $permisos = Permisos::all(); 
             $menu = 'ingreso';
-            return view('centro', ['miuser' => $miuser, 'menu' => $menu, 'centro' => $centro, 'permisos' => $permisos]);
+            return view('registro_editor', ['miuser' => $miuser, 'menu' => $menu, 'centro' => $centro, 'permisos' => $permisos]);
         }else if ($miuser->user_role == 4) {            
             $menu = 'ingreso';   
-            return view('centro_restringido',['miuser' => $miuser, 'menu' =>$menu]);
+            return view('historial/reporte_editor',['miuser' => $miuser, 'menu' =>$menu]);
         }
         
         
 
-        //return view('registro', ['centro' => $centro, 'miuser' => $miuser, 'menu' => $menu]);
-
-        //return view('home', compact("centro"));
+       
     }
     public function indexRegistro()
     {
@@ -60,8 +58,12 @@ class WelcomeController extends Controller
         $this->cambiar_bd($miuser->IDempresa);
         $centro = Centro::all();
             $permisos = Permisos::all(); 
-            $menu = 'ingreso';         
-            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu]);
+            $menu = 'ingreso';        
+
+            $currentUser = $miuser;
+            $nombre = $currentUser->first_name." ".$currentUser->last_name;
+            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu, 'currentUser' => $currentUser,
+            'nombre' => $nombre]);
         
     }
     public function indexConfiguracion()

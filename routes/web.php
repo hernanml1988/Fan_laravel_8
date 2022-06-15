@@ -43,12 +43,13 @@ Route::controller(WelcomeController::class)->group(function(){
 
 // ==============Rutas Registro=====================//
 Route::controller(RegistroController::class)->group(function(){
-    Route::get('registro_editor/load_registro', 'load_registro')->name('load.registro');
-    Route::get('registro_editor/load_diatomeas', 'load_diatomeas')->name('load.diatomeas');
-    Route::get('registro_editor/load_dinoflagelados', 'load_dinoflagelados')->name('load.dinoflagelados');
-    Route::get('registro_editor/load_oespecies', 'load_oespecies')->name('load.oespecies');
-    Route::get('registro_editor/load_pambientales', 'load_pambientales')->name('load.pambientales');
-    Route::get('registro_editor/load_pambientalesotros', 'load_pambientalesotros')->name('load.pambientalesotros');
+    Route::get('registro_editor/load_registro', 'loadRegistro')->name('registro.load.registro');
+    Route::get('registro_editor/load_diatomeas', 'loadDiatomeas')->name('registro.load.diatomeas');
+    Route::get('registro_editor/load_dinoflagelados', 'loadDinoflagelados')->name('registro.load.dinoflagelados');
+    Route::get('registro_editor/load_oespecies', 'loadOespecies')->name('registro.load.oespecies');
+    Route::get('registro_editor/load_pambientales', 'loadPambientales')->name('registro.load.pambientales');
+    Route::get('registro_editor/load_pambientalesotros', 'loadPambientalesOtros')->name('registro.load.pambientalesotros');
+    Route::post('registro_editor/load_options_prof', 'loadOptionsProf')->name('registro.load.options.prof');
 });
 
 

@@ -144,7 +144,7 @@ ul.ui-autocomplete {
                     
                             <div class="dataTable_wrapper">
                                 
-                                <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('load.registro')}}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" data-click-to-select="true" data-single-select="true"  data-row-style="rowStyle" id="dataTables" >
+                                <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('registro.load.registro')}}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" data-click-to-select="true" data-single-select="true"  data-row-style="rowStyle" id="dataTables" >
                                     <thead>
                                         <tr >
 											
@@ -335,7 +335,7 @@ ul.ui-autocomplete {
                                 
                                 <div class="dataTable_wrapper" style="margin-top:25px;" id="Diatomeas-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table" data-url="{{ Route('load.diatomeas') }}" data-filter-control="true" data-query-params="queryParams"  data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladiatomeas" >
+                                    <table cellSpacing="0" data-toggle="table" data-url="{{ Route('registro.load.diatomeas') }}" data-filter-control="true" data-query-params="queryParams"  data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover table_blue"   id="tabladiatomeas" >
                                         <thead>
                                             <tr>
                                                 <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -356,7 +356,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="Dinoflagelados">
                                 <div class="dataTable_wrapper" style="margin-top:25px;" id="Dinoflagelados-form">
                                     
-                                        <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.dinoflagelados') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladinoflagelados" >
+                                        <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('registro.load.dinoflagelados') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tabladinoflagelados" >
                                             <thead>
                                                 <tr>
                                                     <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -375,7 +375,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="OEspecies">
                             	<div class="dataTable_wrapper" style="margin-top:25px;" id="OEspecies-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.oespecies') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tablaoespecies" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('registro.load.oespecies') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table tabledetalle table-striped table-bordered table-hover"   id="tablaoespecies" >
                                         <thead>
                                             <tr>
                                                 <th data-formatter="runningFormatterreporte" data-align= "center" data-valign = "middle" data-width = "35px">#</th>
@@ -393,7 +393,7 @@ ul.ui-autocomplete {
                             <div class="tab-pane fade" id="PAmbientales">
                             	<div class="dataTable_wrapper" style="margin-top:25px;" id="PAmbientales-form">
                                 
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.pambientales') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientales" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('registro.load.pambientales') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientales" >
                                         <thead>
                                             <tr>
                                             	<th data-field="Grupo" data-align= "center" data-valign = "middle" data-width = "243px"></th>
@@ -405,7 +405,7 @@ ul.ui-autocomplete {
                                     </table>
                               	</div>
                               	<div class="dataTable_wrapper" style="margin-top:25px;" id="PAmbientalesotros-form">  
-                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('load.pambientalesotros') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientalesotros" >
+                                    <table cellSpacing="0" data-toggle="table"  data-url="{{ Route('registro.load.pambientalesotros') }}" data-query-params="queryParams" data-pagination="false" data-side-pagination="server" data-cache="false" width="100%" class="table table-striped table-bordered table-hover"   id="tablapambientalesotros" >
                                         <thead>
                                             <tr>
                                                 <th data-field="Grupo" data-align= "center" data-valign = "middle" data-width = "231px"></th>
@@ -1662,7 +1662,7 @@ ul.ui-autocomplete {
 	$( document ).ready(function() {
 		
 		$.ajax({
-				url: '{{ url("vistas/load_options_prof")}}',
+				url: '{{ Route("registro.load.options.prof")}}',
             	data: {
                     _token: "{{ csrf_token() }}"
                   },
@@ -3299,12 +3299,18 @@ ul.ui-autocomplete {
 	}
 	
 	
-	
+	/*=================================================================================================
+	=================================================================================================
+	=================================================================================================
+	=================================================================================================
+	=================================================================================================
+	=================================================================================================
+	=================================================================================================*/
 	function runningFormatterdiatoprof0(value, row, index) {
 		return '<input id="diato0'+index+'" class="form-control"  type="number" min="0" step="1" placeholder="" name = "profundidad">';
 	}
 	function runningFormatterdiatoprof1(value, row, index) {
-		return '	<input id="diato1'+index+'" class="form-control" type="number" min="0" placeholder="" name = "profundidad">';
+		return '<input id="diato1'+index+'" class="form-control" type="number" min="0" placeholder="" name = "profundidad">';
 	}
 	function runningFormatterdiatoprof2(value, row, index) {
 		return '	<input id="diato2'+index+'" class="form-control"  type="number" min="0" placeholder="" name = "profundidad">';

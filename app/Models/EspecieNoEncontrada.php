@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Usuario_fan extends Model
+class EspecieNoEncontrada extends Model
 {
     use HasFactory;
 
     protected $connection = "mysql";
-    protected $table = "users";
+    protected $table = "especie_no_encontrada";
+    protected $primaryKey = 'IDespecie_no_encontrada';
 
 }

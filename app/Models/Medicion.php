@@ -11,6 +11,6 @@ class Medicion extends Model
 
     protected $connection = "mysql";
     protected $table = "medicion";
-
+    protected $primaryKey = 'IDmedicion';
     
 }

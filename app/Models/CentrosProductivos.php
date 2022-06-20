@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pambientales extends Model
+class CentrosProductivos extends Model
 {
     use HasFactory;
 
     protected $connection = "mysql";
-    protected $table = "pambientales";
-    protected $primaryKey = 'IDpambientales';
+    protected $table = "centrosproductivos";
+    protected $primaryKey = 'IDcentro';
+    
+
+
+
 
 }

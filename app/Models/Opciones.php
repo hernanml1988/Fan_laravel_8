@@ -11,6 +11,6 @@ class Opciones extends Model
 
     protected $connection = "mysql";
     protected $table = "opciones";
-
+    protected $primaryKey = 'IDopciones';
     
 }

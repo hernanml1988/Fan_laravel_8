@@ -35,6 +35,54 @@ return [
             'root' => storage_path('app'),
         ],
 
+        '2' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/2',
+		],
+		'4' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/4',
+		],
+		'5' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/5',
+		],
+		'6' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/6',
+		],
+		'7' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/7',
+		],
+		'8' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/8',
+		],
+		'9' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/9',
+		],
+		'10' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/10',
+		],
+		'11' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/11',
+		],
+		'12' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/12',
+		],
+		'13' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/13',
+		],
+		'14' => [
+			'driver' => 'local',
+			'root'   => storage_path().'/app/14',
+		],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

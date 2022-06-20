@@ -11,7 +11,7 @@ class Permisos extends Model
 
     protected $connection = "mysql";
     protected $table = "usuario_permiso";
-
+    protected $primaryKey = 'IDpermiso';
     
 
 

@@ -11,7 +11,7 @@ class Centro extends Model
 
     protected $connection = "mysql";
     protected $table = "centro";
-
+    protected $primaryKey = 'IDcentro';
     
 
 

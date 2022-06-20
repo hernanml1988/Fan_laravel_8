@@ -11,5 +11,6 @@ class Especie extends Model
 
     protected $connection = "mysql";
     protected $table = "especie";
+    protected $primaryKey = 'IDespecie';
 
 }

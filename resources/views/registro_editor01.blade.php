@@ -55,6 +55,14 @@ ul.ui-autocomplete {
 	
 }
 
+.table_blue th{
+	  background: #34495ef0 !important;
+	  color: #ECF0F1 !important;
+	  text-align: center;
+	  vertical-align: middle;
+	  position: sticky; top:-1px;
+	}
+
 </style>
 
 @section('content')

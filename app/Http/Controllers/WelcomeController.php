@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Centro;
+use App\Models\Empresa;
 use App\Models\Permisos;
+use App\Models\UsuarioPermiso;
 use Illuminate\Support\Facades\Auth;
+
 
 
 class WelcomeController extends Controller
@@ -27,43 +30,40 @@ class WelcomeController extends Controller
      */
     public function index()    {
 
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        
-        if($miuser->user_role == 1){
-            $centro = Centro::all();
-            $permisos = Permisos::all(); 
-            $menu = 'ingreso';
-            return view('registro_editor', ['centro' => $centro, 'permisos'=>$permisos, 'miuser'=>$miuser, 'menu'=>$menu]);
-        }else if ($miuser->user_role == 3){
-            $menu = 'historial';
-            return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
-        }else if ($miuser->user_role == 2){
-            $centro = Centro::all();
-            $permisos = Permisos::all(); 
-            $menu = 'ingreso';
-            return view('registro_editor', ['miuser' => $miuser, 'menu' => $menu, 'centro' => $centro, 'permisos' => $permisos]);
-        }else if ($miuser->user_role == 4) {            
-            $menu = 'ingreso';   
-            return view('historial/reporte_editor',['miuser' => $miuser, 'menu' =>$menu]);
-        }
-        
+        return redirect('registro_editor');
+      
         
 
        
     }
-    public function indexRegistro()
+    public function ingresoRegistro()
     {
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);
-        $centro = Centro::all();
-            $permisos = Permisos::all(); 
-            $menu = 'ingreso';        
+        if($miuser->user_role_fan == 1 || $miuser->user_role_fan == 2){
+			
+		}else {
+			return redirect('historial');
+		}
+        //$centros = Centro::all();
+		$centros = Centro::where('IDempresa', '=', $miuser->IDempresa)
+        ->select('Nombre','Estado','IDempresa','IDcentro')
+        ->orderBy('Nombre', 'asc')->get();
+        
+            if($miuser->user_role_fan == 1){
+            $permisos = $centros;
+            }else{
+            $permisos = UsuarioPermiso::join('centro','centro.IDcentro','=','usuario_permiso.IDcentro')
+                        ->where('usuario_permisoid_user', '=', $miuser->id)
+                        ->select('centro.Nombre','centro.Estado','centro.IDempresa','IDcentro')
+                        ->get();
+}
 
+            $empresa = Empresa::find($miuser->IDempresa);
             $currentUser = $miuser;
             $nombre = $currentUser->first_name." ".$currentUser->last_name;
-            return view('registro_editor', ['centro' => $centro, 'permisos' => $permisos, 'miuser' => $miuser, 'menu' =>$menu, 'currentUser' => $currentUser,
-            'nombre' => $nombre]);
+
+        return view('registro_editor', ['menu' => 'ingreso', 'permisos'=>$permisos, 'miuser'=>$miuser,'centros' =>$centros, 'empresa' => $empresa, 'nombre' => $nombre, 'currentUser'=>$currentUser]);
         
     }
     public function indexConfiguracion()

@@ -121,7 +121,7 @@ class RegistroController extends Controller
                                     'Alarma_Rojo',
                                     'Alarma_Amarillo',
                                     'Detalle',
-                                            DB::raw("CASE WHEN gtr_especie.Fiscaliza  = 1 then 'Si' ELSE '-' END as Fiscaliza ")
+                                    DB::raw("CASE WHEN gtr_especie.Fiscaliza  = 1 then 'Si' ELSE '-' END as Fiscaliza ")
                                             )
                             ->where('IDempresa',$miuser->IDempresa)
                             ->orderBy('Nombre', 'ASC')
@@ -399,14 +399,14 @@ class RegistroController extends Controller
                     
         $consulta = Medicion::select('Archivo')
                                 ->where('IDmedicion', $IDmedicion)
-                                ->get();   
+                                ->first();   
         
         // $consulta = mysqli_query($con,"SELECT Archivo FROM $table WHERE IDmedicion = '$IDmedicion'")
         // or die ("Error al traer los datos");	
                 
         // $row = mysqli_fetch_assoc($consulta);
             
-        return Response::json($consulta);
+        return Response::json($consulta->Archivo);
         // echo json_encode($row);
     }
 
@@ -516,7 +516,7 @@ class RegistroController extends Controller
         
         $archivos = Documento::where('IDempresa', $miuser->IDempresa)
                         ->where('IDmedicion', $IDmedicion)
-                        ->get();
+                        ->first();
 
                         function DDtoDMS1($dec)
                         {
@@ -707,10 +707,17 @@ class RegistroController extends Controller
         //                             gtr_medicion_fan.Medicion_7 
         //                         FROM gtr_especie  LEFT JOIN gtr_medicion_fan  
         //ON gtr_medicion_fan.IDespecie = gtr_especie.IDespecie  AND gtr_medicion_fan.IDmedicion = '$IDmedicion' 
-        //                         WHERE gtr_especie.Grupo = 'Diatomeas' AND gtr_especie.Estado = 1 
-        //                         AND gtr_especie.IDempresa = (SELECT IDempresa FROM gtr_users WHERE user_id = '$user_id') ORDER BY gtr_especie.Nombre ASC");
-        $Diato = Especie::leftJoin('medicion_fan', 'medicion_fan.IDespecie','=','especie.IDespecie')
-                                ->where([['medicion_fan.IDmedicion', $IDmedicion,['medicion_fan.IDespecie', 'especie.IDespecie']]])
+        //          WHERE gtr_especie.Grupo = 'Diatomeas' AND gtr_especie.Estado = 1 
+        //          AND gtr_especie.IDempresa = (SELECT IDempresa FROM gtr_users WHERE user_id = '$user_id') ORDER BY gtr_especie.Nombre ASC");
+        $Diato = Especie::leftJoin('medicion_fan', function($query) use ($IDmedicion){
+                                                        $query->on('medicion_fan.IDespecie', '=','especie.IDespecie' )
+                                                                ->where('medicion_fan.IDmedicion','=',  $IDmedicion);
+                                                    })                                                
+                                ->where([   
+                                            ['especie.IDempresa', $IDempresa],
+                                            ['especie.Estado', 1],
+                                            ['especie.Grupo',  'Diatomeas']                                        
+                                        ])
                                 ->select('especie.Nombre',
                                             'especie.Nivel_Critico',
                                             DB::raw("CASE WHEN gtr_especie.Fiscaliza = '1' then 'Si' ELSE '-' END as Fiscaliza "),
@@ -724,16 +731,10 @@ class RegistroController extends Controller
                                             'medicion_fan.Medicion_5',
                                             'medicion_fan.Medicion_6',
                                             'medicion_fan.Medicion_7'
-                                            )
-                                ->where([
-                                    ['IDempresa', $IDempresa],
-                                    ['especie.Estado', 1],
-                                    ['especie.Grupo',  'Diatomeas']
-                                ])
+                                            )                               
                                 ->orderBy('especie.Nombre', 'ASC')
                                 ->get();                    
-                                
-    
+               
                     // $Diato = array();
                    
                     // foreach($Diato as $row){
@@ -766,7 +767,7 @@ class RegistroController extends Controller
                             ])
                             ->orderBy('especie.Nombre', 'ASC')
                             ->get();
-        
+                            
         // $Dino = array();
         // foreach($Dino as $row )
         // {
@@ -780,7 +781,7 @@ class RegistroController extends Controller
         // //Otras Especies
         
         $OEsp = Especie::leftJoin('medicion_fan', 'medicion_fan.IDespecie','=','especie.IDespecie')
-                            ->where('medicion_fan.IDmedicion', $IDmedicion)
+                            ->where('medicion_fan.IDmedicion', $IDmedicion)                            
                             ->select('especie.Nombre',
                                         'especie.Nivel_Critico',
                                         DB::raw("CASE WHEN gtr_especie.Fiscaliza = '1' then 'Si' ELSE '-' END as Fiscaliza "),
@@ -805,11 +806,11 @@ class RegistroController extends Controller
         
       
 
-        // $OEsp = array();
-        // foreach($OEsp as $row )
-        // {
-        // 	$OEsp[]  = $row;
-        // }
+        $OEsp = array();
+        foreach($OEsp as $row )
+        {
+        	$OEsp[]  = $row;
+        }
         
 
         // /*---------------------------------------------------------------------------------------------------------------------*/
@@ -878,7 +879,8 @@ class RegistroController extends Controller
                     $IDcentro  = $row->IDcentro;
                     $Modulo  = $row->Modulo;
                     $Jaula  = $row->Jaula;
-                    if ($row->TopLeft) {
+                    $TopLeft = $row->TopLeft;
+                    if ($TopLeft) {
                         $topleft = explode(',',$row->TopLeft);
                         $latitud = DDtoDMS3($topleft[0]);
                         $longitud = DDtoDMS3($topleft[1]);
@@ -887,7 +889,7 @@ class RegistroController extends Controller
                         $longitud = '';
                     }
             }
-        
+            
                 /*--------------se debe agregar, esta en el laravel fan 5 pero no en el FAN---------------------------------------------/
                 
                 $archivos = Documento::where('IDempresa', $miuser->IDempresa)
@@ -1130,7 +1132,7 @@ class RegistroController extends Controller
                                                     'Alarma_Rojo',
                                                     'Alarma_Amarillo')
                                             ->where('IDespecie', $IDespvalue)
-                                            ->get();
+                                            ->first();
                         $consulta = MedicionFan::insert([
                                                     'IDmedicion'=> $IDmedicion,
                                                     'IDespecie'=> $IDespvalue,
@@ -1446,15 +1448,15 @@ class RegistroController extends Controller
                                                 'especie.Nivel_Critico'
                                             )
                                             ->where(function($query){
-                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Rojo'))
+                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
                                                             ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
-                                                            ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                            ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                            ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                            ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                            ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Rojo'));
+                                                            ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                            ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                            ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                            ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                            ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Rojo'));
                                             })
-                                            ->where('gtr_especie.Alarma_Rojo', '>', 0)
+                                            ->where('especie.Alarma_Rojo', '>', 0)
                                             ->get();
                 // mysqli_query($con,"SELECT mf.IDmedicionfan,
                 //                         mf.Medicion_1,
@@ -1478,8 +1480,7 @@ class RegistroController extends Controller
                 //                         OR mf.Medicion_6 >= e.Alarma_Rojo 
                 //                         OR mf.Medicion_7 >= e.Alarma_Rojo) 
                 //                         AND e.Alarma_Rojo > 0 ")or die ($error ="Error description: " . mysqli_error($con));
-                return Response::json($consulta);
-                die();
+               
                 $alarma = "";
                 $Comentario = array();
                 $Comentario_precaucion = array();
@@ -1518,13 +1519,13 @@ class RegistroController extends Controller
                                                     'especie.Nivel_Critico'
                                                 )
                                                 ->where(function($query){
-                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Amarillo'));
+                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Amarillo'));
                                                 })
                                                 ->where('especie.Alarma_Amarillo', '>', 0)
                                                 ->get();
@@ -1550,12 +1551,12 @@ class RegistroController extends Controller
                     //                 or die ($error ="Error description: " . mysqli_error($con));
 
 
-                    while($row = mysqli_fetch_assoc($consulta))
+                    foreach($consulta as $row )
                     {
                         $alarma = "Precaución";
-                        $Comentario[] = $row['Nombre'];
-                        $Concentracion[] = max($row['Medicion_1'],$row['Medicion_2'],$row['Medicion_3'],$row['Medicion_4'],$row['Medicion_5'],$row['Medicion_6'],$row['Medicion_7']);
-                        $Nocivo[] = $row['Nivel_Critico'];
+                        $Comentario[] = $row->Nombre;
+                        $Concentracion[] = max($row->Medicion_1,$row->Medicion_2,$row->Medicion_3,$row->Medicion_4,$row->Medicion_5,$row->Medicion_6,$row->Medicion_7);
+                        $Nocivo[] = $row->Nivel_Critico;
                     }
                 }else{
                     $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
@@ -1666,23 +1667,25 @@ class RegistroController extends Controller
 
 
                 //Select Conducata peces
+                $IDpambiental = Pambientales::where([['Nombre', 'Mortalidad por FAN'],['IDempresa', $miuser->IDempresa]])
+                                                ->select('IDpambientales')
+                                                ->first();
+                                                
                 $consulta = MedicionPAmbientales::select('Medicion_1')
                                                     ->where('IDmedicion', $IDmedicion)
-                                                    ->where('IDpambientales', function($query){
-                                                                                $query->select('IDpambientales')
-                                                                                        ->table('pambientales')
-                                                                                        ->where('Nombre','Mortalidad por FAN');
-                                                    })
-                                                    ->where('IDempresa', $miuser->IDempresa)
+                                                    ->where('IDpambientales', $IDpambiental)                                                    
                                                     ->get();
+                                                   
                 // mysqli_query($con,"SELECT Medicion_1 FROM medicion_pambientales 
                 // WHERE IDmedicion = '$IDmedicion' 
                 // AND IDpambientales = (SELECT IDpambientales FROM pambientales WHERE Nombre = 'Mortalidad por FAN' 
                 // AND IDempresa = (SELECT IDempresa FROM as_users WHERE user_id = '$user_id'))")
                 // or die ($error ="Error description: " . mysqli_error($con));
                 // $row = mysqli_fetch_assoc($consulta);
-                $Mortalidad = $consulta->Medicion_1;
-
+                foreach($consulta as $row){
+                $Mortalidad = $row->Medicion_1;
+                }
+               
                 $consulta = Medicion::where('IDmedicion', $IDmedicion)
                                         ->update([
                                             'Estado_Alarma' => $alarma,
@@ -1707,7 +1710,7 @@ class RegistroController extends Controller
                 $consulta = Configuracion::select('Observaciones')
                                             ->where([['Modificacion', 'Estado Declaración'],['IDempresa', $IDempresa]])
                                             ->orderBy('Fecha')
-                                            ->first();
+                                            ->get();
                 // mysqli_query($con,"SELECT Observaciones FROM configuracion 
                 // WHERE Modificacion = 'Estado Declaración' AND IDempresa = '$IDempresa' ORDER BY Fecha DESC LIMIT 1")
                 // or die ($error ="Error description: " . mysqli_error($con));
@@ -1801,13 +1804,13 @@ class RegistroController extends Controller
                                                             'especie.Nivel_Fiscaliza',
                                                             'especie.Nivel_Fiscaliza_Pre')
                                                 ->where(function($query){
-                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                            ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'));
+                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                            ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'));
                                                             })
                                                 ->where('especie.Fiscaliza', 1)
                                                 ->get();
@@ -1937,7 +1940,7 @@ class RegistroController extends Controller
 
                 //$row = mysqli_fetch_assoc($consulta);
                 $IDdeclaracion = null;
-                if ($row) {
+                if ($consulta) {
                     $IDdeclaracion = $row->IDdeclaracion;
                 }
 
@@ -2045,7 +2048,17 @@ class RegistroController extends Controller
 
 
 
-                $Resultado = array('Error' =>$error, 'Alarma' => $alarma,'Nombre_Centro' => $Centro,'IDcentro' => $IDcentro, 'Comentario' => $aux, 'Concentracion' => $Concentracion, 'Nocivo' => $Nocivo, 'Nocivo_P' => $Nocivo_P,'Comentario_Precaucion' => $aux_prec, 'Concentracion_Precaucion' => $Concentracion_precaucion, 'Mortalidad' => $Mortalidad );
+                $Resultado = array('Error' =>$error, 
+                'Alarma' => $alarma,
+                'Nombre_Centro' => $Centro,
+                'IDcentro' => $IDcentro, 
+                'Comentario' => $aux, 
+                'Concentracion' => $Concentracion, 
+                'Nocivo' => $Nocivo, 
+                'Nocivo_P' => $Nocivo_P,
+                'Comentario_Precaucion' => $aux_prec, 
+                'Concentracion_Precaucion' => $Concentracion_precaucion, 
+                'Mortalidad' => $Mortalidad );
 
 
 
@@ -2377,7 +2390,16 @@ class RegistroController extends Controller
 		$Laboratorio = $request->input('Laboratorio');
 		$IDcentro = $request->input('IDcentro');
 		$Estado = $request->input('Estado');
-		
+        //$Modulo= $request->input('moduloreporte');
+        //$Jaula= $request->input('jaulareporte');
+	// 	$moduloreporte = $_POST['moduloreporte'];
+	//  $jaulareporte = $_POST['jaulareporte'];
+	//  $latitud_grados = $_POST['latitud_grados'];
+	//  $latitud_min = $_POST['latitud_min'];
+	//  $latitud_seg = $_POST['latitud_seg'];
+	//  $longitud_grados = $_POST['longitud_grados'];
+	//  $longitud_min = $_POST['longitud_min'];
+	//  $longitud_seg = $_POST['longitud_seg'];
 		date_default_timezone_set('america/santiago');
 		$Fecha_Medicion = date('Y-m-d H:i:s',strtotime($Fecha_Medicion));
 		$Fecha_Analisis = date('Y-m-d H:i:s',strtotime($Fecha_Analisis));
@@ -2411,6 +2433,8 @@ class RegistroController extends Controller
 		$ingreso_registro->Firma = $Firma;
 		$ingreso_registro->Estado = $Estado;
 		$ingreso_registro->Laboratorio = $Laboratorio;
+        //$ingreso_registro->Modulo = $Modulo;
+        //$ingreso_registro->Jaula = $Jaula;
 		$ingreso_registro->save();
 		
 		$IDmedicion = $ingreso_registro->IDmedicion;
@@ -3025,7 +3049,16 @@ class RegistroController extends Controller
 				}
 			}
 			
-			$Resultado = array('Error' =>$error, 'Alarma' => $alarma,'Nombre_Centro' => $Centro,'IDcentro' => $IDcentro, 'IDmedicion' => $IDmedicion, 'Comentario' => $aux, 'Concentracion' => $Concentracion, 'Nocivo' => $Nocivo, 'Nocivo_P' => $Nocivo_P, 'Comentario_Precaucion' => $aux_prec, 'Concentracion_Precaucion' => $Concentracion_precaucion, 'Mortalidad' => $Mortalidad, 'Declarar' => $Fecha_semana );
+			$Resultado = array('Error' =>$error, 
+            'Alarma' => $alarma,
+            'Nombre_Centro' => $Centro,
+            'IDcentro' => $IDcentro, 
+            'IDmedicion' => $IDmedicion, 
+            'Comentario' => $aux, 
+            'Concentracion' => $Concentracion, 
+            'Nocivo' => $Nocivo, 
+            'Nocivo_P' => $Nocivo_P, 
+            'Comentario_Precaucion' => $aux_prec, 'Concentracion_Precaucion' => $Concentracion_precaucion, 'Mortalidad' => $Mortalidad, 'Declarar' => $Fecha_semana );
 			
 			return Response::json($Resultado);
 	
@@ -3055,15 +3088,15 @@ class RegistroController extends Controller
         }
         
         
-        $files = $request->file('archivo'); //get the files
+        $file = $request->file('file'); //get the files
         $IDmedicion = $request->input('IDmedicion');
         
         
-        if ($files !=null && $IDmedicion!=null ){
+        if ($file != null && $IDmedicion!=null ){
             
             $contents = Storage::disk('local');		
             
-            foreach ($files as $file) {	
+            //foreach ($files as $file) {	
                     
                 $extensionantes = $file->getClientOriginalExtension();
                 
@@ -3090,11 +3123,11 @@ class RegistroController extends Controller
                 $ingreso_registro->Archivo = $documento->id;
                 $ingreso_registro->save();*/
                 
-            }
+            //}
             $response = array(
             'status' => 'success',
             'msg' => 'Setting created successfully',
-            'files' => $files
+            'files' => $file
             );
         }else{
             $error = 1;
@@ -3735,7 +3768,7 @@ class RegistroController extends Controller
                             'especie.Nivel_Critico',
                             'especie.Alarma_Rojo',
                             'especie.Alarma_Amarillo',
-                            'IDmedicion')
+                            'medicion.IDmedicion')
                         ->orderBy('especie.Nombre','ASC')
                         ->orderBy('medicion.Fecha_Reporte','DESC')
                         ->get();
@@ -3865,7 +3898,7 @@ class RegistroController extends Controller
 
     /*===================================================================================================================*/
 
-    public function cargaRegistroAutomatico(Request $request)
+    public function cargaRegistroAutomatico(Request $request)//comparar con el de laravel 5 
     {
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);
@@ -5976,24 +6009,44 @@ class RegistroController extends Controller
 
     /*===================================================================================================================*/
 
-    public function getArchivo()
-    {
-
-        // $miuser = \Auth::user();   //(object) array('name'=>'Admin Intra', 'user_role_intra'=>1,'IDempresa'=>4);
-		// $entry = Documento::find($fileid);
-
-		// $file = Storage::disk($miuser->IDempresa)->get('Archivos_Registros/'.$entry->url);
- 		// //return \Response::json($entry);
+  
+    /*===================================================================================================================*/
+    public function getArchivo($fileid)
+	{
+		$miuser = Auth::user();   
+        $this->cambiar_bd($miuser->IDempresa);
+        $entry = Documento::find($fileid);
+        
+		$file = Storage::disk($miuser->IDempresa)->get('Archivos_Registros/'.$entry->Url);
+ 		//return Response::json($entry);
 		
-		// return Response($file, 200)->header('Content-Type', $entry->mime);
-
-    }
-
+		return Response($file, 200)->header('Content-Type', $entry->Mime);
+	
+	}
     /*===================================================================================================================*/
 
-    /*===================================================================================================================*/
+    public function getImagenEspecie($fileid, $numImg)
+	{
+		$miuser = Auth::user();   
+        $this->cambiar_bd($miuser->IDempresa);
+        $entry = Especie::find($fileid);
 
-    
+		$file = Storage::disk($miuser->IDempresa)->get('Especies/'.$entry->Imagen);
+ 		//return Response::json($entry);
+		if($numImg == 1){
+            $file = Storage::disk($miuser->IDempresa)->get('Especies/'.$entry->Imagen);
+            return Response($file, 200)->header('Content-Type', $entry->Mime);
+        }else if($numImg == 2){
+            $file = Storage::disk($miuser->IDempresa)->get('Especies/'.$entry->Imagen);
+            return Response($file, 200)->header('Content-Type', 'image/png');
+        }
+        else if($numImg == 3){
+            $file = Storage::disk($miuser->IDempresa)->get('Especies/'.$entry->Imagen);
+            return Response($file, 200)->header('Content-Type', 'image/jpeg');
+        }
+		
+	
+	}
 
 
    

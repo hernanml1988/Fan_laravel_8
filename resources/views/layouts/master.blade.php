@@ -11,7 +11,7 @@
     <meta name="author" content="GTR Gestión">
     <title>GTR Fan @yield('title')</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
     
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --}}
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ asset('css/metisMenu.css') }}" rel="stylesheet">
         <link href="{{ asset('css/timeline.css') }}" rel="stylesheet">
@@ -108,7 +108,7 @@
                 <div class="navbar-default sidebar" role="navigation">
                     <div class="sidebar-nav navbar-collapse"  >
                         <ul class="nav" id="side-menu">
-                             @if ($miuser->user_role == 1 || $miuser->user_role == 2) 
+                             @if ($miuser->user_role_fan == 1 || $miuser->user_role == 2) 
                             <li @if ($menu == "ingreso") class="activo" @endif>
                                 <a href="{{ Route('registro.index') }}"><i class="fa fa-plus-square fa-fw"></i> Registro</a>
                             </li>
@@ -120,7 +120,7 @@
                                     <li @if ($menu == "historial") class="activo" @endif>
                                         <a href="{{ route('historial.index') }}"><i class="fa fa-list-alt fa-fw"></i> Registros</a>
                                     </li>
-                                    @if ($miuser->user_role == 1)
+                                    @if ($miuser->user_role_fan == 1)
                                     <li @if ($menu == "descargas") class="activo" @endif>
                                         <a href="{{ route('historial.descarga') }}"><i class="fa fa-download fa-fw"></i>  Descargas</a>
                                     </li>
@@ -140,7 +140,7 @@
                                 </ul>
                             </li>
                             
-                            @if ($miuser->user_role == 1)
+                            @if ($miuser->user_role_fan == 1)
                            	<li @if ($menu == "informe") class="activo" @endif>
                                 <a href="{{ Route('informe.index') }}"><i class="fa fa-bar-chart"></i>  Informe</a>
                             </li>
@@ -151,7 +151,7 @@
                             </li>
                             @endif
                             
-                            @if ($miuser->user_role == 1)
+                            @if ($miuser->user_role_fan == 1)
                             <li @if ($menu == "configuracion") class="activo" @endif>
                                 <a href="{{ Route('config.index') }}"><i class="fa fa-gear fa-fw"></i> Configuración</a>
                             </li>

@@ -242,7 +242,7 @@
 						  </select>
 						  <label style="color:black;"> Archivo</label>
 						  <br>
-						  <input type="file" id="inputarchivo" accept="" style="padding-top: 0px;"/>
+						  <input type="file" name="file[]" id="inputarchivo" accept="" style="padding-top: 0px;"/>
 						  <label style="color:black;"> Firma</label>
 						  <br>
 						  <select id="firmareporte" class="form-control" style="width:330px;">
@@ -250,7 +250,7 @@
 							<option value="Laboratorio">Laboratorio</option>
 						  </select>
 						  <div id="firma_nombre_div">
-							<input id="firma_nombre" class="form-control" placeholder="Indique su Nombre y Apellido"  style="width:330px;" value="<?php echo $nombre; ?>">
+							<input id="firma_nombre" class="form-control" placeholder="Indique su Nombre y Apellido"  style="width:330px;" value="{{$miuser->name}}">
 						  </div>
 						</div>
 
@@ -456,7 +456,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:15px;"> REGISTRO DIARIO</h4>
 				</div>
 				<div class="modal-body">
@@ -505,7 +505,7 @@
 								<tr>
 								  <td style="font-size:14px !important; padding:0px;" width = "55px"><b>Archivo</b></td>
 								  <td style="font-size:14px !important;" width = "30px">:</td>
-								  <td><output style="text-decoration:underline; vertical-align:middle; cursor: pointer;" id="archivoverreporte" onclick="verarchivo()" name="outputver"></output></td>
+								  <td><output style="text-decoration:underline; vertical-align:middle; cursor: pointer;" id="archivoverreporte"  name="outputver"></output></td>
 								  <td width = "30px"></td>
 								  <td style="font-size:14px !important;" width = "65px"><b>Firma</b></td>
 								  <td style="font-size:14px !important;" width = "30px">:</td>
@@ -703,7 +703,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button id="closeeditup" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
 				  <h4 class="modal-title text-center" id="myModalLabel"> EDITAR REGISTRO DIARIO</h4>
 					 <output id="idcentroeditreporte" class="hidden"></output>
 				  <output id="idmedicioneditreporte" class="hidden"></output>
@@ -1116,7 +1116,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:15px;"> REGISTRO DIARIO </h4>
 				  <output id="idmedicionverreporte" class="hidden"></output>
 				</div>
@@ -1207,7 +1207,7 @@
 							<p class="arealabel">  : </p>
 						  </div>
 						  <div class="col-lg-8 col-md-9 col-xs-7">
-							   <output style="text-decoration:underline; vertical-align:middle; cursor: pointer;" id="archivoverreporteprint" onclick="verarchivo()"></output>
+							   <output style="text-decoration:underline; vertical-align:middle; cursor: pointer;" id="archivoverreporteprint" ></output>
 						  </div>
 					  </div>
 					  <div class="row">
@@ -1348,7 +1348,7 @@
 					  <div id="footerprint" class="modal-footer text-center"  >
 						  <div class="text-center" style="font-size:16px; margin-top:15px;">Atte.</div>
 						  <br/>
-						  <img src="GTRgestion.png" class="center-block"/>
+						  <img src="{{ asset('img/GTRgestion.png') }}" class="center-block"/>
 						  <div class="text-center" style="font-size:16px; margin-bottom:15px;">www.gtrgestion.cl</div>
 						</div>
 
@@ -1365,7 +1365,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:14px;"> <output id="nombreespecieimagen" style="display:inline; text-transform:uppercase; font-size:20px !important;"></output> </h4>
 				</div>
 				<div class="modal-body">
@@ -1415,7 +1415,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button id="" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">CARGA AUTOMÁTICA</h4>
 				</div>
 				<div class="modal-body">
@@ -1499,7 +1499,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button id="closeupnoexiste" type="button" class="close" data-dismiss="" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">ESPECIE NO ENCONTRADA</h4>
 				</div>
 				<div class="modal-body">
@@ -1535,7 +1535,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button id="closeupsiepnoexiste" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				  <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+				  <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
 				  <h4 class="modal-title text-center" id="myModalLabel" style="margin-right:100px; margin-top:9px;">CÓDIGO SIEP NO ENCONTRADO</h4>
 				</div>
 				<div class="modal-body">
@@ -1572,7 +1572,7 @@
 			  <div class="modal-dialog " role="document" >
 				  <div class="modal-content" style="height:120px; width:400px; alignment-adjust:central">
 					  <div class="modal-body center-block text-center">
-						   <img src='loader.gif' /><h5 id="loadingtext"> Loading... Please Wait </h5>
+						   <img src="{{ asset('img/loader.gif') }}" /><h5 id="loadingtext"> Loading... Please Wait </h5>
 					  </div>
 				   </div>
 			  </div>
@@ -1608,7 +1608,7 @@
   <script src="js/color-estados.js"></script>
 
   <!-- Asigna menu para roles -->
-  <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
+  {{-- <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script> --}}
 
   <!-- Edit table -->
   <script src="js/bootstrap-editable.js"></script>
@@ -1627,11 +1627,11 @@
 
 
   <script>
-  var user_id = <?php echo $currentUser->id; ?>;  
-  var id_empresa = <?php echo $currentUser->IDempresa; ?>;
-
+  var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
+  var id_empresa = {!!$currentUser->IDempresa!!}//<?php echo $currentUser->IDempresa; ?>;
+  var user_role_fan = {!!$currentUser->user_role_fan!!}
   var role = <?php echo '"'.$currentUser->role.'"';?>;
-  roles(role);
+  //roles(role);
 
   var dataTables = $('#dataTables');
 
@@ -1914,32 +1914,32 @@
 	  }
   });
 
-  function verarchivo(){
-		  $.ajax({
-					  url: "{{Route('registro.load.archivo.registro')}}",//load_archivo_registro.php
-					  type: 'post',
-					  data: { _token: "{{ csrf_token() }}",
-					  		IDmedicion: idmedicionarchivo},
-					  success: function(dato)
-					  {
-						var nombrearchivo = "";
-							if(dato){
-								$.each(dato, function(){
-									nombrearchivo = nombrearchivo + '<a style="display:inline;"  class="like eliminar_doc_'+this.id+'" href=\"{{Route("registro.get.archivo")}}/'+this.id+'\" target="_blank" > '
-												+ this.titulo+
-											' </a> ';
-								});
-							}
-							$('#archivoverreporteprint').html(nombrearchivo);
-							//var obj = JSON.parse(dato);
-							//window.open(obj['Archivo'], "_blank");	
-						//   var obj = JSON.parse(dato);
-						//   window.open(obj['Archivo'], "_blank");
-					  }
-				  });
+//   function verarchivo(){
+// 		  $.ajax({
+// 					  url: "{{Route('registro.load.archivo.registro')}}",//load_archivo_registro.php
+// 					  type: 'post',
+// 					  data: { _token: "{{ csrf_token() }}",
+// 					  		IDmedicion: idmedicionarchivo},
+// 					  success: function(dato)
+// 					  {
+// 						var nombrearchivo = "";
+// 							if(dato){
+// 								$.each(dato, function(){
+// 									nombrearchivo = nombrearchivo + '<a style="display:inline;"  class="like eliminar_doc_'+this.id+'" href=\"{{Route("registro.get.archivo")}}/'+this.id+'\" target="_blank" > '
+// 												+ this.titulo+
+// 											' </a> ';
+// 								});
+// 							}
+// 							$('#archivoverreporteprint').html(nombrearchivo);
+// 							//var obj = JSON.parse(dato);
+// 							//window.open(obj['Archivo'], "_blank");	
+// 						//   var obj = JSON.parse(dato);
+// 						//   window.open(obj['Archivo'], "_blank");
+// 					  }
+// 				  });
 
 
-	  };
+// 	  };
 
   var idcentro = "";
   var especie_rojo = [];
@@ -2012,12 +2012,15 @@
 							$('#hidden_ubicación').addClass('hidden');
 							}
 
+							var html ='';
 						  var nombrearchivo = "";
 						  if(datos['Archivo']){
-							  nombrearchivo = datos['Archivo'].split("/");
-							  nombrearchivo = nombrearchivo[nombrearchivo.length-1];
+							html= '<a style="display:inline;"  class="like eliminar_doc_'+0+'" href=\"{{Route("registro.get.archivo")}}/'+datos['Archivo']['IDdocumento']+'\" target="_blank" > '
+										+ datos['Archivo']['Titulo']+ 
+											' </a> ';
+							$('#archivoverreporte').html(html);
 						  }
-						  $('#archivoverreporte').text(nombrearchivo);
+						  //$('#archivoverreporte').text(nombrearchivo);
 						  $('#firmaverreporte').text(datos['Firma']);
 						  $('#nombreverreporte').text(datos['Nombre']);
 						  $('#acsverreporte').text(datos['Barrio']);
@@ -2112,8 +2115,8 @@
   });
 
   function funcioneditarregistro(idmedcionaux, estadoaux,declaradoaux){
-
-			  if(estadoaux == 'No' ||  role == "admin_fan_empresa"  ){
+						
+			  if(estadoaux == 'No' || user_role_fan == 1 ){
 				  if(declaradoaux != 1){
 					  if(estadoaux =='Si'){ $('#guardaredit').addClass("hidden"); }else{ $('#guardaredit').removeClass("hidden");}
 					  samegrupo2 = 0;
@@ -2255,7 +2258,7 @@
 
   //Editar registro y preguntar si enviar correo notificación
   function editregistrocorreo(guardar){
-	  if(role == "admin_fan_empresa"){
+	  if(user_role_fan == 1){
 		  swal({
 				title: "Envíar notificaciones?",
 				text: "¿Desea enviar notificaciones automáticas?",
@@ -2394,7 +2397,7 @@
 	  selects = dataTables.bootstrapTable('getSelections')[0];
 	  //if(dataTables.bootstrapTable('getSelections')[0].Date_Reporte == moment().format("DD-MM-YYYY")){
 		  if(selects){
-			  if(selects.Estado == 'No' || role == "admin_fan_empresa"){
+			  if(selects.Estado == 'No' || user_role_fan == 1){
 
 
 						  swal({
@@ -3133,7 +3136,7 @@
 						  form_data.append('IDmedicion', msg['IDmedicion']);
 						  form_data.append('Imagen', document.getElementById("inputarchivo").value);
 						  form_data.append('user_id', user_id);
-
+						  form_data.append('_token' , "{{ csrf_token() }}");
 						  savearchivo(form_data,msg['Alarma'],msg['Comentario'],msg['Concentracion'],msg['Nocivo'],msg['Nocivo_P'],msg['Comentario_Precaucion'],msg['Concentracion_Precaucion'],msg['Mortalidad'],msg['IDcentro'],msg['Nombre_Centro'],fechamedicion,msg['IDmedicion'],guardar);
 					  } else {
 
@@ -3178,7 +3181,8 @@
 			  contentType: false,
 			  processData: false,
 			  type: 'post',
-			  data: form_data,
+			  data: 
+			  		form_data,
 			  success: function(msg)
 			  {
 
@@ -3367,7 +3371,7 @@
 
   $(".tabledetalle").on('click-cell.bs.table', function (field, value, row, $element) {
 	  if($element['Imagen'] != "" && value == 1){
-		  $("#detalleimagen").attr("src",$element['Imagen']);
+		  $("#detalleimagen").attr("src",'{{Route("registro.get.imagen.especie")}}/'+ $element['IDespecie']+'/1'+' "');
 		  $('#nombreespecieimagen').text($element['Nombre']);
 		  if($element['Alarma_Rojo'] > 0){
 			  $('#especienivelrojo').text($element['Alarma_Rojo']+" [cel/ml]");
@@ -3388,7 +3392,7 @@
   }
   function runningFormatterfoto(value, row, index) {
 	  var img = row['Imagen'];//GtrFan-MonitoreoAlgasNocivas_symbol.png;
-	  return '<img src="'+img+'" class="img-circle center-block"/>';
+	  return '<img src="{{Route("registro.get.imagen.especie")}}/'+ row['IDespecie']+'/1'+' " class="img-circle center-block"/>';
   }
 
 

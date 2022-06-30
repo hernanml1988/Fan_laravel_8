@@ -6,7 +6,7 @@ function roles(role){
 		if( user_id != 761 && user_id != 765 ){$('#idhistorial').removeClass("hidden");}
 		if( user_id != 761 && user_id != 765 ){$('#idmapas').removeClass("hidden");}
 		if(id_empresa == 11 || id_empresa == 12 || (id_empresa == 5 && user_id != 761 && user_id != 765) ){$('#idinforme').removeClass("hidden");}
-
+		
 		if(user_id == 81
 			//Camanchaca
 			|| user_id == 85  // Centro Islotes por petición de Alfredo Tello Vi 19-11-21

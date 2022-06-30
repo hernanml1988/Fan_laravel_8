@@ -65,14 +65,16 @@ Route::controller(RegistroController::class)->group(function(){
     Route::post('registro_editor/save_archivo_registro', 'saveArchivoRegistro')->name('registro.save.archivo.registro');//
     Route::post('registro_editor/destinatario_alarma', 'destinatarioAlarma')->name('registro.destinatario.alarma');//
     Route::post('registro_editor/send_alarma', 'sendAlarma')->name('registro.send.alarma');//
-    Route::get('registro_editor/load_historial_centro_pdf', 'loadHistorialCentrosPDF')->name('registro.load.historial.centro.pdf');//
+    Route::post('registro_editor/load_historial_centro_pdf', 'loadHistorialCentrosPDF')->name('registro.load.historial.centro.pdf');//
     Route::get('registro_editor/search_especie_registro', 'searchEspecieRegistro')->name('registro.search.especie.registro');//
     Route::post('registro_editor/carga_registro_automatico', 'cargaRegistroAutomatico')->name('registro.carga.registro.automatico');//
     Route::get('registro_editor/search_especie_no_existe', 'searchEspecieNoExiste')->name('registro.search.especie.no.existe');//
     Route::get('registro_editor/search_siep_no_existe', 'searchSiepNoExiste')->name('registro.search.siep.no.existe');//
     Route::post('registro_editor/save_especie_no_existe', 'saveEspecieNoExiste')->name('registro.save.especie.no.existe');//
     Route::post('registro_editor/delete_especie_no_existe', 'deleteEspecieNoExiste')->name('registro.delete.especie.no.existe');//
-    Route::put('registro_editor/get_archivo/{id?}', 'getArchivo')->name('registro.get.archivo');//
+    Route::get('registro_editor/get_archivo/{id?}' ,'getArchivo' )->name('registro.get.archivo');
+    Route::get('registro_editor/get_imagen_especie/{id?}/{numImg?}' ,'getImagenEspecie' )->name('registro.get.imagen.especie');
+    //Route::put('registro_editor/get_archivo/{id?}', 'getArchivo')->name('registro.get.archivo');//
 
 
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Centro;
 use App\Models\Empresa;
 use App\Models\Permisos;
+use App\Models\UserDetails;
 use App\Models\UsuarioPermiso;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,7 +62,14 @@ class WelcomeController extends Controller
 
             $empresa = Empresa::find($miuser->IDempresa);
             $currentUser = $miuser;
-            $nombre = $currentUser->first_name." ".$currentUser->last_name;
+            $nombre = UserDetails::where('user_id', $miuser->id)
+                                    ->select('first_name','last_name')
+                                    ->get();
+            //foreach($nombre as $n){
+            //     $first_name = $nombre->first_name;
+            //     $last_name = $nombre->last_name;
+            // //}
+            // $nombre = $first_name." ".$last_name;
 
         return view('registro_editor', ['menu' => 'ingreso', 'permisos'=>$permisos, 'miuser'=>$miuser,'centros' =>$centros, 'empresa' => $empresa, 'nombre' => $nombre, 'currentUser'=>$currentUser]);
         

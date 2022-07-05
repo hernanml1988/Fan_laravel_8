@@ -66,7 +66,7 @@
 @section('content')
 
 <div id="wrapper">
-		 <div id="page-wrapper">
+		 <div id="page-wrapper" style="margin-left: -25px">
 		  <div class="row" style="padding:20px;">
 			  <button id="abrirmodalreporte" type="submit" class="btn btn-cerrada"><i class="fa fa-plus-circle"> </i>  Ingresar Registro</button>
 			  <form method="post" enctype="multipart/form-data" style="display:inline" class="form2_cargarexcel" >
@@ -1568,8 +1568,8 @@
 
 
 		  <!-- Modal Loading-->
-		  <div class="modal fade" id="modalloading" tabindex="-1" role="dialog">
-			  <div class="modal-dialog " role="document" >
+		  <div class="modal fade" id="modalloading" tabindex="-1" role="dialog" style="">
+			  <div class="modal-dialog " role="document" style="margin-right: 190px; margin-top: 220px">
 				  <div class="modal-content" style="height:120px; width:400px; alignment-adjust:central">
 					  <div class="modal-body center-block text-center">
 						   <img src="{{ asset('img/loader.gif') }}" /><h5 id="loadingtext"> Loading... Please Wait </h5>
@@ -1869,7 +1869,7 @@
 	  $('#modalloading').modal({backdrop: 'static', keyboard: false});
 	  $.ajax({
 				  url: "{{Route('registro.alarma.generar.registro')}}",   //archivos/Registros_Alarma/generar_registro.php
-				  type: 'post',
+				  type: 'get',
 				  dataType: 'json',
 				  data: {
 					_token: "{{ csrf_token() }}",
@@ -3161,7 +3161,7 @@
 				  }else{
 					  dataTables.bootstrapTable('refresh');
 					  $('#myModalreporte').modal('hide');
-					  swal("Error", "Error al enviar el reporte!", "error");
+					  swal("Aviso", "la coordenada ingresada es mayor a 1km de la coordenada del centro", "warning");
 				  }
 		$('#enviarreporte').prop('disabled', false);
 
@@ -3637,14 +3637,14 @@
 	  var aux = "";
 
 	  if( value.indexOf("Presencia")>=0){
-		  aux=classes[1];
-	  } else if( value.indexOf("Precaución")>=0){
-		  aux=classes[2];
-	  } else if( value.indexOf("Crítico")>=0){
-		  aux=classes[3];
-	  } else if( value.indexOf("Ausencia")>=0){
-		  aux=classes[0];
-	  }
+			aux=classes[1];
+		} else if( value.indexOf("Precauci")>=0){
+			aux=classes[2];
+		} else if( value.indexOf("Nivel")>=0){
+			aux=classes[3];
+		} else if( value.indexOf("Ausencia")>=0){
+			aux=classes[0];
+		}
 
 	  return {
 		  classes: aux

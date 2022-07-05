@@ -11,7 +11,7 @@
     <meta name="author" content="GTR Gestión">
     <title>GTR Fan @yield('title')</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
     
-        {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --}}
+        
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ asset('css/metisMenu.css') }}" rel="stylesheet">
         <link href="{{ asset('css/timeline.css') }}" rel="stylesheet">
@@ -22,9 +22,7 @@
     <link href="{{ asset('css/bootstrap-multiselect.css') }}" rel="stylesheet">
     	<link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
    		<link href="{{ asset('css/jquery-ui.css') }}" rel="stylesheet">
-        <!--<link href="{{ asset('css/all.min.css') }}" rel="stylesheet"> 
-         <link href="{{ asset('css/sistema.css') }}" rel="stylesheet"> 
-         <link href="{{ asset('css/bootstrap-select.css')}}" rel="stylesheet"> -->
+ 
     
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.css') }}" /> 
     	<link href="{{ asset('css/bootstrap-editable.css') }}" rel="stylesheet">

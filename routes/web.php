@@ -5,6 +5,7 @@ use App\Http\Controllers\DeclaracionController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\InformeController;
 use App\Http\Controllers\MapaController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,7 @@ Route::controller(RegistroController::class)->group(function(){
     Route::get('registro_editor/load_pambientalesotros', 'loadPambientalesOtros')->name('registro.load.pambientalesotros');//
     Route::post('registro_editor/load_options_prof', 'loadOptionsProf')->name('registro.load.options.prof');//
     Route::post('registro_editor/load_centros_usuarios', 'loadCentrosUsuarios')->name('registro.load.centro.usuarios');//
-    Route::post('registro_editor/alarma_generar_registro', 'alarmaGenerarRegistro')->name('registro.alarma.generar.registro');//
+    
     Route::get('registro_editor/load_archivo_registro', 'loadArchivoRegistro')->name('registro.load.archivo.registro');//
     Route::get('registro_editor/load_fan_reporte', 'loadFanReporte')->name('registro.load.fan.reporte');//
     Route::post('registro_editor/load_pambientales_reporte', 'loadPAmbientalesReporte')->name('registro.load.pambientales.reporte');
@@ -63,7 +64,9 @@ Route::controller(RegistroController::class)->group(function(){
     Route::post('registro_editor/existe_fecha_muestreo', 'existeFechaMuestreo')->name('registro.existe.fecha.muestreo');//
     Route::post('registro_editor/save_registro', 'saveRegistro')->name('registro.save.registro');//    
     Route::post('registro_editor/save_archivo_registro', 'saveArchivoRegistro')->name('registro.save.archivo.registro');//
+
     Route::post('registro_editor/destinatario_alarma', 'destinatarioAlarma')->name('registro.destinatario.alarma');//
+    
     Route::post('registro_editor/send_alarma', 'sendAlarma')->name('registro.send.alarma');//
     Route::post('registro_editor/load_historial_centro_pdf', 'loadHistorialCentrosPDF')->name('registro.load.historial.centro.pdf');//
     Route::get('registro_editor/search_especie_registro', 'searchEspecieRegistro')->name('registro.search.especie.registro');//
@@ -99,3 +102,5 @@ Route::controller(RegistroController::class)->group(function(){
 
 
 
+Route::get('registro_editor/alarma_generar_registro/', [PDFController::class, 'alarmaGenerarRegistro'])->name('registro.alarma.generar.registro');
+Route::get('registro_editor/alarma_generar_registro_web/{m?}/{i?}/{Alarma?}', [PDFController::class, 'verPDFAlarma'])->name('registro.alarma.generar.registro.web');

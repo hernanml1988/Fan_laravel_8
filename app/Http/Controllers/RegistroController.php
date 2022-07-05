@@ -10,6 +10,7 @@ use App\Models\Documento;
 use App\Models\Especie;
 use App\Models\EspecieEstandar;
 use App\Models\EspecieGeneral;
+use App\Models\HistorialEmail;
 use App\Models\Medicion;
 use App\Models\MedicionFan;
 use App\Models\MedicionPAmbientales;
@@ -19,7 +20,7 @@ use App\Models\Pambientales;
 use App\Models\Permisos;
 use App\Models\User;
 use App\Models\MedicionEliminada;
-
+    
 
 use Box\Spout\Reader\ReaderFactory;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
@@ -744,8 +745,10 @@ class RegistroController extends Controller
         //         /*---------------------------------------------------------------------------------------------------------------------*/
 
   
-        $Dino = Especie::leftJoin('medicion_fan', 'medicion_fan.IDespecie','=','especie.IDespecie')
-                            ->where('medicion_fan.IDmedicion', $IDmedicion)
+        $Dino = Especie::leftJoin('medicion_fan', function($query) use ($IDmedicion){
+                                                        $query->on('medicion_fan.IDespecie', '=','especie.IDespecie' )
+                                                                ->where('medicion_fan.IDmedicion','=',  $IDmedicion);
+                                                    }) 
                             ->select('especie.Nombre',
                                         'especie.Nivel_Critico',
                                         DB::raw("CASE WHEN gtr_especie.Fiscaliza = '1' then 'Si' ELSE '-' END as Fiscaliza "),
@@ -780,8 +783,10 @@ class RegistroController extends Controller
 
         // //Otras Especies
         
-        $OEsp = Especie::leftJoin('medicion_fan', 'medicion_fan.IDespecie','=','especie.IDespecie')
-                            ->where('medicion_fan.IDmedicion', $IDmedicion)                            
+        $OEsp = Especie::leftJoin('medicion_fan', function($query) use ($IDmedicion){
+                                                        $query->on('medicion_fan.IDespecie', '=','especie.IDespecie' )
+                                                                ->where('medicion_fan.IDmedicion','=',  $IDmedicion);
+                                                    }) 
                             ->select('especie.Nombre',
                                         'especie.Nivel_Critico',
                                         DB::raw("CASE WHEN gtr_especie.Fiscaliza = '1' then 'Si' ELSE '-' END as Fiscaliza "),
@@ -806,11 +811,11 @@ class RegistroController extends Controller
         
       
 
-        $OEsp = array();
-        foreach($OEsp as $row )
-        {
-        	$OEsp[]  = $row;
-        }
+        // $OEsp = array();
+        // foreach($OEsp as $row )
+        // {
+        // 	$OEsp[]  = $row;
+        //}
         
 
         // /*---------------------------------------------------------------------------------------------------------------------*/
@@ -954,8 +959,10 @@ class RegistroController extends Controller
 		
 		$IDmedicion = 150;//$request->input('IDmedicion');
 		//Diatomeas	
-		$PAmb = PAmbientales::leftJoin('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
-							->where('medicion_pambientales.IDmedicion',$IDmedicion)
+		$PAmb = PAmbientales::leftJoin('medicion_pambientales',function($query) use ($IDmedicion){
+                                                                    $query->on('medicion_pambientales.IDpambientales', '=','pambientales.IDpambientales' )
+                                                                            ->where('medicion_pambientales.IDmedicion','=',  $IDmedicion);
+                                                                }) 
 							->where('pambientales.Grupo','Columna de Agua')
 							->where('pambientales.Estado',1)
 							->where('pambientales.IDempresa',$miuser->IDempresa)
@@ -978,8 +985,10 @@ class RegistroController extends Controller
 							->get();
 		
 		//Otros
-		$PAmbo  = PAmbientales::join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
-							->where('medicion_pambientales.IDmedicion',$IDmedicion)
+		$PAmbo  = PAmbientales::join('medicion_pambientales',function($query) use ($IDmedicion){
+                                                                    $query->on('medicion_pambientales.IDpambientales', '=','pambientales.IDpambientales' )
+                                                                            ->where('medicion_pambientales.IDmedicion','=',  $IDmedicion);
+                                                                })
 							->where('pambientales.Grupo','NOT LIKE','%Columna de Agua%')
 							->where('pambientales.Estado',1)
 							->where('pambientales.IDempresa',$miuser->IDempresa)
@@ -1431,8 +1440,10 @@ class RegistroController extends Controller
                 
 
 
-                $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                            ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                                                $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                                        ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                                                })
                                             ->select(
                                                 'medicion_fan.IDmedicionfan',
                                                 'medicion_fan.Medicion_1',
@@ -1504,8 +1515,10 @@ class RegistroController extends Controller
                 $aux_prec = "";
                 if($alarma == ""){
 
-                    $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                                ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                    $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                                                                $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                                                        ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                                                                })
                                                 ->select(
                                                     'medicion_fan.IDmedicionfan',
                                                     'medicion_fan.Medicion_1',
@@ -1559,8 +1572,10 @@ class RegistroController extends Controller
                         $Nocivo[] = $row->Nivel_Critico;
                     }
                 }else{
-                    $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                                ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                    $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                                                                $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                                                        ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                                                                })
                                                 ->select(
                                                     'medicion_fan.IDmedicionfan',
                                                     'medicion_fan.Medicion_1',
@@ -1574,22 +1589,22 @@ class RegistroController extends Controller
                                                     'especie.Nivel_Critico'
                                                 )
                                                 ->where(function($query){
-                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Amarillo'));
+                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Amarillo'));
                                                 })
                                                 ->where(function($query){
-                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Rojo'));
+                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Rojo'));
                                             })
                                                 ->where('especie.Alarma_Amarillo', '>', 0)
                                                 ->get();
@@ -1724,8 +1739,10 @@ class RegistroController extends Controller
                 if($Resultado == 'Normal'){
 
                         //Chequea si hay una especie a declarar a sernapesca
-                        $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                                    ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                        $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                                                                        $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                                                                ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                                                                        })
                                                     ->select('medicion_fan.IDmedicion',
                                                                 'medicion_fan.Medicion_1',
                                                                 'medicion_fan.Medicion_2',
@@ -1790,8 +1807,10 @@ class RegistroController extends Controller
                 }else if($Resultado == 'Pre-Alerta'){
 
                     //Chequea si existe nivel Pre-Alerta Res. Ex. 6073 del 24 de diciembre de 2018
-                    $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                                ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                    $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                                                                $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                                                        ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                                                                })
                                                 ->select('medicion_fan.IDmedicion',
                                                             'medicion_fan.Medicion_1',
                                                             'medicion_fan.Medicion_2',
@@ -1861,8 +1880,10 @@ class RegistroController extends Controller
 
                     //
 
-                    $consulta = MedicionFan::join('especie', 'especie.IDespecie', '=', 'medicion_fan.IDespecie')
-                                                ->where([['medicion_fan.IDespecie', 'especie.IDespecie'],['medicion_fan.IDmedicion', $IDmedicion]])
+                    $consulta = MedicionFan::join('especie', function($query) use ($IDmedicion){
+                        $query->on('medicion_fan.IDespecie', '=', 'especie.IDespecie')
+                                ->where('medicion_fan.IDmedicion', '=', $IDmedicion);
+                        })
                                                 ->select('medicion_fan.IDmedicion',
                                                             'medicion_fan.Medicion_1',
                                                             'medicion_fan.Medicion_2',
@@ -2390,16 +2411,16 @@ class RegistroController extends Controller
 		$Laboratorio = $request->input('Laboratorio');
 		$IDcentro = $request->input('IDcentro');
 		$Estado = $request->input('Estado');
-        //$Modulo= $request->input('moduloreporte');
-        //$Jaula= $request->input('jaulareporte');
-	// 	$moduloreporte = $_POST['moduloreporte'];
-	//  $jaulareporte = $_POST['jaulareporte'];
-	//  $latitud_grados = $_POST['latitud_grados'];
-	//  $latitud_min = $_POST['latitud_min'];
-	//  $latitud_seg = $_POST['latitud_seg'];
-	//  $longitud_grados = $_POST['longitud_grados'];
-	//  $longitud_min = $_POST['longitud_min'];
-	//  $longitud_seg = $_POST['longitud_seg'];
+        
+        $moduloreporte = $_POST['moduloreporte'];
+        $jaulareporte = $_POST['jaulareporte'];
+        $latitud_grados = $_POST['latitud_grados'];
+        $latitud_min = $_POST['latitud_min'];
+        $latitud_seg = $_POST['latitud_seg'];
+        $longitud_grados = $_POST['longitud_grados'];
+        $longitud_min = $_POST['longitud_min'];
+        $longitud_seg = $_POST['longitud_seg'];
+
 		date_default_timezone_set('america/santiago');
 		$Fecha_Medicion = date('Y-m-d H:i:s',strtotime($Fecha_Medicion));
 		$Fecha_Analisis = date('Y-m-d H:i:s',strtotime($Fecha_Analisis));
@@ -2415,9 +2436,62 @@ class RegistroController extends Controller
 		$Centro = $centro_aux->Nombre;
 		$IDempresa = $centro_aux->IDempresa;
 		
+        //Comprueba que la coordenada ingresada no sea mayor a 1km de la coordenada del centro (osino se debe considerar como otro "centro")
+	 function haversineGreatCircleDistance1($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000){
+        // convert from degrees to radians
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+  
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+  
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+          cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        return $angle * $earthRadius;
+      }
+  
+      //Covierte coordenada a Decimal
+          function DMStoDD5($deg,$min,$sec)
+      {
+              // Converting DMS ( Degrees / minutes / seconds ) to decimal format
+              return round($deg+((($min*60)+($sec))/3600),5);
+      }
+  
+  
+      $topleft = '';
+      if ($latitud_grados != '' && $latitud_min != '' && $latitud_seg != '' && $longitud_grados != '' && $longitud_min != '' && $longitud_seg != '') {
+          $topleft = -1 * DMStoDD5(abs($latitud_grados),$latitud_min,$latitud_seg).','. -1 * DMStoDD5( abs($longitud_grados),$longitud_min,$longitud_seg);
+      }
+  
+      if ($topleft != '') {
+          //Busca la coordenada del centro para poner por defecto en el registro
+          $consulta = Centro::where('IDcentro', $IDcentro)
+                                ->select('TopLeft')
+                                ->first();
+        //   mysqli_query($con,"SELECT topleft FROM centro WHERE IDcentro = '$IDcentro'")
+        //   or die ($error ="Error description: " . mysqli_error($consulta));
+         // $row = mysqli_fetch_assoc($consulta);
+          $topleft_centro = $consulta->TopLeft;
+        //   if($row){
+        //       $topleft_centro = $row['topleft'];
+        //   }
+  
+          if ($topleft_centro != '') {
+              $lat_long = explode(',',$topleft);
+              $lat_long_centro = explode(',',$topleft_centro);
+              if (haversineGreatCircleDistance1($lat_long[0], $lat_long[1], $lat_long_centro[0], $lat_long_centro[1]) > 1000) {
+                  echo json_encode(array('Error' => 1,'msg' => 'La coordenada ingresada supera en 1[km] la ubicación del centro.'));
+                  die();
+              }
+          }
+  
+      }
+
+
 		//Insertar medicion
 		$Mortalidad = $Medicion0_pambientalesotros[array_search($IDmortalidad, $IDpambientalesotros)];
-		
 		$ingreso_registro = new Medicion();
 		$ingreso_registro->IDcentro = $IDcentro;
 		$ingreso_registro->Fecha_Envio = $fecha;
@@ -2433,13 +2507,24 @@ class RegistroController extends Controller
 		$ingreso_registro->Firma = $Firma;
 		$ingreso_registro->Estado = $Estado;
 		$ingreso_registro->Laboratorio = $Laboratorio;
-        //$ingreso_registro->Modulo = $Modulo;
-        //$ingreso_registro->Jaula = $Jaula;
-		$ingreso_registro->save();
+     	$ingreso_registro->save();
 		
 		$IDmedicion = $ingreso_registro->IDmedicion;
 
-
+        if ($topleft != '') {
+            // $topleft = -1 * DMStoDD(abs($latitud_grados),$latitud_min,$latitud_seg).','. -1 * DMStoDD( abs($longitud_grados),$longitud_min,$longitud_seg);
+            $consulta = Medicion::where('IDmedicion', $IDmedicion)->update(['TopLeft'=> $topleft]);
+            //mysqli_query($con,"UPDATE medicion SET TopLeft = '$topleft' WHERE IDmedicion = '$IDmedicion' ") or die ($error ="Error description: " . mysqli_error($con));
+        }
+    
+        if ($moduloreporte != '') {
+            $consulta = Medicion::where('IDmedicion', $IDmedicion)->update(['Modulo'=> $moduloreporte]);
+            //mysqli_query($con,"UPDATE medicion SET Modulo = '$moduloreporte' WHERE IDmedicion = '$IDmedicion' ") or die ($error ="Error description: " . mysqli_error($con));
+        }
+        if ($jaulareporte != '') {
+            $consulta = Medicion::where('IDmedicion', $IDmedicion)->update(['Jaula'=> $jaulareporte]);
+            //mysqli_query($con,"UPDATE medicion SET Jaula = '$jaulareporte' WHERE IDmedicion = '$IDmedicion' ") or die ($error ="Error description: " . mysqli_error($con));
+        }
 
 		if($error == 0){
 			//Save Diatomeas
@@ -3151,7 +3236,7 @@ class RegistroController extends Controller
 		
 		$error = 0;
 		
-		$user_id = $request->input('user_id');
+		$user_id = $miuser->id;
 		$Alarma = $request->input('Alarma');
 		$IDcentro = $request->input('IDcentro');
 		
@@ -3182,12 +3267,12 @@ class RegistroController extends Controller
 										->where('Mail',1)
 										->where('Estado',1)
 										->where($Alarmaval,1)
-										->select('user_id')
+										->select('id_user')
 										->get();
 			$user_aux = array();			
 			foreach($notificacion as $val){
-				if(!in_array($val->user_id, $user_aux)){
-					array_push($user_aux, $val->user_id);
+				if(!in_array($val->id_user, $user_aux)){
+					array_push($user_aux, $val->id_user);
 				}
 			}
              

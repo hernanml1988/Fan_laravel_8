@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 
 
+
+
 class HistorialController extends Controller
 {
     /**

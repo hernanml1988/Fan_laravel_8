@@ -22,12 +22,13 @@ use App\Models\Pambientales;
 use App\Models\Permisos;
 use App\Models\User;
 use App\Models\MedicionEliminada;
+//use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\DB;
-
+use PDF;
 
 use Illuminate\Support\Facades\Auth;
 
-use PDF;
+
 use Illuminate\Support\Facades\Response;
 
 date_default_timezone_set('america/santiago');
@@ -58,7 +59,10 @@ class PDFController extends Controller
 	}
 
     public function alarmaGenerarRegistro(Request $request)
-    {
+    {   
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);   
         /*	 https://codebriefly.com/laravel-5-export-to-pdf-laravel-dompdf/
@@ -161,17 +165,46 @@ class PDFController extends Controller
             
             $nombre_pdf = 'hola.pdf';//elimina_acentos($nombre_pdf);
             
-            shell_exec('wkhtmltopdf --disable-smart-shrinking --no-outline --page-size A3 --margin-top 2mm --margin-bottom 0mm --margin-right 0mm --margin-left 0mm "http://127.0.0.1:8000/registro_editor/alarma_generar_registro_web/155271/550/Nivel%20Critico" --javascript-delay 1500 '.$nombre_pdf);
-
-            return 'exito';
+            
+            $execute = shell_exec("wkhtmltopdf --disable-smart-shrinking --no-outline --page-size A3 --margin-top 2mm --margin-bottom 0mm --margin-right 0mm --margin-left 0mm 'https://127.0.0.1:8000/registro_editor/alarma_generar_registro_web/155271/550/Nivel%20Critico' --javascript-delay 1500 C:\Users\PC1GT\Documents\.$nombre_pdf.2>&1");
+            //exec('wkhtmltopdf "https://styde.net/generar-pdfs-en-laravel-5-1-con-snappy" docmento.pdf 2>&1');
+             echo $execute;
+             echo 'fin';
+             return  $execute;
        
-        }}           
+        }}          
+        
+        public function pdfview()
+            {
+
+                $pdf = PDF::loadHtml('<h1>test</h1>');
+            return $pdf->stream('example.pdf');
+               
+            }
                 
         
         public function verPDFAlarma(Request $request, $m, $i, $Alarma)
         {
-            
-            return view('prueba');
+           
+
+            function obtenerDireccionIP()
+            {
+                if (!empty($_SERVER ['HTTP_CLIENT_IP'] ))
+                    $ip=$_SERVER ['HTTP_CLIENT_IP'];
+                elseif (!empty($_SERVER ['HTTP_X_FORWARDED_FOR'] ))
+                    $ip=$_SERVER ['HTTP_X_FORWARDED_FOR'];
+                else
+                    $ip=$_SERVER ['REMOTE_ADDR'];
+
+                return $ip;
+            }
+
+            $ipcliente = obtenerDireccionIP();
+        
+            if($ipcliente != "127.0.0.1"){//52.204.158.88
+                    // return "Acceso denegado";
+                    // die();
+            }
 
             $miuser = User::where('id' , $i)
                                     ->where('estado', 1)
@@ -363,9 +396,9 @@ class PDFController extends Controller
                                         );
                 
                                     /*-----------------------------------------------------*/
-                                    $PAmbientales = PAmbientales::where('pambientales.Grupo','Columna de Agua')
-                                                                    ->join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
+                                    $PAmbientales = PAmbientales::join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
                                                                     ->where('medicion_pambientales.IDmedicion',$m)
+                                                                    ->where('pambientales.Grupo','Columna de Agua')
                                                                     ->select( 'pambientales.Nombre',
                                                                     'pambientales.Grupo',
                                                                     'medicion_pambientales.Medicion_1',
@@ -382,8 +415,8 @@ class PDFController extends Controller
                                                                     ->get();
 								
 		//Otros
-		$PAmbientalesotros = PAmbientales::where('pambientales.Grupo','NOT LIKE','%Columna de Agua%')
-								->join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
+		$PAmbientalesotros = PAmbientales::join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
+                                ->where('pambientales.Grupo','NOT LIKE','%Columna de Agua%')
 								->where('medicion_pambientales.IDmedicion',$m)
 								->select( 'pambientales.Nombre',
                                 'pambientales.Grupo',
@@ -404,7 +437,6 @@ class PDFController extends Controller
                                     'PAmbientales' => $PAmbientales, 
                                     'PAmbientalesotros' => $PAmbientalesotros, 
                                 );
-
 
 
                     /*------------------------------------------------------------------------------------*/
@@ -782,53 +814,36 @@ class PDFController extends Controller
                            $Resultado['Error'] = 1;	
                        }	
 
-
-
-
+               
 
 
             // if(file_exists($nombre_pdf)){
             //     unlink($nombre_pdf); 
             // }
-            // return view('pdf_alarma_registro',['user_id'  => $miuser->id,
-            //                                    'idmedicion' =>  $m ,
-            //                                    'alarma' => $Alarma,
-            //                                     'empresa' =>$empresa,
-            //                                     'opciones' =>$opciones->Opciones,
-            //                                     'fanReporte' =>$ResultadoFanReporte,
-            //                                     'pambientales' => $ResultadopambientalesReporte,
-            //                                     'Resultado' => $Resultado,
-             //                               ]);
+            return view('pdf_alarma_registro',['user_id'  => $miuser->id,
+                                               'idmedicion' =>  $m ,
+                                               'alarma' => $Alarma,
+                                                'empresa' =>$empresa,
+                                                'opciones' =>$opciones->Opciones,
+                                                'fanReporte' =>$ResultadoFanReporte,
+                                                'pambientales' => $ResultadopambientalesReporte,
+                                                'Resultado' => $Resultado,
+                                            ]);
 
-                return view('pdf_alarma_registro', ['user_id'  => $miuser->id,
-                                                   'idmedicion' =>  $m ,
-                                                   'alarma' => $Alarma,
-                                                    'empresa' =>$empresa,
-                                                    'opciones' =>$opciones->Opciones,
-                                                    'fanReporte' =>$ResultadoFanReporte,
-                                                    'pambientales' => $ResultadopambientalesReporte,
-                                                    'Resultado' => $Resultado,
-                                               ]);
-            // $pdf = PDF::loadView('pdf_alarma_registro', [
-            //                                   'user_id'  => $miuser->id,
-            //                                   'idmedicion' =>  $m ,
-            //                                    'alarma' => $Alarma,
-            //                                    'empresa' =>$empresa,
-            //                                    'opciones' =>$opciones->Opciones,
-            //                                    'fanReporte' =>$ResultadoFanReporte,
-            //                                      'pambientales' => $ResultadopambientalesReporte,
-            //                                      'Resultado' => $Resultado,
-            //                                 ]);
-            //                                 $pdf->setOptions(['enable-javascript' => true]);
-            //                                 $pdf->setOptions(['javascript-delay', 13500]);
-            //                                 $pdf->setOptions(['enable-smart-shrinking', true]);
-            //                                 $pdf->setOptions(['no-stop-slow-scripts', true]);
-
-                                                        // $pdf->setoption('enable-javascript', true);
-                                                        // $pdf->setoption('javascript-delay', 13500);
-                                                        // $pdf->setoption('enable-smart-shrinking', true);
-                                                        // $pdf->setoption('no-stop-slow-scripts', true);
-            //return $pdf->download($nombre_pdf.'.pdf');
+               
+            $pdf = PDF::loadView('pdf_alarma_registro', [
+                                              'user_id'  => $miuser->id,
+                                              'idmedicion' =>  $m ,
+                                               'alarma' => $Alarma,
+                                               'empresa' =>$empresa,
+                                               'opciones' =>$opciones->Opciones,
+                                               'fanReporte' =>$ResultadoFanReporte,
+                                                 'pambientales' => $ResultadopambientalesReporte,
+                                                 'Resultado' => $Resultado,
+                                            ]);
+  
+            return $pdf->download('hola.pdf');
+            
             // if( 1 == 'ver'){
             //    
             // }
@@ -933,26 +948,9 @@ class PDFController extends Controller
 
         }
     }
-    public function loadLogoEmpresa()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa); 
-        $error = 0;
-		
-	
-        //$user_id = $_POST['user_id'];
-                    
-        $consulta = Empresa::where('IDempresa', $miuser->IDempresa)
-                                ->select('Nombre')
-                                ->first();
-        // mysqli_query($con,"SELECT Nombre FROM empresa WHERE IDempresa = (SELECT IDempresa FROM as_users WHERE user_id = '$user_id')")
-        // or die ("Error al traer los datos");	
-           
-        //$row = mysqli_fetch_assoc($consulta);
-        return Response::json($consulta->Nombre);
-        //echo json_encode($row['Nombre']);
-    }
-
+    
+    
+    
 
 
 

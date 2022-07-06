@@ -2260,7 +2260,7 @@
   function editregistrocorreo(guardar){
 	  if(user_role_fan == 1){
 		  swal({
-				title: "Envíar notificaciones?",
+				title: "Enviar notificaciones?",
 				text: "¿Desea enviar notificaciones automáticas?",
 				type: "warning",
 				showCancelButton: true,

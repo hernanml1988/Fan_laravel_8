@@ -103,4 +103,8 @@ Route::controller(RegistroController::class)->group(function(){
 
 
 Route::get('registro_editor/alarma_generar_registro/', [PDFController::class, 'alarmaGenerarRegistro'])->name('registro.alarma.generar.registro');
-Route::get('registro_editor/alarma_generar_registro_web/{m?}/{i?}/{Alarma?}', [PDFController::class, 'verPDFAlarma'])->name('registro.alarma.generar.registro.web');
+Route::get('registro_editor/alarma_descarga_registro/', [PDFController::class, 'descargaRegistro'])->name('registro.alarma.descargar.registro');
+Route::get('registro_editor/alarma_generar_registro_web/{m?}/{i?}/{Alarma?}', [PDFController::class, 'verPDFAlarma'])->name('registro.alarma.generar.registro.web')->withoutMiddleware(['auth']);
+Route::get('registro_editor/alarma_generar_registro_prueba/', [PDFController::class, 'pdfview'])->name('registro.alarma.generar.registro.prueba');
+
+

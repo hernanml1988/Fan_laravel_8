@@ -427,7 +427,7 @@
 				
 				
 			
-	});
+		});
 
 
 	var idccentro = "";
@@ -437,9 +437,6 @@
 	var especie_nocivo = [];
 	var especie_nocivo_no = [];
 	function tablasverreporte(){
-
-
-	
 				
 				var dato = {!! json_encode($fanReporte) !!};                                               
                                              
@@ -460,69 +457,69 @@
 								nombrearchivo = nombrearchivo[nombrearchivo.length-1];
 							}
 
-              var texto = '';
-              if (datos['Modulo']) {
-                texto = texto + 'Módulo '+ datos['Modulo'];
-              }
-              if (datos['Jaula']) {
-                var coma = '';
-                if (texto != '') {
-                  coma = ', ';
-                }
-                texto = texto + coma +' Jaula '+ datos['Jaula'];
-              }
-              if (datos['latitud']['deg']) {
-                var coma = '';
-                if (texto != '') {
-                  coma = ', ';
-                }
-                texto = texto + coma + ' Latitud: S '+ datos['latitud']['deg']+'° '+datos['latitud']['min'] +"' "+ datos['latitud']['sec'] +'"';
-                texto = texto + coma + ' Longitud: O '+datos['longitud']['deg']+'° '+datos['longitud']['min'] +"' "+ datos['longitud']['sec'] +'"';
-              }
+									var texto = '';
+									if (datos['Modulo']) {
+										texto = texto + 'Módulo '+ datos['Modulo'];
+									}
+									if (datos['Jaula']) {
+										var coma = '';
+										if (texto != '') {
+										coma = ', ';
+										}
+										texto = texto + coma +' Jaula '+ datos['Jaula'];
+									}
+									if (datos['latitud']['deg']) {
+										var coma = '';
+										if (texto != '') {
+										coma = ', ';
+										}
+										texto = texto + coma + ' Latitud: S '+ datos['latitud']['deg']+'° '+datos['latitud']['min'] +"' "+ datos['latitud']['sec'] +'"';
+										texto = texto + coma + ' Longitud: O '+datos['longitud']['deg']+'° '+datos['longitud']['min'] +"' "+ datos['longitud']['sec'] +'"';
+									}
 
-              if (texto != '') {
-                $('#ubicacionverreporte').text(texto);
-                if ($('#ubicacionverreporte').val().length > 55) {
-                  $('.infopdf').addClass('infopdf2');
-                }else{
-                  $('.infopdf').addClass('infopdf3');
-                }
-              }else{
-                $('.infopdf').addClass('infopdf4');
-                $('#ubicacionverreporte').text('-');
-              }
+									if (texto != '') {
+										$('#ubicacionverreporte').text(texto);
+										if ($('#ubicacionverreporte').val().length > 55) {
+										$('.infopdf').addClass('infopdf2');
+										}else{
+										$('.infopdf').addClass('infopdf3');
+										}
+									}else{
+										$('.infopdf').addClass('infopdf4');
+										$('#ubicacionverreporte').text('-');
+									}
 
-              var ausencia = '';
-							if(datos['Diatomeas'] != ""){
-								$('#tabladiatomeasverprint').bootstrapTable("load", datos['Diatomeas']);
-                ausencia = 'no';
-							}else{$('#hidediato').addClass('hidden')}
-							if(datos['Dinoflagelados'] != ""){
-								$('#tabladinoflageladosverprint').bootstrapTable("load", datos['Dinoflagelados']);
-                ausencia = 'no';
-							}else{$('#hidedino').addClass('hidden');}
-							if(datos['OEsp'] != ""){
-								$('#tablaoespeciesverprint').bootstrapTable("load", datos['OEsp']);
-                ausencia = 'no';
-							}else{$('#hideoesp').addClass('hidden');}
+									var ausencia = '';
+													if(datos['Diatomeas'] != ""){
+														$('#tabladiatomeasverprint').bootstrapTable("load", datos['Diatomeas']);
+										ausencia = 'no';
+													}else{$('#hidediato').addClass('hidden')}
+													if(datos['Dinoflagelados'] != ""){
+														$('#tabladinoflageladosverprint').bootstrapTable("load", datos['Dinoflagelados']);
+										ausencia = 'no';
+													}else{$('#hidedino').addClass('hidden');}
+													if(datos['OEsp'] != ""){
+														$('#tablaoespeciesverprint').bootstrapTable("load", datos['OEsp']);
+										ausencia = 'no';
+													}else{$('#hideoesp').addClass('hidden');}
 
-              if (ausencia == '') {
-                $('#id_tabla_pamb').css('margin-top','50px');
-              }
+									if (ausencia == '') {
+										$('#id_tabla_pamb').css('margin-top','50px');
+									}
 
-							document.getElementById("fechaverreporteprint").value = datos['Fecha_Reporte'];
-							document.getElementById("fechaanalisisverreporteprint").value = datos['Fecha_Analisis'];
-							document.getElementById("fechaenvioverreporteprint").value = datos['Fecha_Envio'];
-							//document.getElementById("tecnicaverreporteprint").value = datos['Tecnica'];
-							var obs1 = datos['Observaciones'];
-							//if(datos['Observaciones']){obs1 == datos['Observaciones'];}
-              if (obs1 != '') {
-                document.getElementById("obsverreporteprint").value = obs1;
-              }else{
-                document.getElementById("obsverreporteprint").value = '-';
-              }
+													document.getElementById("fechaverreporteprint").value = datos['Fecha_Reporte'];
+													document.getElementById("fechaanalisisverreporteprint").value = datos['Fecha_Analisis'];
+													document.getElementById("fechaenvioverreporteprint").value = datos['Fecha_Envio'];
+													//document.getElementById("tecnicaverreporteprint").value = datos['Tecnica'];
+													var obs1 = datos['Observaciones'];
+													//if(datos['Observaciones']){obs1 == datos['Observaciones'];}
+									if (obs1 != '') {
+										document.getElementById("obsverreporteprint").value = obs1;
+									}else{
+										document.getElementById("obsverreporteprint").value = '-';
+									}
 
-            //   id_tabla_pamb
+            				//   id_tabla_pamb
 
 							$("#archivolink").text(nombrearchivo);
 							document.getElementById("firmaverreporteprint").value = datos['Firma'];
@@ -538,25 +535,31 @@
 							loaddatagrafico();
 
 						}else{swal("Error", "Error al cargar el reporte.", "error");}
-				 	// }
-				// });
-			//Parámetros Ambientales
+								
 						
-			var dato = {!! json_encode($pambientales) !!};  
+						var dato = {!! json_encode($pambientales) !!};  
 
-						if(dato != 0){
+						if(dato != 0)
+						{
 							var datos = dato;//JSON.parse(dato);
 
 							//Print
-							if(datos['PAmbientales'] != ""){
+							if(datos['PAmbientales'] != "")
+							{
 								$('#tablapambientalesverprint').bootstrapTable("load", datos['PAmbientales']);
-							}else{$('#tablapambientalesverprint').addClass('hidden');}
+							}else
+							{
+								$('#tablapambientalesverprint').addClass('hidden');
+							}
 							$('#tablapambientalesotrosverprint').bootstrapTable("load", datos['PAmbientalesotros']);
-						}else{swal("Error", "Error al cargar el reporte.", "error");}
+						}else
+							{
+								swal("Error", "Error al cargar el reporte.", "error");
+							}
 					
 				
 
-	}
+			}
 
 
 

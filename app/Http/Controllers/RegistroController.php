@@ -633,15 +633,16 @@ class RegistroController extends Controller
 		$PAmb = PAmbientales::where('pambientales.Grupo','Columna de Agua')
 								->join('medicion_pambientales','medicion_pambientales.IDpambientales','=','pambientales.IDpambientales')
 								->where('medicion_pambientales.IDmedicion',$IDmedicion)
+                                ->where('pambientales.IDempresa', $miuser->IDempresa)
 								->select( 'pambientales.Nombre',
-                                'pambientales.Grupo',
-                                'medicion_pambientales.Medicion_1',
-                                'medicion_pambientales.Medicion_2',
-                                'medicion_pambientales.Medicion_3',
-                                'medicion_pambientales.Medicion_4',
-                                'medicion_pambientales.Medicion_5',
-                                'medicion_pambientales.Medicion_6',
-                                'medicion_pambientales.Medicion_7' 
+                                            'pambientales.Grupo',
+                                            'medicion_pambientales.Medicion_1',
+                                            'medicion_pambientales.Medicion_2',
+                                            'medicion_pambientales.Medicion_3',
+                                            'medicion_pambientales.Medicion_4',
+                                            'medicion_pambientales.Medicion_5',
+                                            'medicion_pambientales.Medicion_6',
+                                            'medicion_pambientales.Medicion_7' 
 									)
 								->orderByRaw("CASE WHEN gtr_pambientales.Nombre = 'Observaciones' THEN 1 ELSE 0 END")
 								->orderBy('pambientales.Grupo', 'DESC')
@@ -3352,9 +3353,17 @@ class RegistroController extends Controller
         $Alarma = $request->input('Alarma');
         $Comentario = $request->input('Comentario');
         $Comentario_Precaucion = $request->input('Comentario_Precaucion');
-        $Concentracion = $request->input('Concentracion');
+        if($request->input('Concentracion')){$Concentracion = $request->input('Concentracion');}
+        else{
+            $Concentracion[0] = '';
+        }
+      
         $Concentracion_Precaucion = $request->input('Concentracion_Precaucion');
-        $Nocivo = $request->input('Nocivo');
+        if($request->input('Nocivo')){$Nocivo = $request->input('Nocivo');}
+        else{
+            $Nocivo[0] = '';
+        }
+        
         $Nocivo_P = $request->input('Nocivo_P');
         $Mortalidad = $request->input('Mortalidad');
         $Dia = $request->input('Dia');

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\DeclaracionController;
+use App\Http\Controllers\EXCELLController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\InformeController;
 use App\Http\Controllers\MapaController;
@@ -100,6 +101,12 @@ Route::controller(RegistroController::class)->group(function(){
 
 // ==============Rutas Configuracion=====================//
 
+// ==============Rutas Excel=====================//
+Route::controller(EXCELLController::class)->group(function(){
+Route::get('registro_editor/download_excel', 'descargaFormatopEstandar')->name('excel.download.form.registro');
+Route::post('registro_editor/carga_excel', 'cargaRegistroAutomatico')->name('excel.cargar.form.registro');
+
+});
 
 
 Route::get('registro_editor/alarma_generar_registro/', [PDFController::class, 'alarmaGenerarRegistro'])->name('registro.alarma.generar.registro');

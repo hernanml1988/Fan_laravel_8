@@ -22,6 +22,8 @@ use App\Models\Pambientales;
 use App\Models\Permisos;
 use App\Models\User;
 use App\Models\MedicionEliminada;
+use Illuminate\Support\Facades\Storage;
+
 
 use Illuminate\Support\Facades\Auth;
 date_default_timezone_set('america/santiago');
@@ -55,15 +57,12 @@ class EXCELLController extends Controller
 		public function cargaRegistroAutomatico(Request $request)
 		{
 			$miuser = Auth::user();
-        	$this->cambiar_bd($miuser->IDempresa);   
-
-			
-			
+        	$this->cambiar_bd($miuser->IDempresa);			
 			   
 			  $path = $request->file('select_file')->getRealPath();
-		  
+				
+			  
 			  $data = Excel::load($path, function($reader){})->get();
-
 			  function sanear_string($string)
 			  {
 						   
@@ -149,6 +148,16 @@ class EXCELLController extends Controller
 			  return Response::json($data);
 
 			
+		}
+		public function descargaFormatopEstandar()
+		{
+			$miuser = Auth::user();
+        	$this->cambiar_bd($miuser->IDempresa); 
+
+			$file = Storage::disk('public')->get('Formato Carga Registro V2.2.xlsm');
+ 			//return \Response::json($entry);
+		
+			return Response($file, 200)->header('Content-Type', 'application/vnd.ms-excel.sheet.macroEnabled.12');
 		}
 
 

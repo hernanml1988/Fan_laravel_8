@@ -56,7 +56,7 @@ class RegistroController extends Controller
               
        $registros = Medicion::where('IDcentro', $IDcentro)
 									->where(
-										function ($query) use ($search,$IDcentro)  {
+										function ($query) use ($search)  {
 											$query->where(DB::raw("(DATE_FORMAT(Fecha_Reporte,'%d-%m-%Y'))") , 'like', '%' . $search . '%')
 											->orWhere('Mortalidad' , 'like', '%' . $search . '%')
 											->orWhere('Comentario' , 'like', '%' . $search . '%')
@@ -81,12 +81,10 @@ class RegistroController extends Controller
                                                 'Declarado','Laboratorio',
 												DB::raw("CASE WHEN Estado = 0 then 'No' ELSE 'Si' END as Estado")
 											) 
-									//->selectRaw("SUM(gtr_ingreso_medicion.consumo) as consumo_total")
-									//->selectRaw("SUM(gtr_ingreso_medicion.dias_funcionamiento) as dias_funcionamiento_total")
-									//->groupBy('ingreso_registro.id')
+									
 									->orderBy('Fecha_Order', 'desc')
 									->orderBy('IDmedicion', 'desc')
-									//->orderBy('ingreso_ficha.valor', 'asc')
+									
 									->skip($offset)
 									->take($limit)
 									->get();      

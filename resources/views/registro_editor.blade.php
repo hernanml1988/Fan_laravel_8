@@ -4290,7 +4290,7 @@ function cargarexcelautomatico(form_data,file_name){
 		  msgcargaexcel = [];
 		  $('#modalloading').modal({backdrop: 'static', keyboard: false});
 		  $.ajax({
-				  url: "Route('registro.carga.registro.automatico')",//carga_registro_automatico.php
+				  url: "{{Route('excel.cargar.form.registro')}}",//carga_registro_automatico.php
 				  cache: false,
 				  contentType: false,
 				  processData: false,
@@ -4515,10 +4515,9 @@ function runningFormatterespeciegeneral(value, row, index) {
   }
 
 
-
 //Descargar formato estandar
 function formatoestandar(){
-  window.location.href = "archivos/Registros_Alarma/descargar_formato_estandar.php";
+  window.location.href = "{{Route('excel.download.form.registro')}}";//"archivos/Registros_Alarma/descargar_formato_estandar.php";
 }
 
 $("#cargarexcel").change(function() {

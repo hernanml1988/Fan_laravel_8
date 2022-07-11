@@ -86,6 +86,22 @@ Route::controller(RegistroController::class)->group(function(){
 
 
 // ==============Rutas Historial=====================//
+Route::controller(HistorialController::class)->group(function(){
+Route::get('historial/reporte_editor/load_registro_centros', 'loadRegistroCentros')->name('historial.load.registro.centros');
+Route::post('historial/reporte_editor/load_fan_reporte', 'loadFanReporte')->name('historial.load.fan.reporte'); 
+Route::post('historial/reporte_editor/load_pambientales_reporte', 'loadPAmbientalesReporte')->name('historial.load.pambientales.reporte'); 
+Route::post('historial/reporte_editor/load_historial_centro_pdf', 'loadHistorialCentrosPDF')->name('historial.load.historial.centros.pdf');    
+Route::post('historial/reporte_editor/load_options_prof', 'loadOptionsProf')->name('historial.load.options.prof');
+Route::post('historial/reporte_editor/load_archivo_registro', 'loadArchivoRegistro')->name('historial.load.archivo.registro');
+
+Route::get('historial/reporte_editor/load_tabla_descargas', 'loadTablaDescargas')->name('historial.load.tabla.descargas');
+Route::post('historial/reporte_editor/save_historial_registro', 'saveHistorialDescarga')->name('historial.save.historial.descarga');
+Route::post('historial/reporte_editor/load_distribucion_descarga', 'loadDistribucionDescargas')->name('historial.load.distribucion.descargas');
+Route::get('historial/reporte_editor/load_anio_periodo', 'loadAnioPeriodo')->name('historial.load.anio.periodo');
+Route::get('historial/reporte_editor/alarma_generar_registro', 'alarmaGenerarExcel')->name('historial.alarma.generar.excel');
+});
+
+
 
 
 // ==============Rutas Mapas=====================//

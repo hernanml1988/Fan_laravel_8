@@ -74,6 +74,49 @@ class WelcomeController extends Controller
         return view('registro_editor', ['menu' => 'ingreso', 'permisos'=>$permisos, 'miuser'=>$miuser,'centros' =>$centros, 'empresa' => $empresa, 'nombre' => $nombre, 'currentUser'=>$currentUser]);
         
     }
+
+    public function indexHistorial()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+
+        if($miuser->user_role_fan == 1 || $miuser->user_role_fan == 2){
+			
+		}else {
+			return redirect('historial');
+		}
+		
+
+		//$centros = Centro::all();
+		$centros = Centro::where('IDempresa', '=', $miuser->IDempresa)
+					->select('*','IDcentro as id_centro')
+					->orderBy('nombre', 'asc')->get();
+					
+		if($miuser->user_role_fan == 1){
+			$permisos = $centros;
+		}else{
+			$permisos = UsuarioPermiso::where('id_user', '=', $miuser->id)->get();
+		}
+		
+		$empresa = Empresa::find($miuser->IDempresa);
+            $currentUser = $miuser;
+        $menu = 'historial';
+        return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu, 'permisos' => $permisos, 'centros' => $centros, 'currentUser' => $currentUser]);
+    }
+
+    
+    public function descargas_editor()
+    {
+        $miuser = Auth::user();
+        $this->cambiar_bd($miuser->IDempresa);
+        $currentUser = $miuser;
+        $menu="descargas";
+        return view('historial/descargas_editor', ['miuser' => $miuser, 'menu'=> $menu, 'currentUser' => $currentUser]);
+    }
+
+
+
+
     public function indexConfiguracion()
     {
         $miuser = Auth::user();
@@ -90,22 +133,8 @@ class WelcomeController extends Controller
         $currentUser = $miuser;
         return view('declaracion/declaracion', ['menu'=>$menu, 'miuser' => $miuser, 'currentUser'=> $currentUser]);
     }
-    public function indexHistorial()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
     
-        $menu = 'historial';
-        return view('historial/reporte_editor', ['miuser' => $miuser, 'menu' => $menu]);
-    }
-    public function descargas_editor()
-    {
-        $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-        
-        $menu="descargas";
-        return view('historial/descargas_editor', ['miuser' => $miuser, 'menu'=> $menu]);
-    }
+    
     public function indexInforme()
     {
         $miuser = Auth::user();

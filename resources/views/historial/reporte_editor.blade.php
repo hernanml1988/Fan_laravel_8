@@ -22,9 +22,9 @@
 
 
 
-       	<div id="page-wrapper">
+       	<div id="page-wrapper" style="margin-left: -21px; margin-right: -40px">
 
-            	<div class="row">
+            	<div class="row" >
                     <div class="col-lg-10 col-lg-offset-1 col-md-10 col-xs-12">
                         <div class="panel panel-black" style="margin-top:20px;">
                             <div class="panel-heading" style="height:90px;">
@@ -33,7 +33,15 @@
                                 </div>
                                 <div class="row" style="padding-top:9px;">
                                     <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-xs-10 col-xs-offset-1">
-                                        <select id="opcionescentros" class="form-control"></select>
+                                        <select id="opcionescentros" class="form-control">
+											@foreach ($centros as $c)
+											@foreach ($permisos as $p)
+												@if ($p->IDcentro == $c->IDcentro)
+													<option value="{{$c->IDcentro}} ">{{$c->Nombre}} </option>
+												@endif
+											@endforeach	
+									@endforeach
+										</select>
                                     </div>
                                 </div>
                             </div>
@@ -41,7 +49,8 @@
 
                                     <div class="dataTable_wrapper" style="height:450px; overflow:auto; font-size:12px; padding-top:12px;">
 
-                                        <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="load_registro_centros.php" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer table_blue" style="text-align-last:center" data-click-to-select="true" data-single-select="true" id="dataTables" >
+                                        <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('historial.load.registro.centros')}}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer table_blue" style="text-align-last:center" data-click-to-select="true" data-single-select="true" id="dataTables" >
+											{{-- data-url "load_registro_centros.php" --}}
                                             <thead>
                                                 <tr >
 
@@ -83,7 +92,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style=" margin-right:180px;margin-top:9px;"> REGISTRO DIARIO </h4>
                   </div>
                   <div class="modal-body">
@@ -328,7 +337,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel"> REGISTRO DIARIO </h4>
                   </div>
                   <div class="modal-body">
@@ -558,7 +567,7 @@
                         <div id="footerprint" class="modal-footer text-center"  >
                             <div class="text-center" style="font-size:16px; margin-top:15px;">Atte.</div>
                             <br/>
-                            <img src="GTRgestion.png" class="center-block"/>
+                            <img src="{{ asset('img/GTRgestion.png') }}" class="center-block"/>
                             <div class="text-center" style="font-size:16px; margin-bottom:15px;">www.gtrgestion.cl</div>
                       	</div>
 
@@ -576,7 +585,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GTRgestion.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:14px;"> <output id="nombreespecieimagen" style="display:inline; text-transform:uppercase; font-size:20px !important;"></output></h4>
                   </div>
                   <div class="modal-body">
@@ -628,7 +637,7 @@
                         <div class="modal-dialog " role="document" >
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                             	<div class="modal-body center-block text-center">
-                                	 <img src='loader.gif' /><h5> Loading... Please Wait </h5>
+                                	 <img src="{{ asset('img/loader.gif') }}" /><h5> Loading... Please Wait </h5>
                                 </div>
                              </div>
                         </div>
@@ -642,7 +651,7 @@
 
     </div>
 
-
+	<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
 
@@ -679,17 +688,20 @@
 
     <!-- Export table -->
     <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>
+    <script src="js/bootstrap-table-export.js"></script> 
 
 
 
 
 
-    <script>
-	var user_id = <?//php echo $currentUser->id; ?>;
-	var id_empresa = <?//php echo $currentUser->IDempresa; ?>;
+<script>
+	var user_id =  {!!$currentUser->id!!}//php echo $currentUser->id; ?>;
+	var id_empresa = {!!$currentUser->IDempresa!!}//php echo $currentUser->IDempresa; ?>;
+	var user_role_fan = {!!$currentUser->user_role_fan!!}
+  var role = <?php echo '"'.$currentUser->role.'"';?>;
+	//roles(<?/*php echo '"'.$currentUser->role.'"';?>*/);
 
-	roles(<?/*php echo '"'.$currentUser->role.'"';?>*/);
+	var dataTables = $('#dataTables');
 
 	function queryParams(params) {
 		params.user_id = user_id;
@@ -702,7 +714,7 @@
 
 
 
-	var dataTables = $('#dataTables');
+	
 
 
 	//Mensaje Loding
@@ -732,10 +744,11 @@
 	//Load opciones profundidad
 	$( document ).ready(function() {
 		$.ajax({
-				url: "load_options_prof.php",
+				url: "{{Route('historial.load.options.prof')}}",//load_options_prof.php",
 				type: 'post',
 				dataType: 'json',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:		user_id
 				},
 				success: function(dato)
@@ -796,26 +809,27 @@
 
 
 			//Load opciones centros
-			$.ajax({
-					url: "load_options_centros.php",
-					type: 'post',
-					dataType: 'json',
-					data: {
-						user_id:		user_id
-					},
-					success: function(dato)
-					{
-						if(dato != ""){
-							$.each(dato['Nombre'], function (i, item) {
-								$('#opcionescentros').append($('<option>', {
-									value: dato['IDcentro'][i],
-									text : dato['Nombre'][i]
-								}));
-							});
-							dataTables.bootstrapTable("refresh");
-						}
-					}
-			});
+			// $.ajax({
+			// 		url: "load_options_centros.php",
+			// 		type: 'post',
+			// 		dataType: 'json',
+			// 		data: {
+			// 			_token: "{{ csrf_token() }}",
+			// 			user_id:		user_id
+			// 		},
+			// 		success: function(dato)
+			// 		{
+			// 			if(dato != ""){
+			// 				$.each(dato['Nombre'], function (i, item) {
+			// 					$('#opcionescentros').append($('<option>', {
+			// 						value: dato['IDcentro'][i],
+			// 						text : dato['Nombre'][i]
+			// 					}));
+			// 				});
+			// 				dataTables.bootstrapTable("refresh");
+			// 			}
+			// 		}
+			// });
 
 	});
 
@@ -833,7 +847,7 @@
 					url: "archivos/Registros_Alarma/generar_registro.php",
 					type: 'post',
 					dataType: 'json',
-					data: {
+					data: { 	_token: "{{ csrf_token() }}",
 						f:	dataTables.bootstrapTable('getSelections')[0].Date_Reporte,
 						c:	$('#opcionescentros option:selected').text(),
 						a:	dataTables.bootstrapTable('getSelections')[0].Estado_Alarma,
@@ -856,13 +870,13 @@
 
 	function verarchivo(){
 			$.ajax({
-						url: "load_archivo_registro.php",
+						url: "{{Route('historial.load.archivo.registro')}}",//load_archivo_registro.php",
 						type: 'post',
-						data: {IDmedicion: dataTables.bootstrapTable('getSelections')[0].IDmedicion},
+						data: {	_token: "{{ csrf_token() }}", IDmedicion: dataTables.bootstrapTable('getSelections')[0].IDmedicion},
 						success: function(dato)
 						{
 							console.log(dato);
-							var obj = JSON.parse(dato);
+							var obj = dato;//JSON.parse(dato);
 							window.open(obj['Archivo'], "_blank");
 						}
 					});
@@ -886,9 +900,9 @@
 			$('#tablaoespeciesver').bootstrapTable("removeAll");
 			$('[name="outputver"]').text("");
 			$.ajax({
-					url: "load_fan_reporte.php",
+					url: "{{Route('historial.load.fan.reporte')}}",//load_fan_reporte.php",
 					type: 'post',
-					data: {
+					data: { 	_token: "{{ csrf_token() }}",
 						IDmedicion: 	 dataTables.bootstrapTable('getSelections')[0].IDmedicion,
 						user_id:		user_id
 					},
@@ -896,7 +910,7 @@
 					{
 
 						if(dato != 0){
-							var datos = JSON.parse(dato);
+							var datos = dato;//JSON.parse(dato);
               especie_rojo = [];
 							especie_amarillo = [];
 							especie_otro = [];
@@ -940,15 +954,21 @@
 
 							var nombrearchivo = "";
 							if(datos['Archivo']){
-								nombrearchivo = datos['Archivo'].split("/");
-								nombrearchivo = nombrearchivo[nombrearchivo.length-1];
-							}
-							$('#archivoverreporte').text(nombrearchivo);
+							html= '<a style="display:inline;"  class="like eliminar_doc_'+0+'" href=\"{{Route("registro.get.archivo")}}/'+datos['Archivo']['IDdocumento']+'\" target="_blank" > '
+										+ datos['Archivo']['Titulo']+ 
+											' </a> ';
+							$('#archivoverreporte').html(html);
+						  }
+							// if(datos['Archivo']){
+							// 	nombrearchivo = datos['Archivo'].split("/");
+							// 	nombrearchivo = nombrearchivo[nombrearchivo.length-1];
+							// }
+							//$('#archivoverreporte').text(nombrearchivo);
 							$('#firmaverreporte').text(datos['Firma']);
 							$('#nombreverreporte').text(datos['Nombre']);
 							$('#acsverreporte').text(datos['Barrio']);
 							$('#especieverreporte').text(datos['Especie']);
-              $('#pecesverreporte').text(datos['Mortalidad']);
+              				$('#pecesverreporte').text(datos['Mortalidad']);
 							$('#siepverreporte').text(datos['Codigo']);
 							$('#siembraverreporte').text(datos['Siembra']);
 							$('#cosechaverreporte').text(datos['Cosecha']);
@@ -981,9 +1001,9 @@
 				});
 			//Parámetros Ambientales
 			$.ajax({
-					url: "load_pambientales_reporte.php",
+					url: "{{Route('historial.load.pambientales.reporte')}}",//load_pambientales_reporte.php",
 					type: 'post',
-					data: {
+					data: { 	_token: "{{ csrf_token() }}",
 						IDmedicion: 	 dataTables.bootstrapTable('getSelections')[0].IDmedicion,
 						user_id:		user_id
 					},
@@ -992,7 +1012,7 @@
 						$('#tablapambientalesver').bootstrapTable("removeAll");
 						$('#tablapambientalesotrosver').bootstrapTable("removeAll");
 						if(dato != 0){
-							var datos = JSON.parse(dato);
+							var datos = dato;//JSON.parse(dato);
 							$('#tablapambientalesver').bootstrapTable("load", datos['PAmbientales']);
 							$('#tablapambientalesotrosver').bootstrapTable("load", datos['PAmbientalesotros']);
 
@@ -1040,10 +1060,10 @@
 		//if(especie_grafico_1 != "" || especie_grafico_2 != "" || especie_grafico_3 != ""){
 			$('#modalloading').modal({backdrop: 'static', keyboard: false});
 			$.ajax({
-				url: "load_historial_centros_pdf.php",
+				url: "{{Route('historial.load.historial.centros.pdf')}}",//load_historial_centros_pdf.php",
 				type: 'post',
 				dataType: 'json',
-				data: {
+				data: { 	_token: "{{ csrf_token() }}",
 					IDcentro:		 idcentro,
 					IDmedicion: 	   idmedicion,
 					Especies_1: 	    especie_grafico_1,// especie_grafico.slice(0, 4)
@@ -1298,7 +1318,7 @@
 		return (index + 1);
 	}
 	function runningFormatterfoto(value, row, index) {
-		return '<img href="'+row['Imagen']+'" src="'+row['Imagen']+'" class="img-circle center-block" />';
+		return '<img src="{{Route("registro.get.imagen.especie")}}/'+ row['IDespecie']+'/1'+' " class="img-circle center-block" />';
 	}
 
 
@@ -1455,13 +1475,14 @@
 
 		if( value.indexOf("Presencia")>=0){
 			aux=classes[1];
-		} else if( value.indexOf("Precaución")>=0){
+		} else if( value.indexOf("Precauci")>=0){
 			aux=classes[2];
-		} else if( value.indexOf("Crítico")>=0){
+		} else if( value.indexOf("Nivel")>=0){
 			aux=classes[3];
-		}else if( value.indexOf("Ausencia")>=0){
+		} else if( value.indexOf("Ausencia")>=0){
 			aux=classes[0];
 		}
+
 
 		return {
 			classes: aux
@@ -1555,7 +1576,7 @@
 			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap-datetimepicker.css\" type=\"text/css\" media=\"print\"/>" );
 			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/font-awesome.css\" type=\"text/css\" media=\"print\"/>" );
 			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/jquery-ui.css\" type=\"text/css\" media=\"print\"/>" );
-//
+
 
 			WinPrint.document.write('</head><body >');
 

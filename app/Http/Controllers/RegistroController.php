@@ -47,7 +47,7 @@ class RegistroController extends Controller
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);
 
-        $user_id = $request->input('user_id');
+        $user_id = $miuser->id;
 		$search = $request->input('search');
 		$order = $request->input('order');  //siempre es asc
 		$limit = $request->input('limit');
@@ -78,7 +78,8 @@ class RegistroController extends Controller
                                                 'Tecnica',
                                                 'Observaciones',
                                                 'Firma',
-                                                'Declarado','Laboratorio',
+                                                'Declarado',
+                                                'Laboratorio',
 												DB::raw("CASE WHEN Estado = 0 then 'No' ELSE 'Si' END as Estado")
 											) 
 									
@@ -140,10 +141,8 @@ class RegistroController extends Controller
     public function loadDinoflagelados(Request $request)
     {
         $miuser = Auth::user();
-        $this->cambiar_bd($miuser->IDempresa);
-
+        $this->cambiar_bd($miuser->IDempresa);       
         
-        $especie = new Especie();
 	    $error = 0;
       
 
@@ -956,7 +955,7 @@ class RegistroController extends Controller
 		}
 		
 		
-		$IDmedicion = 150;//$request->input('IDmedicion');
+		$IDmedicion = $request->input('IDmedicion');
 		//Diatomeas	
 		$PAmb = PAmbientales::leftJoin('medicion_pambientales',function($query) use ($IDmedicion){
                                                                     $query->on('medicion_pambientales.IDpambientales', '=','pambientales.IDpambientales' )
@@ -5270,7 +5269,7 @@ class RegistroController extends Controller
         						if($alarma == ""){
                                     $consulta = MedicionFan::select('IDmedicionfan')
                                                                 ->where('IDmedicion', $IDmedicion)
-                                                                -where(
+                                                                ->where(
                                                                     function($query){
                                                                         $query->where('Medicion_1', '>', 0)
                                                                                 ->orWhere('Medicion_2', '>', 0)

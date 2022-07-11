@@ -166,8 +166,8 @@ class PDFController extends Controller
             $nombre_pdf = 'hola.pdf';//elimina_acentos($nombre_pdf);
             
             
-            $execute = shell_exec("wkhtmltopdf --disable-smart-shrinking --no-outline --page-size A3 --margin-top 2mm --margin-bottom 0mm --margin-right 0mm --margin-left 0mm 'https://127.0.0.1:8000/registro_editor/alarma_generar_registro_web/155271/550/Nivel%20Critico' --javascript-delay 1500 C:\Users\PC1GT\Documents\.$nombre_pdf.2>&1");
-            //exec('wkhtmltopdf "https://styde.net/generar-pdfs-en-laravel-5-1-con-snappy" docmento.pdf 2>&1');
+            //$execute = shell_exec("wkhtmltopdf --disable-smart-shrinking --no-outline --page-size A3 --margin-top 2mm --margin-bottom 0mm --margin-right 0mm --margin-left 0mm 'https://127.0.0.1:8000/registro_editor/alarma_generar_registro_web/155271/550/Nivel%20Critico' --javascript-delay 1500 C:\Users\PC1GT\Documents\.$nombre_pdf.2>&1");
+            $execute = exec('wkhtmltopdf "https://styde.net/generar-pdfs-en-laravel-5-1-con-snappy" docmento.pdf 2>&1');
              echo $execute;
              echo 'fin';
              return  $execute;
@@ -820,7 +820,7 @@ class PDFController extends Controller
             // if(file_exists($nombre_pdf)){
             //     unlink($nombre_pdf); 
             // }
-            return view('pdf_alarma_registro',['user_id'  => $miuser->id,
+            return view('prueba',['user_id'  => $miuser->id,
                                                'idmedicion' =>  $m ,
                                                'alarma' => $Alarma,
                                                 'empresa' =>$empresa,

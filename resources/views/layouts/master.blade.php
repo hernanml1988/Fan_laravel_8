@@ -22,7 +22,7 @@
     <link href="{{ asset('css/bootstrap-multiselect.css') }}" rel="stylesheet">
     	<link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
    		<link href="{{ asset('css/jquery-ui.css') }}" rel="stylesheet">
- 
+    
     
 		<link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.css') }}" /> 
     	<link href="{{ asset('css/bootstrap-editable.css') }}" rel="stylesheet">

@@ -202,7 +202,8 @@
                                 </div>
                                     <div class="dataTable_wrapper" style="height:600px; overflow:auto; font-size:12px; padding-top:12px;">
                                          <!--data-show-export="true"  data-export-types="['excel']" data-export-options='{"fileName": "GTR fan - Historial"}'-->
-                                        <table cellSpacing="0" data-toggle="table" data-pagination="true" data-search="false" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="load_tabla_descargas.php" data-query-params="queryParams" data-show-columns="true" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" id="dataTables" >
+                                        <table cellSpacing="0" data-toggle="table" data-pagination="true" data-search="false" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('historial.load.tabla.descargas')}}" data-query-params="queryParams" data-show-columns="true" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer" style="text-align-last:center" id="dataTables" >
+                                            {{-- load_tabla_descargas.php --}}
                                             <thead id="table-sticky-header">
                                                 <tr >
                                                     <th data-field="Region" data-sortable="false" data-switchable="false" data-valign = "middle"   data-width = "90px">Región</th>
@@ -264,7 +265,7 @@
 
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    {{-- <script src="js/bootstrap.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="js/metisMenu.min.js"></script>
@@ -290,7 +291,7 @@
     <script src="js/bootstrap-table-export.js"></script>
 
     <!-- Multiple Select -->
-    <script src="js/jquery.multi-select.js" type="text/javascript"></script>
+    <script src="js/jquery.multi-select.js" type="text/javascript"></script> --}}
 
 
 
@@ -299,7 +300,10 @@
     <script>
     var user_id = <?//php echo $currentUser->id; ?>;
     var id_empresa = <?//php echo $currentUser->IDempresa; ?>;
-
+    var user_id =  {!!$currentUser->id!!}//php echo $currentUser->id; ?>;
+	var id_empresa = {!!$currentUser->IDempresa!!}//php echo $currentUser->IDempresa; ?>;
+	var user_role_fan = {!!$currentUser->user_role_fan!!}
+    var role = <?php echo '"'.$currentUser->role.'"';?>;
     roles(<?/*php echo '"'.$currentUser->role.'"';?>*/);
 
     var selectedfilter = [];
@@ -375,7 +379,7 @@
     function savehistorial(){
         var obs = "Descarga datos desde "+document.getElementById("fechadesde").value+" hasta "+document.getElementById("fechahasta").value+" | Centros descargados:"+selectedfiltertext.substr(1);
         $.ajax({
-                url: "save_historial_descargas.php",
+                url: "{{Route('historial.save.historial.descarga')}}",//save_historial_descargas.php",
                 type: 'post',
                 data: {
                  Modificacion:   "Descarga datos excel",
@@ -422,7 +426,7 @@
 
         // $('#modalloading').modal({backdrop: 'static', keyboard: false});
         $.ajax({
-                url: "load_options_prof.php",
+                url: "{{Route('historial.load.options.prof')}}",//load_options_prof.php",
                 type: 'post',
                 dataType: 'json',
                 data: {
@@ -458,7 +462,7 @@
             });
         // $('#modalloading').modal({backdrop: 'static', keyboard: false});
         $.ajax({
-                url: "load_distribucion_descargas.php",
+                url: "{{Route('historial.load.distribucion.descargas')}}",//load_distribucion_descargas.php",
                 type: 'post',
                 dataType: 'json',
                 data: {
@@ -473,7 +477,7 @@
 
 
                         $.ajax({
-                                url: "load_anio_periodo.php",
+                                url: "{{Route('historial.load.anio.periodo')}}",//load_anio_periodo.php",
                                 type: 'get',
                                 dataType: 'json',
                                 data: {
@@ -656,7 +660,7 @@
 
         savehistorial();
         $.ajax({
-                url: "archivos/Registros_Alarma/generar_excel.php",
+                url: "{{Route('historial.alarma.generar.excel')}}",//archivos/Registros_Alarma/generar_excel.php",
                 type: 'post',
                 dataType: 'json',
                 data: {

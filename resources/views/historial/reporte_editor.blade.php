@@ -10,9 +10,9 @@
     }
     </style>
 @section('content')
-<script type="text/javascript">
+	<script type="text/javascript">
 
-</script>
+	</script>
 
 
 
@@ -50,7 +50,7 @@
                                     <div class="dataTable_wrapper" style="height:450px; overflow:auto; font-size:12px; padding-top:12px;">
 
                                         <table cellSpacing="0" data-toggle="table" data-search="true" data-show-columns="true" data-pagination="true" data-page-size="50"  data-page-list="[50, 100, 200, 300, 500]" data-side-pagination="server" data-url="{{Route('historial.load.registro.centros')}}" data-query-params="queryParams" data-show-refresh="true" data-cache="false" width="100%" class="table table-striped table-bordered table-hover pointer table_blue" style="text-align-last:center" data-click-to-select="true" data-single-select="true" id="dataTables" >
-											{{-- data-url "load_registro_centros.php" --}}
+											
                                             <thead>
                                                 <tr >
 
@@ -634,7 +634,7 @@
 
             <!-- Modal Loading-->
                     <div class="modal fade" id="modalloading" tabindex="-1" role="dialog">
-                        <div class="modal-dialog " role="document" >
+                        <div class="modal-dialog " role="document" style="margin-right: 190px; margin-top: 220px">
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                             	<div class="modal-body center-block text-center">
                                 	 <img src="{{ asset('img/loader.gif') }}" /><h5> Loading... Please Wait </h5>
@@ -653,15 +653,15 @@
 
 	<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+   <script src="{{asset('js/bootstrap.min.js')}}"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/metisMenu.min.js"></script>
-    <script src="js/bootstrap-table.js"></script>
-
+    {{-- <script src="{{asset ('js/metisMenu.min.js')}}"></script> --}}
+    {{-- <script src="js/bootstrap-table.js')}}"></script> --}}
+ {{-- 
     <!-- DatetimePicker -->
-   <script src="js/moment-with-locales.js"></script>
-   <script src="js/bootstrap-datetimepicker.js"></script>
+   <script src="{{asset('js/moment-with-locales.js')}}"></script>
+   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
 
 
     <!-- Custom Theme JavaScript -->
@@ -679,8 +679,7 @@
 	<!-- Incluye los colores para los estados -->
     <script src="js/color-estados.js"></script>
 
-    <!-- Asigna menu para roles -->
-    <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
+   
 
     <!-- Edit table -->
     <script src="js/bootstrap-editable.js"></script>
@@ -688,7 +687,7 @@
 
     <!-- Export table -->
     <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script> 
+    <script src="js/bootstrap-table-export.js"></script>  --}}
 
 
 
@@ -725,7 +724,7 @@
 
 	$(".tabledetalle").on('click-cell.bs.table', function (field, value, row, $element) {
 		if($element['Imagen'] != "" && value == 1){
-			$("#detalleimagen").attr("src",$element['Imagen']);
+			$("#detalleimagen").attr("src",'{{Route("registro.get.imagen.especie")}}/'+ $element['IDespecie']+'/1'+' "');
 			$('#nombreespecieimagen').text($element['Nombre']);
 			if($element['Alarma_Rojo'] > 0){
 				$('#especienivelrojo').text($element['Alarma_Rojo']+" [cel/ml]");
@@ -1597,7 +1596,7 @@
 
 
 
-</script>
+	</script>
 
 
 

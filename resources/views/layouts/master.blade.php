@@ -250,8 +250,7 @@
      <script src="{{ asset('js/jquery.imageresize.js')}}"></script>-->
      
     
-    <!-- Asigna menu para roles --> 
-    <script src="{{ asset('js/menu_role.js')}}"></script>
+    
     
     
 

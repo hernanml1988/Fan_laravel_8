@@ -105,7 +105,7 @@
 
      
 
-       	<div id="page-wrapper">
+       	<div id="page-wrapper" style="margin-left:-24px; margin-right: 1px">
 
 
 
@@ -150,7 +150,15 @@
 
                                         </div>
                                         <div class="col-lg-4 col-md-4 col-xs-12 center-block">
-                                            <select id="opcionescentros"  name="multipleselectsearch" class="form-control center-block" style="width:200px !important; margin-top:7px; "></select>
+                                            <select id="opcionescentros"  name="multipleselectsearch" class="form-control center-block" style="width:200px !important; margin-top:7px; ">
+												@foreach ($centros as $c)
+													@foreach ($permisos as $p)
+														@if ($p->IDcentro == $c->IDcentro)
+															<option value="{{$c->IDcentro}} ">{{$c->Nombre}} </option>
+														@endif
+													@endforeach	
+												@endforeach
+											</select>
                                             <select id="nromedicionresumen" class="form-control center-block" style="max-width:200px; margin-top:5px;">
                                             </select>
                                             <select id="especiesselectmap" name="multipleselectsearch" class="form-control center-block" style="width:200px; margin-top:7px;">
@@ -1164,10 +1172,10 @@
                     </div>
 
 
-
+					<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    {{-- <script src="js/bootstrap.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="js/metisMenu.min.js"></script>
@@ -1188,11 +1196,7 @@
     <!-- Autocomplete -->
     <script src="js/jquery-ui.js"></script>
 
-    <!-- Asigna menu para roles -->
-    <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
-
-
-	 <!-- Alertas -->
+    	 <!-- Alertas -->
     <script src="js/sweetalert.min.js"></script>
 
     <!-- Export table -->
@@ -1203,19 +1207,36 @@
   	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
 
     <!-- Switch button -->
-  	<script type="text/javascript" src="js/lc_switch.js"></script>
+  	 --}}
 
+	 
 
+	   <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+					<!-- Export table -->
+		
+		<!-- DatetimePicker -->
+
+		<script src="{{asset('js/metisMenu.min.js')}}"></script>
+		<script src="{{asset('js/bootstrap-table.js')}}"></script>
+		
+		<script src="{{asset('js/moment-with-locales.js')}}"></script>
+		<script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
+
+	   <script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
+	   <script type="text/javascript" src="{{asset('js/lc_switch.js')}}"></script>
 
 
 
     <script>
+		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
+		var id_empresa = {!!$currentUser->IDempresa!!}//<?php echo $currentUser->IDempresa; ?>;
+		var user_role_fan = {!!$currentUser->user_role_fan!!}
+		var role = <?php echo '"'.$currentUser->role.'"';?>;
+		// var user_id = <php echo $miuser->id; ?>;
+		// var id_empresa = <?php echo $miuser->IDempresa; ?>;
 
-	var user_id = <php echo $miuser->id; ?>;
-	var id_empresa = <?php echo $miuser->IDempresa; ?>;
-
-	roles(<?php echo '"'.$miuser->role.'"';?>);
-
+		// roles(<?php echo '"'.$miuser->role.'"';?>);
+		
 
 	$('#nombreswitch').lc_switch('Auto', 'No');
 	$('#acsswitch').lc_switch();
@@ -1791,11 +1812,11 @@ function replaceElement($elem) {
 			$.ajax({
 						url: "load_archivo_registro.php",
 						type: 'post',
-						data: {IDmedicion: idmedicionarchivo},
+						data: {_token: "{{ csrf_token() }}",IDmedicion: idmedicionarchivo},
 						success: function(dato)
 						{
 
-							var obj = JSON.parse(dato);
+							var obj = dato;// JSON.parse(dato);
 							window.open(obj['Archivo'], "_blank");
 						}
 					});
@@ -1821,9 +1842,10 @@ function replaceElement($elem) {
 		opt = [];
 
 		$.ajax({
-				url: "load_ubicacion_centros.php",
+				url: "{{Route('mapas.load.ubicacion.centro')}}", //"load_ubicacion_centros.php",
 				type: 'post',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:			user_id,
 					Nombre_Region: 	  nombreregion,
 					Colaborativo:	   0,
@@ -1833,7 +1855,7 @@ function replaceElement($elem) {
 				success: function(dato)
 				{
 
-					datos = JSON.parse(dato);
+					datos = dato; //JSON.parse(dato);
 
 					$( '#showcentros' ).empty();
 					$('#opcionescentros').empty();
@@ -1914,10 +1936,11 @@ function replaceElement($elem) {
 
 			//Load opciones profundidad
 			$.ajax({
-					url: "load_options_prof.php",
+					url: "{{Route('mapas.load.options.prof')}}",//load_options_prof.php",
 					type: 'post',
 					dataType: 'json',
 					data: {
+						_token: "{{ csrf_token() }}",
 						user_id:		user_id
 					},
 					success: function(dato)
@@ -2026,7 +2049,7 @@ function replaceElement($elem) {
 		dato = [];
 		$('#modalloading').modal({backdrop: 'static', keyboard: false});
 		$.ajax({
-			url: "load_historial_centros.php",
+			url: "{{Route('mapas.load.historial.centros')}}",//load_historial_centros.php",
 			type: 'post',
 			dataType: 'json',
 			data: {
@@ -2348,6 +2371,7 @@ function replaceElement($elem) {
 					type: 'post',
 					dataType: 'json',
 					data: {
+						_token: "{{ csrf_token() }}",
 						f:	fechamedicion,
 						c:	$('#modalnombrecentro').text(),
 						a:	"",
@@ -2488,9 +2512,10 @@ function replaceElement($elem) {
 			$('[name="outputver"]').text("");
 			$('#modalloading').modal({backdrop: 'static', keyboard: false});
 			$.ajax({
-					url: "load_fan_reporte.php",
+					url: "{{Route('mapas.load.fan.reporte')}}",//load_fan_reporte.php",
 					type: 'post',
 					data: {
+						_token: "{{ csrf_token() }}",
 						IDmedicion: 	 IDmedicion,
 						user_id:		user_id
 					},
@@ -2498,7 +2523,7 @@ function replaceElement($elem) {
 					{
 						$('#modalloading').modal('hide');
 						if(msg != 0){
-							var datos2 = JSON.parse(msg);
+							var datos2 = msg;// JSON.parse(msg);
 							$('#tabladiatomeasver').bootstrapTable("load", datos2['Diatomeas']);
 							$('#tabladinoflageladosver').bootstrapTable("load", datos2['Dinoflagelados']);
 							$('#tablaoespeciesver').bootstrapTable("load", datos2['OEsp']);
@@ -2535,14 +2560,13 @@ function replaceElement($elem) {
                 $('#hidden_ubicación').addClass('hidden');
               }
 
-							var nombrearchivo = "";
-							if(datos2['Archivo']){
-								if(datos2['Archivo'] != ""){
-									nombrearchivo = datos2['Archivo'].split("/");
-									nombrearchivo = nombrearchivo[nombrearchivo.length-1];
-								}
-							}
-							$('#archivoverreporte').text(nombrearchivo);
+			  var nombrearchivo = "";
+								if(datos['Archivo']){
+								  html= '<a style="display:inline;"  class="like eliminar_doc_'+0+'" href=\"{{Route("registro.get.archivo")}}/'+datos['Archivo']['IDdocumento']+'\" target="_blank" > '
+											  + datos['Archivo']['Titulo']+ 
+												  ' </a> ';
+								  $('#archivoverreporte').html(html);}
+							//$('#archivoverreporte').text(nombrearchivo);
 							$('#firmaverreporte').text(datos2['Firma']);
 							$('#nombreverreporte').text(datos2['Nombre']);
 							$('#acsverreporte').text(datos2['Barrio']);
@@ -2574,9 +2598,10 @@ function replaceElement($elem) {
 
 			//Parámetros Ambientales
 			$.ajax({
-					url: "load_pambientales_reporte.php",
+					url: "{{Route('mapas.load.pambientales.reporte')}}",//load_pambientales_reporte.php",
 					type: 'post',
 					data: {
+						_token: "{{ csrf_token() }}",
 						IDmedicion: 	 IDmedicion,
 						user_id:		user_id
 					},
@@ -2585,7 +2610,7 @@ function replaceElement($elem) {
 						$('#tablapambientalesver').bootstrapTable("removeAll");
 						$('#tablapambientalesotrosver').bootstrapTable("removeAll");
 						if(msg != 0){
-							var datos2 = JSON.parse(msg);
+							var datos2 = datos2; //JSON.parse(msg);
 							$('#tablapambientalesver').bootstrapTable("load", datos2['PAmbientales']);
 							$('#tablapambientalesotrosver').bootstrapTable("load", datos2['PAmbientalesotros']);
 
@@ -2743,9 +2768,10 @@ function replaceElement($elem) {
 
 	function sendreporte(WinPrint){
 		$.ajax({
-					url: "send_reporte.php",
+					url: "{{Route('mapas.send.reporte')}}",//send_reporte.php",
 					type: 'post',
 					data: {
+						_token: "{{ csrf_token() }}",
 						Page: WinPrint
 					},
 					success: function(msg)
@@ -2814,9 +2840,10 @@ function replaceElement($elem) {
 		//parseInt(document.getElementById("especiesselectmap").value)
 		$('#loading1').removeClass("hidden");
 		$.ajax({
-				url: "load_resumen_reporte.php",
+				url: "{{Route('mapas.load.resumen.reporte')}}",//load_resumen_reporte.php",
 				type: 'post',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:			user_id,
 					Nombre_Region: 	  nombreregion,
 					Dias: 	 		   dias,
@@ -2831,7 +2858,7 @@ function replaceElement($elem) {
 				success: function(dato)
 				{
 
-					var myobjaux = JSON.parse(dato);
+					var myobjaux = dato;//JSON.parse(dato);
 
 					var myobj = myobjaux['Resultado'];
 					tablacompleta = myobj;

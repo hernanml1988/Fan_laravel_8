@@ -148,8 +148,28 @@ class WelcomeController extends Controller
     {
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);
+        if($miuser->user_role_fan == 1 || $miuser->user_role_fan == 2){
+
+		}else {
+			return redirect('historial');
+		}
+
+
+		//$centros = Centro::all();
+		$centros = Centro::where('IDempresa', '=', $miuser->IDempresa)
+					->select('*','IDcentro as id_centro')
+					->orderBy('nombre', 'asc')->get();
+
+		if($miuser->user_role_fan == 1){
+			$permisos = $centros;
+		}else{
+			$permisos = UsuarioPermiso::where('id_user', '=', $miuser->id)->get();
+		}
+
+		$empresa = Empresa::find($miuser->IDempresa);
+        $currentUser = $miuser;
         $menu = 'mapa';
-        return view('mapas/mapa_editor', ['miuser' => $miuser, 'menu' =>$menu]);
+        return view('mapas/mapa_editor', ['miuser' => $miuser, 'menu' =>$menu, 'currentUser' => $currentUser, 'centros' => $centros, 'permisos' => $permisos]);
     }
 
     public function mapa_colab_editor()

@@ -29,10 +29,12 @@ use Illuminate\Support\Facades\Auth;
 date_default_timezone_set('america/santiago');
 use PDF;
 use Excel;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\FacadesDB;
 
 class EXCELLController extends Controller
 {
@@ -44,7 +46,7 @@ class EXCELLController extends Controller
 	
 		public function __construct()
 		{
-			//\DB::setDefaultConnection('mysql');
+			//DB::setDefaultConnection('mysql');
 
 			//$this->middleware('guest');
 			$this->middleware('auth');
@@ -76,7 +78,7 @@ class EXCELLController extends Controller
 		
 		$data = Excel::toArray(new RegistroAutoImport, $request->file('select_file')->getRealPath());
 		$data = $data[0];
-		return Response::json($data);
+		//return Response::json($data);
 				
 		$Nombre_Especie = array();
 
@@ -109,32 +111,31 @@ class EXCELLController extends Controller
            if ($extension  == 'xlsx' || $extension  == 'xlsm' ) {
 
         		// Temporary file name
-                
-        		$trow = 1;
         		$formato_version_agrega1 = 0;
 
 
-        				foreach ($data as $row) {
+				//return Response::json($data[2][18]);
+					
+					if($data[1][18] != '' ){
+						//return Response::json($data[2][18]);
+						if($data[1][18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU9lT1zMqkhN.DJGJXgfxW"){
+							$formato = "Interno";
+							$version = 0;
+						}
+						if($data[1][18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU7lT1zMqkhN.DJGJXgfxW"){
+							$formato = "Interno";
+							$version = 1;
+						}
+					}
+					else if($data[2][18] != ''){
+						if($data[2][18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU7lT1zMqkhN.DJGJXgfxW"){
+							$formato = "Interno";
+							$version = 2; //Suma una fila más por que se agrego el numero de version en la fila1 del excel y eso hizo que se corra todo en +1
+						}
+					}
+				
 
-							
-        					if($trow == 2 ){
-        						if($row[18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU9lT1zMqkhN.DJGJXgfxW"){
-        							$formato = "Interno";
-        							$version = 0;
-        						}
-        						if($row[18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU7lT1zMqkhN.DJGJXgfxW"){
-        							$formato = "Interno";
-        							$version = 1;
-        						}
-        					}else if($trow == 3){
-        						if($row[18] == "2a13sFNdlBlDFRsj1bsGvKdLIe9NBXap1oumU7lT1zMqkhN.DJGJXgfxW"){
-        							$formato = "Interno";
-        							$version = 2; //Suma una fila más por que se agrego el numero de version en la fila1 del excel y eso hizo que se corra todo en +1
-        						}
-        					}
-        					$trow++;
-
-        				}
+        				//return Response::json($version);
         			
 
         		
@@ -259,21 +260,31 @@ class EXCELLController extends Controller
 					$Fecha_Medicion= '';
 					$Fecha_Analisis= '';
         					foreach ($data as $row) {	
+								//return Response::json($row);								
         						if($totalrow == (2 + $version) ){
-        									$IDcentro_siep = str_replace(chr( 194 ) . chr( 160 ), '',$row[3]);		
-																				
+									//return Response::json($row);
+									
+        									$IDcentro_siep = str_replace(chr( 194 ) . chr( 160 ), '',$row[3]);											
         									$IDcentro_siep = str_replace(' ', '',$IDcentro_siep);
+											
         									$Tecnica = str_replace("'",chr(34),$row[5]);
+											//return Response::json($Tecnica);
         						}else
         						if($totalrow == (3 + $version) ){
+									// $fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject(intval($row[3]));									
         									if($row[3] != ""){
-        										$Fecha_Medicion = date_format($row[3],'Y-m-d');
+												$fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[3]);
+        										$Fecha_Medicion = $fecha->format('Y-m-d');
+												//return Response::json($Fecha_Medicion);
         									}else{$Fecha_Medicion = "";}
         									$Observaciones = str_replace("'",chr(34),$row[5]);
+											//return Response::json($Observaciones);
         						}else
         						if($totalrow == (4 + $version) ){
         									if($row[3] != ""){
-        										$hora_med = date_format($row[3],'H:i:s');
+												$hora = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[3]);
+        										$hora_med = $hora->format('H:i:s');
+												//return Response::json($hora_med);
         									}else{$hora_med = "00:00:00";}
         									if($Fecha_Medicion != "" ){
         										$Fecha_Medicion = date('Y-m-d H:i:s', strtotime("$Fecha_Medicion $hora_med"));
@@ -281,12 +292,16 @@ class EXCELLController extends Controller
         						}else
         						if($totalrow == (5 + $version) ){
         									if($row[3] != ""){
-        										$Fecha_Analisis = date_format($row[3],'Y-m-d');
+												$fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[3]);
+        										$Fecha_Analisis = $fecha->format('Y-m-d');
+												//return Response::json($Fecha_Analisis);
         									}else{$Fecha_Analisis = "";}
         						}else
         						if($totalrow == (6 + $version) ){
         									if($row[3] != ""){
-        										$hora_analisis = date_format($row[3],'H:i:s');
+												$hora = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[3]);
+        										$hora_analisis = $hora->format('H:i:s');
+												// return Response::json($hora_analisis);
         									}else{$hora_analisis = "00:00:00";}
         									if($Fecha_Analisis != "" ){
         										$Fecha_Analisis = date('Y-m-d H:i:s', strtotime("$Fecha_Analisis $hora_analisis"));
@@ -367,7 +382,7 @@ class EXCELLController extends Controller
         									$Temperatura_6 = str_replace(",",".",$row[7]);
         									$Temperatura_7 = str_replace(",",".",$row[8]);
         						}else
-        						if($totalrow >= (29 + $version)   && $totalrow <= $finfito && $row[1] != "" &&  ($row[2] >= 0 || $row[3] >= 0 || $row[4] >= 0 || $row[5] >= 0 || $row[6] >= 0 || $row[7] >= 0 || $row[8] >= 0) ){
+        						if($totalrow >= (30 + $version)   && $totalrow <= $finfito && $row[1] != "" &&  ($row[2] >= 0 || $row[3] >= 0 || $row[4] >= 0 || $row[5] >= 0 || $row[6] >= 0 || $row[7] >= 0 || $row[8] >= 0) ){
 
 
         									if($row[2] >= 0){$med1 = $row[2];}else{$med1 = "";}
@@ -388,6 +403,7 @@ class EXCELLController extends Controller
         													'Medicion6' => $med6,
         													'Medicion7' => $med7,
         													);
+															
         						}
 
         						$totalrow++;
@@ -395,8 +411,9 @@ class EXCELLController extends Controller
         			
         			
         		}
-
-
+				// return response([$data,$Nombre_Especie,$Direccion_viento, $Conducta_Peces, $Fecha_Medicion, $Fecha_Analisis, $IDcentro_siep,
+				// 					$o2_percent_1, $o2_mg_2, $Temperatura_3],200);
+				
          		
 
         	}else
@@ -586,15 +603,17 @@ class EXCELLController extends Controller
 
 
         	//Rescatado del modal
-        	if($Codigo != ""){$IDcentro_siep = $Codigo;}
+        	if($Codigo != "")
+				
+				{$IDcentro_siep = $Codigo;}
 
-
+			//return Response::json('IDcentro_siep :'.$IDcentro_siep.' -- Fecha_Medicion: '.$Fecha_Medicion);
          	//IDempresa usuario
           
         	$IDempresa = $miuser->IDempresa;
 
-
-
+			//return Response::json($IDcentro_siep);
+			
 
         // 	//Buscar IDcentro
             $consulta = Centro::where([
@@ -608,9 +627,9 @@ class EXCELLController extends Controller
                                 ->first();
             //DB::select("SELECT IDcentro,Nombre FROM centro WHERE Codigo = '$IDcentro_siep' AND IDempresa = '$IDempresa' ");
         
+			//return Response::json($consulta);
 
-
-								
+									
         	$IDcentro = null;
         	$Centro = null;
         	if ($consulta) {
@@ -626,7 +645,7 @@ class EXCELLController extends Controller
         		$Laboratorio = 1; //ver si es Interno o Externo
         	}
 
-
+			
 
         	if($Fecha_Medicion != ""){
         		if($IDcentro){
@@ -635,15 +654,17 @@ class EXCELLController extends Controller
         			$array_especies_iguales = array();
         			$especie_iguales = '';
         			foreach($Nombre_Especie as $i => $Espvalue){
+						//return Response::json($Espvalue);
         				if($Espvalue){
         					if (in_array($Espvalue['Nombre'],$array_especies_iguales)) {
-        						$especie_iguales = $Espvalue['Nombre'];
+        						$especie_iguales = $Espvalue['Nombre'];								
         						break;
         					}
         					$array_especies_iguales[] = $Espvalue['Nombre'];
+							//return Response::json($array_especies_iguales);
         				}
         			}
-
+					//return Response::json($especie_iguales);
         			if ($especie_iguales == '') {
 
         				//Chequear que la muestra no haya sido ingresada antes (ver fecha y hora)
@@ -655,36 +676,35 @@ class EXCELLController extends Controller
                                                     ['Fecha_Reporte', $Fecha_Medicion_existe]
                                                 ])
                                                 ->select('Fecha_Envio')
-                                                ->get();
+                                                ->first();
                         //DB::select("SELECT Fecha_Envio FROM gtr_medicion WHERE IDcentro = '$IDcentro' AND Fecha_Reporte = '$Fecha_Medicion_existe' ");
-        				
+        				 //return Response::json($Fecha_Medicion_existe);
 
         				$fecha_envio = 0;
-        				if(!isset($consulta))
+        				if($consulta)
         				{
         					$fecha_envio = 1;
         				}
+						//return Response::json($fecha_envio);
 
         				if ($fecha_envio == 0 || $existeregistro == 1) {
 
         					//Buscar Fechas Siembra, Cosecha y especie cultivada
                             $consulta = Centro::where('IDcentro', $IDcentro)
                                                     ->select('Especie','Siembra','Cosecha')
-                                                    ->get();
-                            //DB::select("SELECT Especie, Siembra, Cosecha FROM gtr_centro WHERE IDcentro = '$IDcentro' ");
-        					
-
-        					//$row = mysqli_fetch_assoc($consulta);
+                                                    ->first();
+                            
         					$Especie = $consulta->Especie;
         					$Siembra = $consulta->Siembra;
         					$Cosecha = $consulta->Cosecha;
-
+							
+							//return response([$Especie,$Siembra, $Cosecha],200);
 
         					//Insertar medicion
         					$Mortalidad = "";//$Medicion0_pambientalesotros[array_search($IDmortalidad, $IDpambientalesotros)];
         					if(!isset($Observaciones)){$Observaciones = "";}
 
-                            $consulta = Medicion::insert([
+                            $consulta =Medicion::insertGetId([
                                                     'IDcentro' => $IDcentro,
                                                     'Fecha_Envio' => $fecha,
                                                     'Fecha_Reporte' => $Fecha_Medicion,
@@ -701,19 +721,22 @@ class EXCELLController extends Controller
                                                     'Laboratorio' => $Laboratorio,
                                                     'Tipo_Carga' => 'Planilla Excel'
                             ]);                          
-                                                                
-        					// $consulta = mysqli_query($con,"INSERT INTO medicion(IDcentro,Fecha_Envio,Fecha_Reporte,Fecha_Analisis,Estado_Alarma,Tecnica,Observaciones,Mortalidad,Especie,Siembra,Cosecha,Firma,Estado,Laboratorio,Tipo_Carga) VALUES ('$IDcentro', '$fecha', '$Fecha_Medicion','$Fecha_Analisis','Ausencia Microalgas', '$Tecnica','$Observaciones','$Mortalidad', '$Especie', '$Siembra', '$Cosecha', '$Firma','1','$Laboratorio','Planilla Excel')")
-        					// or die ( $error ="Error description 5: ".mysqli_error($consulta) );
-
-        					$IDmedicion = $consulta->IDmedicion; //mysqli_insert_id($consulta); /*----------------------------------REVISAR FUNCION --------------------------------------------- */
 							
-        					if($error == 0){
+        					
+							//$consulta = Medicion::latest('IDmedicion')->first(); // llama el ID del registro mas reciente
+														
+        					$IDmedicion = $consulta; 
+							//return response::json($IDmedicion);
+							//return Response::json($IDmedicion);
+        						if($error == 0){
         						//Save Especies
         						// $string = "";
+								
 								$insertData = [];
         						if($Nombre_Especie != ""){
-        							foreach($Nombre_Especie as $i => $Espvalue){
-        								if($Espvalue){
+									
+									foreach($Nombre_Especie as $i => $Espvalue){
+										 if($Espvalue){
         									$nombre_aux = $Espvalue['Nombre'];
         									$Medicion1 = $Espvalue['Medicion1'];
         									$Medicion2 = $Espvalue['Medicion2'];
@@ -725,34 +748,29 @@ class EXCELLController extends Controller
         									$Medicion6 = $Espvalue['Medicion6'];}else{$Medicion6 = "";}
         									if(isset($Espvalue['Medicion7'])){
         									$Medicion7 = $Espvalue['Medicion7'];}else{$Medicion7 = "";}
-
+											
+											
                                             $consulta1 = EspecieGeneral::where('Nombre', $nombre_aux)
                                                                             ->select('IDespecie_general')
-                                                                            ->get();
-                                            
+                                                                            ->first();
+											 //return Response::json($consulta1);	
                                             //DB::select("SELECT IDespecie_general FROM gtr_especie_general WHERE Nombre = '$nombre_aux' ");
         									
         									$IDespecie_general = null;
-        									if (!isset($consulta1)) {
+        									if ($consulta1) {
         										$IDespecie_general = $consulta1->IDespecie_general;
         									}
 
-											$IDespecie_general_aux = EspecieEstandar::where([
-												['Nombre', $nombre_aux],
-												['IDempresa', $IDempresa]
-												])
-											->select('IDespecie_general')
-											->first();
+																				
         									if($formato == "Externo"){
                                                 $IDespecie_general_aux = EspecieEstandar::where([
-                                                                                                ['Nombre', $nombre_aux],
-                                                                                                ['IDempresa', $IDempresa]
-                                                                                                ])
-                                                                                            ->select('IDespecie_general')
-                                                                                            ->first();
-
-                                                $consulta = Especie::select(
-                                                                        DB::raw("COALESCE(IDespecie,0) as id"),
+																							['Nombre', $nombre_aux],
+																							['IDempresa', $IDempresa]
+																							])
+																						->select('IDespecie_general')
+																						->first();
+													
+                                                $consulta = Especie::select(DB::raw("COALESCE(gtr_especie.IDespecie,0) as id"),
                                                                         'Fiscaliza',
                                                                         'Nociva',
                                                                         'Nivel_Critico',
@@ -760,57 +778,54 @@ class EXCELLController extends Controller
                                                                         'Alarma_Amarillo'
                                                                             )
                                                                     ->where('IDespecie_general', $IDespecie_general_aux->IDespecie_general)
-                                                                    ->orWhere('IDespecie_general', 
-                                                                                function($query) use ($IDespecie_general, $IDempresa){
-                                                                                    $query->where(
-                                                                                            ['IDespecie_general', $IDespecie_general],
-                                                                                            ['IDempresa', $IDempresa]);
-                                                                                            })
+                                                                    ->orWhere([['IDespecie_general', $IDespecie_general],['IDempresa', $IDempresa]])
                                                                     ->first();
                                                                                                                                    
                                                 // DB::select("SELECT  COALESCE(IDespecie,0) as id, Fiscaliza,Nociva,Nivel_Critico,Alarma_Rojo,Alarma_Amarillo 
-                                                //                                    FROM gtr_especie WHERE ( IDespecie_general = (SELECT IDespecie_general FROM gtr_especie_estandar WHERE Nombre = '$nombre_aux' 
-                                                //                                    LIMIT 1) AND IDempresa = '$IDempresa') OR (IDespecie_general = '$IDespecie_general' AND IDempresa = '$IDempresa') LIMIT 1");
+                                                //       FROM gtr_especie
+												 //WHERE ( IDespecie_general = (SELECT IDespecie_general FROM gtr_especie_estandar WHERE Nombre = '$nombre_aux' LIMIT 1) 
+												 //AND IDempresa = '$IDempresa') 
+												 //OR (IDespecie_general = '$IDespecie_general' AND IDempresa = '$IDempresa') LIMIT 1");
         										                           
 
 
 
 
         									}else if ($formato == "Interno"){   
-                                                $consulta = Especie::select(
-                                                                            DB::raw("COALESCE(IDespecie,0) as id"),
+												$IDespecie_general_aux = EspecieEstandar::where([
+																								['Nombre', $nombre_aux]
+																								])
+																							->select('IDespecie_general')
+																							->first();
+																							
+                                                $consulta = Especie::where([['IDespecie_general', $IDespecie_general_aux->IDespecie_general], ['IDempresa', $IDempresa]])
+																		->orWhere([['IDespecie_general', $IDespecie_general],['IDempresa', $IDempresa]])
+                                                                        ->select( 
+                                                                             DB::raw("coalesce(IDespecie,0) as id"),
                                                                             'Fiscaliza',
                                                                             'Nociva',
                                                                             'Nivel_Critico',
                                                                             'Alarma_Rojo',
                                                                             'Alarma_Amarillo'
                                                                             )
-                                                                        ->where('IDespecie_general', $IDespecie_general_aux->IDespecie_general)
-                                                                        ->orWhere('IDespecie_general', 
-                                                                                    function($query) use ($IDespecie_general, $IDempresa){
-                                                                                        $query->where(
-                                                                                                ['IDespecie_general', $IDespecie_general],
-                                                                                                ['IDempresa', $IDempresa]);
-                                                                                                })
                                                                         ->first();
-        										// $consulta = mysqli_query($con,"(SELECT  COALESCE(IDespecie,0) as id, Fiscaliza,Nociva,Nivel_Critico,Alarma_Rojo,Alarma_Amarillo 
-                                                //                                 FROM especie WHERE (IDespecie_general = (SELECT IDespecie_general FROM especie_estandar WHERE Nombre = '$nombre_aux' LIMIT 1) 
-                                                //                                 AND IDempresa = '$IDempresa') OR (IDespecie_general = '$IDespecie_general' AND IDempresa = '$IDempresa') LIMIT 1)")
+        										// $consulta = mysqli_query($con,"(SELECT  COALESCE(IDespecie,0) as id, 
+												// 														Fiscaliza,
+												// 														Nociva,
+												// 														Nivel_Critico,
+												// 														Alarma_Rojo,
+												// 														Alarma_Amarillo 
+                                                // //    FROM especie WHERE (IDespecie_general = (SELECT IDespecie_general FROM especie_estandar WHERE Nombre = '$nombre_aux' LIMIT 1) AND IDempresa = '$IDempresa') 
+												// 					OR (IDespecie_general = '$IDespecie_general' AND IDempresa = '$IDempresa') LIMIT 1)")
                                                 //                                 or die ( $error ="Error description 6: " . mysqli_error($con) );
         									}
-
+												//return Response::json($consulta);
         									//$row = mysqli_fetch_assoc($consulta);
 
-        									if (!isset($consulta)) {  //Si no encuentra la especie,
+        									if (!$consulta) {  //Si no encuentra la especie,
         											 // pero si está en especie_general o especie_estandar. Se debe agregar al listado primero
                                                     $consulta2 = EspecieGeneral::where('IDespecie_general', $IDespecie_general)
-                                                                                    ->orWhere('IDespecie_general', 
-                                                                                                    function ($query) use ($nombre_aux){
-                                                                                                        $query->table('especie_estandar')
-                                                                                                                ->select('IDespecie_general')
-                                                                                                                ->where('Nombre', $nombre_aux)
-                                                                                                                ->limit(1);
-                                                                                                    })
+                                                                                    ->orWhere('IDespecie_general', $IDespecie_general_aux->IDespecie_general)
                                                                                     ->select('IDespecie_general',
                                                                                                 'Imagen',
                                                                                                 'Detalle',
@@ -841,6 +856,8 @@ class EXCELLController extends Controller
         												$Nivel_Critico1 = ($Nivel_Critico1==0)? 'NULL' : "'$Nivel_Critico1'";
         											}
 
+													
+
         											if ($IDespecie_general) {
                                                         $consulta3 = Especie::insert([
                                                                                     'IDempresa'=>   $IDempresa,
@@ -870,9 +887,9 @@ class EXCELLController extends Controller
                                                                                     'Alarma_Rojo',
                                                                                     'Alarma_Amarillo'
                                                                                 )
-                                                                                ->get();
+                                                                                ->first();
 
-   
+															//return Response::json($consulta4);							
         												// $consulta4 = mysqli_query($con,"SELECT COALESCE(IDespecie,0) as id, Fiscaliza,Nociva,Nivel_Critico,Alarma_Rojo,Alarma_Amarillo 
                                                         // FROM especie WHERE IDespecie_general = '$IDespecie_general' AND IDempresa = '$IDempresa' AND Grupo = '$Grupo1' ")
                                                         // or die ( $error ="Error description4: " . mysqli_error($con) );
@@ -887,22 +904,23 @@ class EXCELLController extends Controller
         									$Alarma_Rojo_aux ='';
         									$Alarma_Amarillo_aux = '';
 
-        									if (!isset($consulta4)) {
-        										$IDespecie = $row->id;
-        										$Fiscaliza_aux = $row->Fiscaliza;
-        										$Nociva_aux = $row->Nociva;
-        										if($row->Nivel_Critico != ''){
-        											$Nivel_Critico_aux = $row->Nivel_Critico;
+        									if ($consulta) {
+        										$IDespecie = $consulta->id;
+        										$Fiscaliza_aux = $consulta->Fiscaliza;
+        										$Nociva_aux = $consulta->Nociva;
+        										if($consulta->Nivel_Critico != ''){
+        											$Nivel_Critico_aux = $consulta->Nivel_Critico;
         										}else{$Nivel_Critico_aux = 0;
-        											//echo '<pre> vacio'; print_r($row[ 'Nivel_Critico']); echo '</pre>';
+        											//echo '<pre> vacio'; print_r($consulta[ 'Nivel_Critico']); echo '</pre>';
         										}
-        										if($row->Alarma_Rojo){
-        											$Alarma_Rojo_aux = $row->Alarma_Rojo;
+        										if($consulta->Alarma_Rojo){
+        											$Alarma_Rojo_aux = $consulta->Alarma_Rojo;
         										}else{$Alarma_Rojo_aux = 0;}
-        										if($row->Alarma_Amarillo){
-        											$Alarma_Amarillo_aux = $row->Alarma_Amarillo;
+        										if($consulta->Alarma_Amarillo){
+        											$Alarma_Amarillo_aux = $consulta->Alarma_Amarillo;
         										}else{$Alarma_Amarillo_aux = 0;}
         									}
+											//return Response::json($IDespecie);
 
         									//$Alarma_Rojo_aux = $row[ 'Alarma_Rojo'];
         									//$Alarma_Amarillo_aux = $row[ 'Alarma_Amarillo'];
@@ -967,7 +985,7 @@ class EXCELLController extends Controller
                                     // Medicion_2,Medicion_3,Medicion_4,Medicion_5,Medicion_6,Medicion_7) VALUES" .$string2)or die ( $error ="Error description 6: " . mysqli_error($con) );
 
         						}
-
+								
 
         						////////////////////////
         						//Parámetros Ambientales
@@ -1173,7 +1191,7 @@ class EXCELLController extends Controller
         						if(!isset($Temperatura_5)){$Temperatura_5 = "";}
         						if(!isset($Temperatura_6)){$Temperatura_6 = "";}
         						if(!isset($Temperatura_7)){$Temperatura_7 = "";}
-                                $IDtemperatura = PAmbientales::select('IDpambientales')->where([['Nombre','Temperatura [ºC]'],['IDempresa', $IDempresa]]);
+                                $IDtemperatura = PAmbientales::select('IDpambientales')->where([['Nombre','Temperatura [ºC]'],['IDempresa', $IDempresa]])->first();
                                 $insertData[] = ['IDmedicion'=> $IDmedicion,
 													'IDpambientales'=> $IDtemperatura->IDpambientales,
 													'Medicion_1'=> $Temperatura_1,
@@ -1189,7 +1207,7 @@ class EXCELLController extends Controller
         						if(!isset($Salinidad_5)){$Salinidad_5 = "";}
         						if(!isset($Salinidad_6)){$Salinidad_6 = "";}
         						if(!isset($Salinidad_7)){$Salinidad_7 = "";}
-                                $IDsalinidad = PAmbientales::select('IDpambientales')->where([['Nombre','Salinidad'],['IDempresa', $IDempresa]]);
+                                $IDsalinidad = PAmbientales::select('IDpambientales')->where([['Nombre','Salinidad'],['IDempresa', $IDempresa]])->first();
                                 $insertData[] = ['IDmedicion'=> $IDmedicion,
 													'IDpambientales'=> $IDsalinidad->IDpambientales,
 													'Medicion_1'=> $Salinidad_1,
@@ -1205,7 +1223,7 @@ class EXCELLController extends Controller
         						if(!isset($o2_mg_5)){$o2_mg_5 = "";}
         						if(!isset($o2_mg_6)){$o2_mg_6 = "";}
         						if(!isset($o2_mg_7)){$o2_mg_7 = "";}
-                                $IDoxigenoDisuelto = PAmbientales::select('IDpambientales')->where([['Nombre','Oxigeno Disuelto [mg/l]'],['IDempresa', $IDempresa]]);
+                                $IDoxigenoDisuelto = PAmbientales::select('IDpambientales')->where([['Nombre','Oxigeno Disuelto [mg/l]'],['IDempresa', $IDempresa]])->first();
                                 $insertData[] = ['IDmedicion'=> $IDmedicion,
 													'IDpambientales'=> $IDoxigenoDisuelto->IDpambientales,
 													'Medicion_1'=> $o2_mg_1,
@@ -1221,7 +1239,7 @@ class EXCELLController extends Controller
         						if(!isset($o2_percent_5)){$o2_percent_5 = "";}
         						if(!isset($o2_percent_6)){$o2_percent_6 = "";}
         						if(!isset($o2_percent_7)){$o2_percent_7 = "";}
-                                $IDoxigenoDisueltoPorcent = PAmbientales::select('IDpambientales')->where([['Nombre','Oxigeno Disuelto [%]'],['IDempresa', $IDempresa]]);
+                                $IDoxigenoDisueltoPorcent = PAmbientales::select('IDpambientales')->where([['Nombre','Oxigeno Disuelto [%]'],['IDempresa', $IDempresa]])->first();
                                 $insertData[] = ['IDmedicion'=> $IDmedicion,
 													'IDpambientales'=> $IDoxigenoDisueltoPorcent->IDpambientales,
 													'Medicion_1'=> $o2_percent_1,
@@ -1239,18 +1257,13 @@ class EXCELLController extends Controller
         						//Save Parametros Ambientales
                                 $consulta = MedicionPAmbientales::insert($insertData);
                                 
-        // 						/*//Nombre e ID Centro
+         						//Nombre e ID Centro
                                 $consulta = Centro::select('Nombre','IDcentro')->where('IDcentro', $IDcentro)->first();                                
-        // 						$consulta = mysqli_query($con,"SELECT Nombre,IDcentro FROM centro WHERE IDcentro = '$IDcentro' ")
-        // 					    or die ( $error ="Error description: " . mysqli_error($consulta) );
-
-        // 						$row = mysqli_fetch_assoc($consulta);
-        // 						$Centro = $row['Nombre'];
-        // 						$IDcentro = $row['IDcentro'];*/
+       
                                 $Centro = $consulta->Nombre;
             					$IDcentro = $consulta->IDcentro;
 
-        // 						//Alarma para todas las especies, (no solo las que fiscaliza serna)
+         						//Alarma para todas las especies, (no solo las que fiscaliza serna)
                                 $consulta = MedicionFan::join('especie', 'especie.IDespecie' ,'=','medicion_fan.IDespecie')
                                                             ->select(   'medicion_fan.IDmedicionfan',
                                                                         'medicion_fan.Medicion_1',
@@ -1265,23 +1278,29 @@ class EXCELLController extends Controller
                                                                         'especie.Nombre',
                                                                         'especie.Nivel_Critico'
                                                                 )
-                                                            ->where([
-                                                                ['medicion_fan.IDespecie', 'especie.IDespecie'],
-                                                                ['medicion_fan.IDmedicion', $IDmedicion]
-                                                                ])
+                                                            ->where(
+                                                                'medicion_fan.IDmedicion','=', $IDmedicion
+                                                                )
                                                             ->where(
                                                                 function($query){
-                                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                    ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                    ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                    ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                    ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                    ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                    ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Rojo'));
+                                                                    $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                    ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                    ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                    ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                    ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                    ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                    ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Rojo'));
                                                                 }) 
                                                             ->where('especie.Alarma_Rojo','>', 0)
-                                                            ->get();                                
-        // 						$consulta = mysqli_query($con,"SELECT mf.IDmedicionfan,mf.Medicion_1,mf.Medicion_2,mf.Medicion_3,mf.Medicion_4,mf.Medicion_5,mf.Medicion_6,mf.Medicion_7,e.Alarma_Rojo,e.Alarma_Amarillo,e.Nombre, e.Nivel_Critico FROM ( medicion_fan mf INNER JOIN especie e ON (mf.IDespecie = e.IDespecie AND mf.IDmedicion = '$IDmedicion') ) WHERE (mf.Medicion_1 >= e.Alarma_Rojo OR mf.Medicion_2 >= e.Alarma_Rojo OR mf.Medicion_3 >= e.Alarma_Rojo OR mf.Medicion_4 >= e.Alarma_Rojo OR mf.Medicion_5 >= e.Alarma_Rojo OR mf.Medicion_6 >= e.Alarma_Rojo OR mf.Medicion_7 >= e.Alarma_Rojo) AND e.Alarma_Rojo > 0 ")or die ($error ="Error description 8: " . mysqli_error($consulta));
+                                                            ->get();         
+									//return Response::json($consulta);
+         						//$consulta = mysqli_query($con,"SELECT mf.IDmedicionfan,mf.Medicion_1,mf.Medicion_2,mf.Medicion_3,mf.Medicion_4,mf.Medicion_5,
+								// mf.Medicion_6,mf.Medicion_7,e.Alarma_Rojo,e.Alarma_Amarillo,e.Nombre, e.Nivel_Critico 
+								// FROM ( medicion_fan mf INNER JOIN especie e 
+								// ON (mf.IDespecie = e.IDespecie AND mf.IDmedicion = '$IDmedicion') ) 
+								//WHERE (mf.Medicion_1 >= e.Alarma_Rojo OR mf.Medicion_2 >= e.Alarma_Rojo OR mf.Medicion_3 >= e.Alarma_Rojo 
+								// OR mf.Medicion_4 >= e.Alarma_Rojo OR mf.Medicion_5 >= e.Alarma_Rojo OR mf.Medicion_6 >= e.Alarma_Rojo OR mf.Medicion_7 >= e.Alarma_Rojo) 
+								// AND e.Alarma_Rojo > 0 ")or die ($error ="Error description 8: " . mysqli_error($consulta));
         						$alarma = "";
         						$Comentario = array();
         						$Comentario_precaucion = array();
@@ -1296,18 +1315,18 @@ class EXCELLController extends Controller
         							$Comentario[] = $row->Nombre;
         							$Concentracion[] = max($row->Medicion_1,$row->Medicion_2,$row->Medicion_3,$row->Medicion_4,$row->Medicion_5,$row->Medicion_6,$row->Medicion_7);
         							$Nocivo[] = $row->Nivel_Critico;
-        				//			$datos_rojo['Alarma_Rojo'][] = $row['Alarma_Rojo'];
-        				//			$datos_rojo['Alarma_Amarillo'][] = $row['Alarma_Amarillo'];
-        				//			$datos_rojo['Medicion_1'][] = $row['Medicion_1'];
-        				//			$datos_rojo['Medicion_2'][] = $row['Medicion_2'];
-        				//			$datos_rojo['Medicion_3'][] = $row['Medicion_3'];
-        				//			$datos_rojo['Medicion_4'][] = $row['Medicion_4'];
+							//			$datos_rojo['Alarma_Rojo'][] = $row['Alarma_Rojo'];
+							//			$datos_rojo['Alarma_Amarillo'][] = $row['Alarma_Amarillo'];
+							//			$datos_rojo['Medicion_1'][] = $row['Medicion_1'];
+							//			$datos_rojo['Medicion_2'][] = $row['Medicion_2'];
+							//			$datos_rojo['Medicion_3'][] = $row['Medicion_3'];
+							//			$datos_rojo['Medicion_4'][] = $row['Medicion_4'];
         						}
-
+								
         						if($alarma == ""){
                                     $consulta = MedicionFan::join('especie', 'especie.IDespecie' ,'=','medicion_fan.IDespecie')
                                                                 ->where([
-                                                                    ['medicion_fan.IDespecie', 'especie.IDespecie'],
+                                                                    //['medicion_fan.IDespecie', 'especie.IDespecie'],
                                                                     ['medicion_fan.IDmedicion', $IDmedicion]
                                                                     ])
                                                                     ->select('medicion_fan.IDmedicionfan',
@@ -1323,13 +1342,13 @@ class EXCELLController extends Controller
                                                                     )
                                                                 ->where(
                                                                     function($query){
-                                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Amarillo'));
+                                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Amarillo'));
                                                                     })
                                                                 ->where('especie.Alarma_Amarillo','>', 0)                                                                
                                                                 ->get();
@@ -1355,7 +1374,7 @@ class EXCELLController extends Controller
         						}else{
                                     $consulta = MedicionFan::join('especie', 'especie.IDespecie' ,'=','medicion_fan.IDespecie')
                                                                 ->where([
-                                                                    ['medicion_fan.IDespecie', 'especie.IDespecie'],
+                                                                    //['medicion_fan.IDespecie', 'especie.IDespecie'],
                                                                     ['medicion_fan.IDmedicion', $IDmedicion]
                                                                 ])
                                                                 ->select('medicion_fan.IDmedicionfan',
@@ -1371,23 +1390,23 @@ class EXCELLController extends Controller
                                                                         )
                                                                 ->where(
                                                                     function($query){
-                                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Amarillo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Amarillo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Amarillo'));
+                                                                        $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Amarillo'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Amarillo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Amarillo'));
                                                                     })
                                                                 ->where(
                                                                         function($query){
-                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Rojo')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Rojo'));
+                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Alarma_Rojo'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Alarma_Rojo')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Alarma_Rojo'));
                                                                             })
                                                                 ->where('especie.Alarma_Amarillo','>', 0) 
                                                                 ->get();
@@ -1476,7 +1495,7 @@ class EXCELLController extends Controller
         						$Resultado = 'Normal';
         						if($consulta)
         						{
-        							$Resultado  = $row->Observaciones;
+        							$Resultado  = $consulta->Observaciones;
         						}
 
         						if($Resultado == 'Normal'){
@@ -1484,7 +1503,7 @@ class EXCELLController extends Controller
         							//Chequea si hay una especie a declarar a sernapesca
                                     $consulta = MedicionFan::join('especie', 'especie.IDespecie' ,'=','medicion_fan.IDespecie')
                                                                 ->where([
-                                                                    ['medicion_fan.IDespecie', 'especie.IDespecie'],
+                                                                    //['medicion_fan.IDespecie', 'especie.IDespecie'],
                                                                     ['medicion_fan.IDmedicion', $IDmedicion]
                                                                 ])
                                                                 ->select('medicion_fan.IDmedicionfan',
@@ -1500,13 +1519,13 @@ class EXCELLController extends Controller
                                                                         )
                                                                 ->where(
                                                                         function($query){
-                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Nivel_Fiscaliza'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Nivel_Fiscaliza')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Nivel_Fiscaliza'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Nivel_Fiscaliza')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Nivel_Fiscaliza')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Nivel_Fiscaliza')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Nivel_Fiscaliza'));
+                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza'));
                                                                             })
                                                                 ->where('especie.Fiscaliza','>', 1)
                                                                 ->get();
@@ -1559,13 +1578,13 @@ class EXCELLController extends Controller
                                                                         )
                                                                 ->where(
                                                                         function($query){
-                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Nivel_Fiscaliza_Pre'));
+                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Pre'));
                                                                             })
                                                                 ->where('especie.Fiscaliza','>', 1)
                                                                 ->get();
@@ -1617,13 +1636,13 @@ class EXCELLController extends Controller
                                                                         )
                                                                 ->where(
                                                                         function($query){
-                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta'))
-                                                                                ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta'))
-                                                                                ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta')) 
-                                                                                ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Nivel_Fiscaliza_Alerta'));
+                                                                            $query->where('medicion_fan.Medicion_1', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta'))
+                                                                                ->orWhere('medicion_fan.Medicion_2', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta')) 
+                                                                                ->orWhere('medicion_fan.Medicion_3', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta'))
+                                                                                ->orWhere('medicion_fan.Medicion_4', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta')) 
+                                                                                ->orWhere('medicion_fan.Medicion_5', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta')) 
+                                                                                ->orWhere('medicion_fan.Medicion_6', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta')) 
+                                                                                ->orWhere('medicion_fan.Medicion_7', '>=', DB::raw('gtr_especie.Nivel_Fiscaliza_Alerta'));
                                                                             })
                                                                 ->where('especie.Fiscaliza','>', 1)
                                                                 ->get();                                  
@@ -1672,15 +1691,12 @@ class EXCELLController extends Controller
         							// $consulta = mysqli_query($con,"INSERT INTO declaracion(IDcentro,IDmedicion,Fecha_Registro,Estado,Firma_user_id,Observaciones,Especie,Estado_Nocivo) VALUES ('$IDcentro','$IDmedicion','$Fecha_Medicion','0','0','','$Especie_declarar_aux','$Estado_Nocivo')")
         							// or die ( $error ="Error description 17: " . mysqli_error($consulta) );
 
-        						}else{
+        						}else{}
 
-
-        						}
-
-        // 						//Buscar especie que no este en la lista
+         						//Buscar especie que no este en la lista
                                 $consulta = MedicionFan::select('IDespecie','IDmedicionfan')->where('IDmedicion', $IDmedicion)->get();
                                 
-        // 						$consulta = mysqli_query($con,"SELECT IDespecie, IDmedicionfan FROM medicion_fan WHERE IDmedicion = '$IDmedicion'")
+         						//$consulta = mysqli_query($con,"SELECT IDespecie, IDmedicionfan FROM medicion_fan WHERE IDmedicion = '$IDmedicion'")
                                 //or die ($error ="Error description 18: " . mysqli_error($consulta));
 
         							$noexiste_index = array();
@@ -1755,18 +1771,644 @@ class EXCELLController extends Controller
         }
     }
 		
+		/*================================================================================================================================= */
+	public function descargaFormatopEstandar()
+	{
+		$miuser = Auth::user();
+		$this->cambiar_bd($miuser->IDempresa); 
 
-		public function descargaFormatopEstandar()
-		{
-			$miuser = Auth::user();
-        	$this->cambiar_bd($miuser->IDempresa); 
+		$file = Storage::disk('public')->get('Formato Carga Registro V2.2.xlsm');
+		//return \Response::json($entry);
+	
+		return Response($file, 200)->header('Content-Type', 'application/vnd.ms-excel.sheet.macroEnabled.12');
+	}
 
-			$file = Storage::disk('public')->get('Formato Carga Registro V2.2.xlsm');
- 			//return \Response::json($entry);
-		
-			return Response($file, 200)->header('Content-Type', 'application/vnd.ms-excel.sheet.macroEnabled.12');
+		/*================================================================================================================================= */
+
+		//modulo de descarga
+	public function descargaExcel(Request $request,$p1,$p2,$p3,$p4,$p5,$p6,$p7,$p8)
+	{
+		ini_set('memory_limit', '-1');
+		$Centros = explode(",",$p1);
+		$Inicio = date('Y-m-d 00:00:00', strtotime($p2));
+		$Termino = date('Y-m-d 00:00:00', strtotime($p3. ' +1 day'));
+		$estado_alarma = [];
+		if ($p4) {
+			$estado_alarma[] = 'Nivel Crítico';
+		}
+		if ($p5) {
+			$estado_alarma[] = 'Precaución';
+		}
+		if ($p6) {
+			$estado_alarma[] = 'Presencia Microalgas';
+		}
+		if ($p7) {
+			$estado_alarma[] = 'Ausencia Microalgas';
 		}
 
+		$anio_periodo = $p8;
+
+		$miuser = Auth::user();
+		$IDempresa = $miuser->IDempresa;
+
+		if ($miuser->fan != 1) {
+				return Response::json('Acceso Restringido');
+		}
+
+		$t_titulos = microtime(true);
+
+		$Pambientales = array();
+		$Resultado_ausencia = array();
+		$Resultado = array();
+
+		//Consulta por los nombres de los parámetros Ambientales
+		$pamb = DB::connection('mysql')->table('pambientales')
+							->where('IDempresa', '=', $miuser->IDempresa)
+							->select('Nombre','Grupo')
+							->orderByRaw("CASE WHEN pambientales.Grupo = 'Columna de Agua' THEN 0 ELSE 1 END")
+							->orderByRaw("CASE WHEN pambientales.Grupo = 'Peces' THEN 0 ELSE 1 END")
+							->orderBy( 'Grupo')
+							->orderBy( 'Nombre')
+							->get();
+
+		$Pambientales_key = array();
+		$Titulo_pamb = array();
+		foreach ($pamb as $row) {
+			if($row->Grupo == "Columna de Agua"){
+				$Titulo_pamb[] = $row->Nombre." | 0.5[m]";
+				$Titulo_pamb[] = $row->Nombre." | 5[m]";
+				$Titulo_pamb[] = $row->Nombre." | 10[m]";
+				$Titulo_pamb[] = $row->Nombre." | 15[m]";
+				$Titulo_pamb[] = $row->Nombre." | 20[m]";
+				$Titulo_pamb[] = $row->Nombre." | 25[m]";
+				$Titulo_pamb[] = $row->Nombre." | 30[m]";
+			}else{
+				$Titulo_pamb[] = $row->Nombre;
+			}
+		}
+
+		$vacios = array();
+		foreach($Titulo_pamb as $value){
+			$vacios[] = "";
+			}
+
+
+			$t_titulos = microtime(true) - $t_titulos;
+
+
+			$t_ids = microtime(true);
+
+
+
+				//Busca, cantidad máxima de Registros
+				if($anio_periodo>0){
+					$medicion_ids = DB::connection('mysql')->table('medicion as m')
+															->join('centrosproductivos as cp','cp.IDcentro','=','m.IDcentro')
+															->where('cp.estado', 1)
+															->whereIn('cp.IDcentro', $Centros)
+															->whereYear('cp.Siembra','=', $anio_periodo)
+															->where('m.Estado', 1)
+															->where('m.Fecha_Reporte','>=', 'cp.Siembra')
+															->where('m.Fecha_Reporte','<=', 'cp.Cosecha')
+															->whereIn('m.IDcentro', $Centros)
+															->whereIn('m.Estado_Alarma', $estado_alarma)
+															->lists('IDmedicion');
+				}else{
+					$medicion_ids = DB::connection('mysql')->table('medicion as m')
+															->where('m.Estado', 1)
+															->where('m.Fecha_Reporte','>=', $Inicio)
+															->where('m.Fecha_Reporte','<', $Termino)
+															->whereIn('m.IDcentro', $Centros)
+															->whereIn('m.Estado_Alarma', $estado_alarma)
+															->lists('IDmedicion');
+
+				}
+
+				$max = 2000;
+				if (count($medicion_ids) > $max) { // Mayor a XX registros
+					return  redirect()->to("https://fan2.gtrgestion.cl/descargas_editor.php?p1=".$p1."&p2=".$p2."&p3=".$p3."&p4=".$p4."&p5=".$p5."&p6=".$p6."&p7=".$p7."&p8=".$p8."&error=Supera el máximo de ".$max." registros (".count($medicion_ids) ."). Favor acotar el rango de búsqueda."); // ->withErrors('SUPERA EL MAXIMO DE'.$max.' REGISTROS ('.count($medicion_ids) .'). FAVOR ACOTAR EL RANGO DE BUSQUEDA O CONTACTAR AL ADMINISTRADOR');
+				}
+
+
+
+				$declaracion = DB::connection('mysql')->table('medicion as m')
+						->join('declaracion as d','d.IDmedicion','=','m.IDmedicion')
+						->whereIn('m.IDmedicion',$medicion_ids)
+						->select( 'm.IDmedicion',
+											DB::raw("CASE
+																WHEN d.Fecha_Envio
+																THEN DATE_FORMAT(CAST(d.Fecha_Envio AS DATE), '%d-%m-%Y')
+																ELSE ''
+																END as Date_Declaracion")
+										)
+						->get();
+
+				$declaracion_date = [];
+				foreach ($declaracion as $key => $value) {
+					$declaracion_date[$value->IDmedicion] = $value->Date_Declaracion;
+				}
+
+
+			$t_ids = microtime(true) - $t_ids;
+
+			// return \Response::json($Titulo_pamb);
+
+			$t_fan = microtime(true);
+					// medicion_fan
+					if($anio_periodo>0){
+
+						$medicion_fan = DB::connection('mysql')->table('medicion as m')
+												->join('centrosproductivos as cp','cp.IDcentro','=','m.IDcentro')
+												->whereIn('m.IDmedicion',$medicion_ids)
+												->join('medicion_fan as mf','mf.IDmedicion','=','m.IDmedicion')
+												->join('especie as e','e.IDespecie','=','mf.IDespecie')
+												->join('centro as c','c.IDcentro','=','m.IDcentro')
+												->join('region as r','r.IDregion','=','c.IDregion')
+												->join('area as a','a.IDarea','=','c.IDarea')
+												->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
+												->where('c.IDempresa','=', $IDempresa)
+												->select( 'm.IDmedicion','m.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+																	DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+																	DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+																	DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+																	'e.Grupo','e.Nombre as Nombre_Especie',
+																	DB::raw("CASE
+																			WHEN mf.Fiscaliza = '1'
+																				THEN 'Si'
+																				ELSE '-'
+																		END as Fiscaliza"),
+																	DB::raw("CASE
+																			WHEN mf.Nivel_Fiscaliza > '0'
+																				THEN mf.Nivel_Fiscaliza
+																				ELSE '-'
+																		END as Nivel_Fiscaliza"),
+																	DB::raw("CASE
+																			WHEN mf.Nociva = '1'
+																				THEN 'Nociva'
+																				ELSE '-'
+																		END as Nociva"),
+																	DB::raw("CASE
+																			WHEN mf.Nivel_Critico > '0'
+																				THEN mf.Nivel_Critico
+																				ELSE '-'
+																		END as Nivel_Critico"),
+																	DB::raw("CASE
+																			WHEN mf.Alarma_Rojo > '0'
+																				THEN mf.Alarma_Rojo
+																				ELSE '-'
+																		END as Alarma_Rojo"),
+																	DB::raw("CASE
+																			WHEN mf.Alarma_Amarillo > '0'
+																				THEN mf.Alarma_Amarillo
+																				ELSE '-'
+																		END as Alarma_Amarillo"),
+																	DB::raw("CASE
+																			WHEN e.Nivel_Fiscaliza > '0'
+																				THEN e.Nivel_Fiscaliza
+																				ELSE '-'
+																		END as 	Nivel_Fiscaliza_Actual"),
+																	DB::raw("CASE
+																			WHEN e.Nociva = '1'
+																				THEN 'Nociva'
+																				ELSE '-'
+																		END as Nociva_Actual"),
+																	DB::raw("CASE
+																			WHEN e.Nivel_Critico > '0'
+																				THEN e.Nivel_Critico
+																				ELSE '-'
+																		END as Nivel_Critico_Actual"),
+																	'm.Estado_Alarma',
+																	'm.Estado_Alarma','mf.Medicion_1','mf.Medicion_2', 'mf.Medicion_3', 'mf.Medicion_4', 'mf.Medicion_5', 'mf.Medicion_6', 'mf.Medicion_7', 'm.Tecnica', 'm.Observaciones', 'm.Firma',
+
+																DB::raw("CASE
+																	WHEN m.Laboratorio > '0'
+																		THEN 'Externa'
+																		ELSE 'Interna'
+																END as Laboratorio"),
+																DB::raw(	"'' as Date_Declaracion"),
+																DB::raw("CASE
+																		WHEN cp.Siembra
+																		THEN DATE_FORMAT(CAST(cp.Siembra AS DATE), '%d-%m-%Y')
+																		ELSE '-'
+																	END as Siembra"),
+																DB::raw("CASE
+																		WHEN cp.Cosecha
+																		THEN DATE_FORMAT(CAST(cp.Cosecha AS DATE), '%d-%m-%Y')
+																		ELSE '-'
+																	END as Cosecha"),
+																	'm.Modulo','m.Jaula','m.TopLeft'
+														)
+												->orderBy('m.Fecha_Reporte', 'DESC')
+												->get();
+
+
+
+					}else{
+
+						$medicion_fan = DB::connection('mysql')->table('medicion as m')
+								->join('medicion_fan as mf','mf.IDmedicion','=','m.IDmedicion')
+								->whereIn('m.IDmedicion',$medicion_ids)
+								->join('especie as e','e.IDespecie','=','mf.IDespecie')
+								->join('centro as c','c.IDcentro','=','m.IDcentro')
+								->join('region as r','r.IDregion','=','c.IDregion')
+								->join('area as a','a.IDarea','=','c.IDarea')
+								->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
+								->where('c.IDempresa','=', $IDempresa)
+								->select( 'm.IDmedicion','m.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
+													DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+													DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
+													DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+													DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
+													DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+													DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+													'e.Grupo','e.Nombre as Nombre_Especie',
+													DB::raw("CASE
+															WHEN mf.Fiscaliza = '1'
+																THEN 'Si'
+																ELSE '-'
+														END as Fiscaliza"),
+													DB::raw("CASE
+															WHEN mf.Nivel_Fiscaliza > '0'
+																THEN mf.Nivel_Fiscaliza
+																ELSE '-'
+														END as Nivel_Fiscaliza"),
+													DB::raw("CASE
+															WHEN mf.Nociva = '1'
+																THEN 'Nociva'
+																ELSE '-'
+														END as Nociva"),
+													DB::raw("CASE
+															WHEN mf.Nivel_Critico > '0'
+																THEN mf.Nivel_Critico
+																ELSE '-'
+														END as Nivel_Critico"),
+													DB::raw("CASE
+															WHEN mf.Alarma_Rojo > '0'
+																THEN mf.Alarma_Rojo
+																ELSE '-'
+														END as Alarma_Rojo"),
+													DB::raw("CASE
+															WHEN mf.Alarma_Amarillo > '0'
+																THEN mf.Alarma_Amarillo
+																ELSE '-'
+														END as Alarma_Amarillo"),
+													DB::raw("CASE
+															WHEN e.Nivel_Fiscaliza > '0'
+																THEN e.Nivel_Fiscaliza
+																ELSE '-'
+														END as 	Nivel_Fiscaliza_Actual"),
+													DB::raw("CASE
+															WHEN e.Nociva = '1'
+																THEN 'Nociva'
+																ELSE '-'
+														END as Nociva_Actual"),
+													DB::raw("CASE
+															WHEN e.Nivel_Critico > '0'
+																THEN e.Nivel_Critico
+																ELSE '-'
+														END as Nivel_Critico_Actual"),
+													'm.Estado_Alarma',
+													'm.Estado_Alarma','mf.Medicion_1','mf.Medicion_2', 'mf.Medicion_3', 'mf.Medicion_4', 'mf.Medicion_5', 'mf.Medicion_6', 'mf.Medicion_7', 'm.Tecnica', 'm.Observaciones', 'm.Firma',
+
+												DB::raw("CASE
+													WHEN m.Laboratorio > '0'
+														THEN 'Externa'
+														ELSE 'Interna'
+												END as Laboratorio"),
+												DB::raw(	"'' as Date_Declaracion"),
+													'm.Modulo','m.Jaula','m.TopLeft'
+										)
+								->orderBy('m.Fecha_Reporte', 'DESC')
+								->get();
+
+					}
+
+				$t_fan = microtime(true) - $t_fan;
+
+					$t_amb = microtime(true);
+
+					//Parámetros ambientales
+					if(intval($anio_periodo)>0){
+						//Consulta por los parámetros Ambientales
+						$medicion_pamb1 = DB::connection('mysql')->table('medicion_pambientales as mp')
+												->whereIn('mp.IDmedicion',$medicion_ids)
+												->join('pambientales as p','p.IDpambientales','=','mp.IDpambientales')
+												->select('mp.IDmedicion', 'mp.IDpambientales', 'p.Grupo as Grupop','p.Nombre as Nombrep',
+																'mp.Medicion_1 as Medicion_1p', 'mp.Medicion_2 as Medicion_2p','mp.Medicion_3 as Medicion_3p','mp.Medicion_4 as Medicion_4p', 'mp.Medicion_5 as Medicion_5p', 'mp.Medicion_6 as Medicion_6p', 'mp.Medicion_7 as Medicion_7p'
+														)
+												->orderByRaw("CASE WHEN Grupop = 'Columna de Agua' THEN 0 ELSE 1 END")
+												->orderBy('Grupop', 'Nombrep')
+												->get();
+
+						$medicion_pamb2 = DB::connection('mysql')->table('medicion as m')
+												->join('centrosproductivos as cp','cp.IDcentro','=','m.IDcentro')
+												->whereIn('m.IDmedicion',$medicion_ids)
+												->join('centro as c','c.IDcentro','=','m.IDcentro')
+												->join('region as r','r.IDregion','=','c.IDregion')
+												->join('area as a','a.IDarea','=','c.IDarea')
+												->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
+												->where('c.IDempresa','=', $IDempresa)
+												->select( 'm.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+																	DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+																	DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
+																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+																	DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+																	DB::raw(	"'' as Grupo"),
+																	DB::raw(	"'' as Nombre_Especie"),
+																	DB::raw(	"'' as Fiscaliza"),
+																	DB::raw(	"'' as Nivel_Fiscaliza"),
+																	DB::raw(	"'' as Nociva"),
+																	DB::raw(	"'' as Nivel_Critico"),
+																	DB::raw(	"'' as Alarma_Rojo"),
+																	DB::raw(	"'' as Alarma_Amarillo"),
+																	DB::raw(	"'' as Nivel_Fiscaliza_Actual"),
+																	DB::raw(	"'' as Nociva_Actual"),
+																	DB::raw(	"'' as Nivel_Critico_Actual"),
+																	'm.Estado_Alarma',
+																	DB::raw("'' as Medicion_1"), DB::raw("'' as Medicion_2"), DB::raw("'' as Medicion_3"), DB::raw("'' as Medicion_4"), DB::raw("'' as Medicion_5"), DB::raw("'' as Medicion_6"), DB::raw("'' as Medicion_7"),
+																	'm.Tecnica', 'm.Observaciones', 'm.Firma',
+																	DB::raw("CASE
+																		WHEN m.Laboratorio > '0'
+																			THEN 'Externa'
+																			ELSE 'Interna'
+																	END as Laboratorio"),
+																	DB::raw(	"'' as Date_Declaracion"),
+																	DB::raw("CASE
+																			WHEN cp.Siembra
+																				THEN DATE_FORMAT(CAST(cp.Siembra AS DATE), '%d-%m-%Y')
+																				ELSE '-'
+																		END as Siembra"),
+																	DB::raw("CASE
+																			WHEN cp.Cosecha
+																				THEN DATE_FORMAT(CAST(cp.Cosecha AS DATE), '%d-%m-%Y')
+																				ELSE '-'
+																		END as Cosecha"),
+																	'm.Modulo','m.Jaula','m.TopLeft',
+
+																	'm.IDmedicion'
+																	// 'mp.IDmedicion', 'mp.IDpambientales', 'p.Grupo as Grupop','p.Nombre as Nombrep', 'mp.Medicion_1 as Medicion_1p', 'mp.Medicion_2 as Medicion_2p','mp.Medicion_3 as Medicion_3p','mp.Medicion_4 as Medicion_4p', 'mp.Medicion_5 as Medicion_5p', 'mp.Medicion_6 as Medicion_6p', 'mp.Medicion_7 as Medicion_7p'
+												)
+												->get();
+
+						}else{
+
+							//Consulta por los parámetros Ambientales
+							$medicion_pamb1 = DB::connection('mysql')->table('medicion_pambientales as mp')
+													->whereIn('mp.IDmedicion',$medicion_ids)
+													->join('pambientales as p','p.IDpambientales','=','mp.IDpambientales')
+													->select('mp.IDmedicion', 'mp.IDpambientales', 'p.Grupo as Grupop','p.Nombre as Nombrep',
+																	'mp.Medicion_1 as Medicion_1p', 'mp.Medicion_2 as Medicion_2p','mp.Medicion_3 as Medicion_3p','mp.Medicion_4 as Medicion_4p', 'mp.Medicion_5 as Medicion_5p', 'mp.Medicion_6 as Medicion_6p', 'mp.Medicion_7 as Medicion_7p'
+															)
+													->orderByRaw("CASE WHEN Grupop = 'Columna de Agua' THEN 0 ELSE 1 END")
+													->orderBy('Grupop', 'Nombrep')
+													->get();
+
+
+							$medicion_pamb2 = DB::connection('mysql')->table('medicion as m')
+													->whereIn('m.IDmedicion',$medicion_ids)
+													->join('centro as c','c.IDcentro','=','m.IDcentro')
+													->join('region as r','r.IDregion','=','c.IDregion')
+													->join('area as a','a.IDarea','=','c.IDarea')
+													->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
+													->where('c.IDempresa','=', $IDempresa)
+													->select( 'm.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
+																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+																		DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
+																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+																		DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
+																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+																		DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+																		DB::raw(	"'' as Grupo"),
+																		DB::raw(	"'' as Nombre_Especie"),
+																		DB::raw(	"'' as Fiscaliza"),
+																		DB::raw(	"'' as Nivel_Fiscaliza"),
+																		DB::raw(	"'' as Nociva"),
+																		DB::raw(	"'' as Nivel_Critico"),
+																		DB::raw(	"'' as Alarma_Rojo"),
+																		DB::raw(	"'' as Alarma_Amarillo"),
+																		DB::raw(	"'' as Nivel_Fiscaliza_Actual"),
+																		DB::raw(	"'' as Nociva_Actual"),
+																		DB::raw(	"'' as Nivel_Critico_Actual"),
+																		'm.Estado_Alarma',
+																		DB::raw("'' as Medicion_1"), DB::raw("'' as Medicion_2"), DB::raw("'' as Medicion_3"), DB::raw("'' as Medicion_4"), DB::raw("'' as Medicion_5"), DB::raw("'' as Medicion_6"), DB::raw("'' as Medicion_7"),
+																		'm.Tecnica', 'm.Observaciones', 'm.Firma',
+																		DB::raw("CASE
+																			WHEN m.Laboratorio > '0'
+																				THEN 'Externa'
+																				ELSE 'Interna'
+																		END as Laboratorio"),
+																		DB::raw(	"'' as Date_Declaracion"),
+																		'm.Modulo','m.Jaula','m.TopLeft',
+
+																		'm.IDmedicion'
+																		// 'mp.IDmedicion', 'mp.IDpambientales', 'p.Grupo as Grupop','p.Nombre as Nombrep', 'mp.Medicion_1 as Medicion_1p', 'mp.Medicion_2 as Medicion_2p','mp.Medicion_3 as Medicion_3p','mp.Medicion_4 as Medicion_4p', 'mp.Medicion_5 as Medicion_5p', 'mp.Medicion_6 as Medicion_6p', 'mp.Medicion_7 as Medicion_7p'
+													)
+													->get();
+
+						}
+
+						$t_amb = microtime(true) - $t_amb;
+						$t_for = microtime(true);
+
+						foreach ($medicion_pamb1 as $val1) {
+							$row = [];
+							foreach ($medicion_pamb2 as $val2) {
+								if ($val1->IDmedicion == $val2->IDmedicion) {
+									$row1 =  (array) $val1;
+									$row2 =  (array) $val2;
+									array_shift($row1);
+									$row = array_merge($row2,$row1);
+									break;
+								}
+							}
+
+							if(!isset($Pambientales[$row['IDmedicion']])){$Pambientales[$row['IDmedicion']] = $vacios;}
+							if($row['Grupop'] == "Columna de Agua"){
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 0.5[m]",$Titulo_pamb)]  = $row['Medicion_1p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 5[m]",$Titulo_pamb)]    = $row['Medicion_2p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 10[m]",$Titulo_pamb)]   = $row['Medicion_3p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 15[m]",$Titulo_pamb)]   = $row['Medicion_4p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 20[m]",$Titulo_pamb)]   = $row['Medicion_5p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 25[m]",$Titulo_pamb)]   = $row['Medicion_6p'];
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep']." | 30[m]",$Titulo_pamb)]   = $row['Medicion_7p'];
+							}else{
+								$Pambientales[$row['IDmedicion']][array_search($row['Nombrep'],$Titulo_pamb)]  = $row['Medicion_1p'];
+							}
+
+							if($row['Estado_Alarma'] == "Ausencia Microalgas"){
+								$Resultado_ausencia[$row['IDmedicion']] = array_slice($row,0,-11);
+							}
+						}
+
+
+					foreach ($medicion_fan as $row_aux) {
+						$row =  (array) $row_aux;
+						$idmed = $row['IDmedicion'];
+						array_shift($row);
+
+						//Se agrega la fecha Declaración (ya que separo en otra consulta para no hacer un leftjoin que eleva demaciado los tiempos de procesamiento)
+						if (isset($declaracion_date[$idmed])) {
+							$row['Date_Declaracion'] = $declaracion_date[$idmed];
+						}
+
+						if(isset($Pambientales[$idmed])){
+							$Resultado[]  = array_merge($row, $Pambientales[$idmed]);
+						}else{
+							$Resultado[] = $row;
+						}
+					}
+
+					foreach ($Resultado_ausencia as $idmed => $row) {
+						//Se agrega la fecha Declaración (ya que separo en otra consulta para no hacer un leftjoin que eleva demaciado los tiempos de procesamiento)
+						if (isset($declaracion_date[$idmed])) {
+							$row['Date_Declaracion'] = $declaracion_date[$idmed];
+						}
+
+						$Resultado[]  = array_merge($row, $Pambientales[$idmed]);
+					}
+
+					$fecha = [];
+					foreach ($Resultado as $key => $row) {
+						$fecha[$key] = strtotime($row['Fecha_Order']);
+						array_shift($Resultado[$key]);
+					}
+
+					array_multisort($fecha, SORT_DESC, $Resultado);
+
+					$t_for = microtime(true) - $t_for;
+
+				// return \Response::json('medicion_ids,: '.count($medicion_ids).' | Resultado,: '.count($Resultado).' | t_titulos: '.$t_titulos.' | t_ids_declaracion'.$t_ids.' | t_fan: '.$t_fan.' | t_amb: '.$t_amb.' | t_for: '.$t_for.' |  Todo: '.($t_titulos+$t_fan+$t_for+$t_amb+$t_ids));
+
+					if($Resultado != ""){
+
+						$fis_actual =  "Nivel Fiscalizado Actual";
+						$nociva_actual =  "Nociva Actual";
+						$nociva_nivel_actual = "Nivel Nocivo Actual";
+						if($IDempresa == 5 ){
+							$fis_actual =  "SERNAPESCA";
+							$nociva_actual =  "Nociva Actual";
+							$nociva_nivel_actual = "PROMOFI";
+						}
+
+						if($anio_periodo>0){
+							$titulos = array(
+										'0' => "Nombre Región",
+										'1' => "Nombre Área",
+										'2' => "ACS",
+										'3' => "Nombre Centro",
+										'4' => "Fecha Muestreo",
+										'5' => "Hora Muestreo",
+										'6' => "Fecha Análisis",
+										'7' => "Hora Análisis",
+										'8' => "Fecha Envío",
+										'9' => "Hora Envío",
+										'10' => "Grupo",
+										'11' => "Nombre Especie",
+										'12' => "Fiscalizada",
+										'13' => "Nivel Fiscalizado",
+										'14' => "Nociva",
+										'15' => "Nivel Nocivo",
+										'16' => "Alarma Crítico",
+										'17' => "Alarma Precaución",
+										'18' => $fis_actual,
+										'19' => $nociva_actual,
+										'20' => $nociva_nivel_actual,
+										'21' => "Estado Registro",
+										'22' => "Medición 0.5 [m] | [cel/ml]",
+										'23' => "Medición 5 [m] | [cel/ml]",
+										'24' => "Medición 10 [m] | [cel/ml]",
+										'25' => "Medición 15 [m] | [cel/ml]",
+										'26' => "Medición 20 [m] | [cel/ml]",
+										'27' => "Medición 25 [m] | [cel/ml]",
+										'28' => "Medición 30 [m] | [cel/ml]",
+										'29' => "Técnica Utilizada",
+										'30' => "Observaciones",
+										'31' => "Firma",
+										'32' => "Medición",
+										'33' => "Registro Declarado en GTR",
+										'34' => "Siembra",
+										'35' => "Cosecha",
+										'36' => "Módulo",
+										'37' => "Jaula",
+										'38' => "Grados Decimales (DD)"
+
+										);
+						}else{
+							$titulos = array(
+									'0' => "Nombre Región",
+										'1' => "Nombre Área",
+										'2' => "ACS",
+										'3' => "Nombre Centro",
+										'4' => "Fecha Muestreo",
+										'5' => "Hora Muestreo",
+										'6' => "Fecha Análisis",
+										'7' => "Hora Análisis",
+										'8' => "Fecha Envío",
+										'9' => "Hora Envío",
+										'10' => "Grupo",
+										'11' => "Nombre Especie",
+										'12' => "Fiscalizada",
+										'13' => "Nivel Fiscalizado",
+										'14' => "Nociva",
+										'15' => "Nivel Nocivo",
+										'16' => "Alarma Crítico",
+										'17' => "Alarma Precaución",
+										'18' => $fis_actual,
+										'19' => $nociva_actual,
+										'20' => $nociva_nivel_actual,
+										'21' => "Estado Registro",
+										'22' => "Medición 0.5 [m] | [cel/ml]",
+										'23' => "Medición 5 [m] | [cel/ml]",
+										'24' => "Medición 10 [m] | [cel/ml]",
+										'25' => "Medición 15 [m] | [cel/ml]",
+										'26' => "Medición 20 [m] | [cel/ml]",
+										'27' => "Medición 25 [m] | [cel/ml]",
+										'28' => "Medición 30 [m] | [cel/ml]",
+										'29' => "Técnica Utilizada",
+										'30' => "Observaciones",
+										'31' => "Firma",
+										'32' => "Medición",
+										'33' => "Registro Declarado en GTR",
+										// '34' => "Siembra",
+										// '35' => "Cosecha"
+										'34' => "Módulo",
+										'35' => "Jaula",
+										'36' => "Grados Decimales (DD)",
+										);
+						}
+
+
+						$titulos = array_merge($titulos,$Titulo_pamb);
+
+						// return \Response::json($Resultado);
+
+						Excel::create('GTR fan - Historial', function($excel) use($Resultado,$titulos) {
+							// header('Content-Encoding: UTF-8');
+					// header('Content-type: text/csv; charset=UTF-8');
+					// header('Content-Disposition: attachment; filename=GTR fan - Historial.csv');
+
+							$excel->sheet('Mediciones', function($sheet) use($Resultado,$titulos){
+								// $sheet->fromArray($Resultado);
+									$sheet->row(1,$titulos);
+									$sheet->row(1, function($row) { $row->setBackground('#CCCCCC');$row->setAlignment('left');$row->setFontWeight('bold'); });
+									$sheet->freezeFirstRow();
+									foreach($Resultado as $index => $val) {
+									$sheet->row($index+2, $val);
+										$sheet->row($index+2, function($row) { $row->setAlignment('left'); });
+									}
+						});
+						})->export('xlsx');
+
+					}
+
+				return Response::json('vacio');
+
+	}
 
 
 

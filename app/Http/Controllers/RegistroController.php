@@ -2170,29 +2170,29 @@ class RegistroController extends Controller
                     
                     $Fecha_Eliminacion = date('Y-m-d H:i:s');
                     
-                    // $consulta_insert= MedicionEliminada::insert([
-                    //                                                 'IDmedicion' => $IDmedicion,
-                    //                                                 'IDcentro' => $IDcentro,
-                    //                                                 'Codigo' => $Codigo,
-                    //                                                 'Nombre_Centro' => $Nombre_Centro,
-                    //                                                 'Fecha_Reporte' => $Fecha_Reporte,
-                    //                                                 'Fecha_Eliminacion' => $Fecha_Eliminacion,
-                    //                                                 'email' => $email,
-                    //                                                 'Estado_Alarma' => $Estado_Alarma,
-                    //                                                 'Comentario' => $Comentario,
-                    //                                             ]);
-                    $insertarMedicionEliminada = new MEdicionEliminada();
-                    $insertarMedicionEliminada->IDmedicion = $IDmedicion;
-                    $insertarMedicionEliminada->IDempresa = $IDempresa;
-                    $insertarMedicionEliminada->IDcentro = $IDcentro;
-                    $insertarMedicionEliminada->Codigo = $Codigo;
-                    $insertarMedicionEliminada->Nombre_Centro = $Nombre_Centro;
-                    $insertarMedicionEliminada->Fecha_Reporte  = $Fecha_Reporte;
-                    $insertarMedicionEliminada->Fecha_Eliminacion  = $Fecha_Eliminacion;
-                    $insertarMedicionEliminada->email  = $email;
-                    $insertarMedicionEliminada->Estado_Alarma  = $Estado_Alarma;
-                    $insertarMedicionEliminada->Comentario  = $Comentario; 
-                    $insertarMedicionEliminada->save();
+                    $consulta_insert= MedicionEliminada::insert([
+                                                                    'IDmedicion' => $IDmedicion,
+                                                                    'IDcentro' => $IDcentro,
+                                                                    'Codigo' => $Codigo,
+                                                                    'Nombre_Centro' => $Nombre_Centro,
+                                                                    'Fecha_Reporte' => $Fecha_Reporte,
+                                                                    'Fecha_Eliminacion' => $Fecha_Eliminacion,
+                                                                    'email' => $email,
+                                                                    'Estado_Alarma' => $Estado_Alarma,
+                                                                    'Comentario' => $Comentario,
+                                                                ]);
+                    // $insertarMedicionEliminada = new MEdicionEliminada();
+                    // $insertarMedicionEliminada->IDmedicion = $IDmedicion;
+                    // $insertarMedicionEliminada->IDempresa = $IDempresa;
+                    // $insertarMedicionEliminada->IDcentro = $IDcentro;
+                    // $insertarMedicionEliminada->Codigo = $Codigo;
+                    // $insertarMedicionEliminada->Nombre_Centro = $Nombre_Centro;
+                    // $insertarMedicionEliminada->Fecha_Reporte  = $Fecha_Reporte;
+                    // $insertarMedicionEliminada->Fecha_Eliminacion  = $Fecha_Eliminacion;
+                    // $insertarMedicionEliminada->email  = $email;
+                    // $insertarMedicionEliminada->Estado_Alarma  = $Estado_Alarma;
+                    // $insertarMedicionEliminada->Comentario  = $Comentario; 
+                    // $insertarMedicionEliminada->save();
                 }
         //     if ($row['Estado'] > 0) { // Si no es borrador
         //         $Fecha_Reporte = $row['Fecha_Reporte'];
@@ -5124,7 +5124,7 @@ class RegistroController extends Controller
                                                                     $query->where('medicion_fan.Medicion_1', '>=', DB::raw('especie.Alarma_Rojo'))
                                                                     ->orWhere(' medicion_fan.Medicion_2', '>=', DB::raw('especie.Alarma_Rojo')) 
                                                                     ->orWhere(' medicion_fan.Medicion_3', '>=', DB::raw('especie.Alarma_Rojo'))
-                                                                     ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo')) 
+                                                                    ->orWhere(' medicion_fan.Medicion_4', '>=', DB::raw('especie.Alarma_Rojo')) 
                                                                     ->orWhere(' medicion_fan.Medicion_5', '>=', DB::raw('especie.Alarma_Rojo')) 
                                                                     ->orWhere(' medicion_fan.Medicion_6', '>=', DB::raw('especie.Alarma_Rojo')) 
                                                                     ->orWhere(' medicion_fan.Medicion_7', '>=', DB::raw('especie.Alarma_Rojo'));
@@ -5657,8 +5657,8 @@ class RegistroController extends Controller
         // //get search term
         // $searchTerm = $_GET['term'];
         // $user_id = $_GET['user_id'];
-        $searchTerm = 32;//$request->input('term');
-        $user_id = 550;//$request->input('user_id');
+        $searchTerm = $request->input('term');
+        $user_id = $request->input('user_id');
         
         // //get matched data from skills table
         $consulta = Centro::select('Nombre','Codigo')
@@ -5667,7 +5667,7 @@ class RegistroController extends Controller
                                         $query->where('Nombre', 'like', '%'.$searchTerm.'%')
                                                 ->orWhere('Codigo', 'like', '%'.$searchTerm.'%');
                                     })
-                                ->where('IDempresa', $IDempresa)
+                                ->where('IDempresa', $miuser->IDempresa)
                                 ->orderBy('Nombre', 'ASC')
                                 ->get();
 
@@ -5698,7 +5698,7 @@ class RegistroController extends Controller
     {
         $miuser = Auth::user();
         $this->cambiar_bd($miuser->IDempresa);
-        //         $error = 0;
+                 $error = 0;
 
         //     $user_id = $_POST['user_id'];
         //     $Fecha_Medicion =$_POST['user_id'];

@@ -15,7 +15,7 @@
      
 
 
-        <div id="page-wrapper">
+        <div id="page-wrapper" style="margin-left: -28px">
 
                 <div class="row">
                     <div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-xs-12">
@@ -43,13 +43,13 @@
                                                     <div class="col-lg-6 col-md-12 col-xs-12" >
                                                         <h2>Seleccionar Período</h2>
 
-                                                        <?/*php
+                                                        <?php
                                                                 if($currentUser->IDempresa ==6){
                                                                     echo '<div class="row"  style="margin-top:25px;" >';
                                                                 }else{
                                                                     echo '<div class="row"  style="margin-top:25px; display:none" >';
                                                                 }
-                                                        */?>;
+                                                        ?>;
 
 
                                                           <div class="col-lg-4 col-md-4 col-xs-4">

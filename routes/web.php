@@ -105,7 +105,15 @@ Route::get('historial/reporte_editor/alarma_generar_registro', 'alarmaGenerarExc
 
 
 // ==============Rutas Mapas=====================//
-
+Route::controller(MapaController::class)->group(function(){
+    Route::post('mapas/load_ubicacion_centro', 'loadUbicacionCentro')->name('mapas.load.ubicacion.centro');
+    Route::post('mapas/load_options_prof', 'loadOptionsProf')->name('mapas.load.options.prof');
+    Route::post('mapas/load_historial_centros', 'loadHistorialCentros')->name('mapas.load.historial.centros');
+    Route::post('mapas/load_fan_reporte', 'loadFanReporte')->name('mapas.load.fan.reporte');
+    Route::post('mapas/load_resumen_reporte', 'loadResumenReporte')->name('mapas.load.resumen.reporte');
+    Route::post('mapas/load_pambientales.reporte', 'loadPambientalesReporte')->name('mapas.load.pambientales.reporte');
+    Route::post('mapas/send_reporte', 'sendReporte')->name('mapas.send.reporte');
+    });
 
 
 // ==============Rutas Informe=====================//

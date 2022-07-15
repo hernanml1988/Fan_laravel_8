@@ -41,7 +41,7 @@ class RegistroAutoImport implements ToCollection, WithLimit, WithColumnLimit
     // }
     public function limit(): int
     {
-        return 10;
+        return 80;
     }
     public function endColumn(): string
     {

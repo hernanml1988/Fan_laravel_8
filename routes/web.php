@@ -113,6 +113,9 @@ Route::controller(MapaController::class)->group(function(){
     Route::post('mapas/load_resumen_reporte', 'loadResumenReporte')->name('mapas.load.resumen.reporte');
     Route::post('mapas/load_pambientales.reporte', 'loadPambientalesReporte')->name('mapas.load.pambientales.reporte');
     Route::post('mapas/send_reporte', 'sendReporte')->name('mapas.send.reporte');
+    //====Rutas Mapa colab ===
+    
+
     });
 
 

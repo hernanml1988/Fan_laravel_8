@@ -163,7 +163,7 @@
                                             </select>
                                             <select id="especiesselectmap" name="multipleselectsearch" class="form-control center-block" style="width:200px; margin-top:7px;">
                                             </select>
-                                            <div id="loading1" class="" style="display:inline; position:absolute; margin-top:-28px; width:68%"><img class="pull-right" style="width: 25px;" src='loader.gif' /></div>
+                                            <div id="loading1" class="" style="display:inline; position:absolute; margin-top:-28px; width:68%"><img class="pull-right" style="width: 25px;" src="{{ asset('img/loader.gif')}}" /></div>
 
 
 
@@ -1165,7 +1165,7 @@
                         <div class="modal-dialog " role="document" >
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                             	<div class="modal-body center-block text-center">
-                                	 <img src='loader.gif'/><h5> Loading... Please Wait </h5>
+                                	 <img src="{{ asset('img/loader.gif') }}"/><h5> Loading... Please Wait </h5>
                                 </div>
                              </div>
                         </div>
@@ -1175,57 +1175,80 @@
 					<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
 
     <!-- Bootstrap Core JavaScript -->
-    {{-- <script src="js/bootstrap.min.js"></script>
+    {{-- ****<script src="js/bootstrap.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/metisMenu.min.js"></script>
-    <script src="js/bootstrap-table.js"></script>
+    ******<script src="js/metisMenu.min.js"></script>
+    ******<script src="js/bootstrap-table.js"></script>
 
 
 	<!-- DatetimePicker -->
-   <script src="js/moment-with-locales.js"></script>
-   <script src="js/bootstrap-datetimepicker.js"></script>
+   ******<script src="js/moment-with-locales.js"></script>
+   ******<script src="js/bootstrap-datetimepicker.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="js/sb-admin-2.js"></script>
+       ***<script src="js/sb-admin-2.js"></script>
 
 
     <!-- Multiple Select -->
   	<script type="text/javascript" src="js/bootstrap-slider.js"></script>
 
     <!-- Autocomplete -->
-    <script src="js/jquery-ui.js"></script>
+    *****<script src="js/jquery-ui.js"></script>
 
     	 <!-- Alertas -->
-    <script src="js/sweetalert.min.js"></script>
+    ******<script src="js/sweetalert.min.js"></script>
 
     <!-- Export table -->
-    <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>
+    ****<script src="js/tableExport.js"></script>
+    ****<script src="js/bootstrap-table-export.js"></script>
 
     <!-- Multiple Select -->
-  	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+  	**<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
 
     <!-- Switch button -->
   	 --}}
 
 	 
 
-	   <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-					<!-- Export table -->
-		
-		<!-- DatetimePicker -->
+	   <!-- Bootstrap Core JavaScript -->
+	   <script src="{{asset('js/bootstrap.min.js')}}"></script>
 
-		<script src="{{asset('js/metisMenu.min.js')}}"></script>
-		<script src="{{asset('js/bootstrap-table.js')}}"></script>
-		
-		<script src="{{asset('js/moment-with-locales.js')}}"></script>
-		<script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
-
-	   <script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
-	   <script type="text/javascript" src="{{asset('js/lc_switch.js')}}"></script>
-
-
+	   <!-- Metis Menu Plugin JavaScript -->
+	   <script src="{{asset('js/metisMenu.min.js')}}"></script>
+	   <script src="{{asset('js/bootstrap-table.js')}}"></script>
+   
+   
+	   <!-- DatetimePicker -->
+	  <script src="{{asset('js/moment-with-locales.js')}}"></script>
+	  <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
+   
+	   <!-- Custom Theme JavaScript -->
+	   <script src="{{asset('js/sb-admin-2.js')}}"></script>
+   
+   
+	   <!-- Multiple Select -->
+		 <script type="text/javascript" src="{{asset('js/bootstrap-slider.js')}}"></script>
+   
+	   <!-- Autocomplete -->
+	   <script src="{{asset('js/jquery-ui.js')}}"></script>
+   
+	   <!-- Asigna menu para roles -->
+	   {{-- <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script> --}}
+   
+   
+		<!-- Alertas -->
+	   <script src="{{asset('js/sweetalert.min.js')}}"></script>
+   
+	   <!-- Export table -->
+	   <script src="{{asset('js/tableExport.js')}}"></script>
+	   <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
+   
+	   <!-- Multiple Select -->
+		 <script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
+   
+	   <!-- Switch button -->
+		 <script type="text/javascript" src="{{asset('js/lc_switch.js')}}"></script>
 
     <script>
 		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
@@ -1934,7 +1957,7 @@ function replaceElement($elem) {
 
 
 
-			//Load opciones profundidad
+			//Load opciones 
 			$.ajax({
 					url: "{{Route('mapas.load.options.prof')}}",//load_options_prof.php",
 					type: 'post',
@@ -2053,6 +2076,7 @@ function replaceElement($elem) {
 			type: 'post',
 			dataType: 'json',
 			data: {
+				_token: "{{ csrf_token() }}",
 				IDcentro:		 idcentroactual,
 				Fecha_Inicio: 	 document.getElementById("fechadesde").value,
 				Fecha_Termino: 	document.getElementById("fechahasta").value,

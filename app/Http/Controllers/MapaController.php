@@ -16,6 +16,20 @@ use Illuminate\Support\Facades\Response;
 
 class MapaController extends Controller
 {
+
+    public function __construct()
+	{
+		//\DB::setDefaultConnection('mysql');
+
+		//$this->middleware('guest');
+		$this->middleware('auth');
+		//$this->middleware('acceso.sistema');
+		//$this->middleware('politica.empresa');
+
+
+		//$this->middleware('auth.basic');
+	}
+
     public function loadUbicacionCentro(Request $request)
     {
         $miuser = Auth::user();
@@ -241,7 +255,7 @@ class MapaController extends Controller
                                             ->orderBy('e.Nombre', 'ASC')
                                             ->orderBy('fecha', 'ASC')
                                             ->get();
-                            return Response::json($consulta);
+                            //return Response::json($consulta);
         // mysqli_query($con,"SELECT m.Fecha_Reporte as fecha, 
         // DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i') as Fecha_Reporte, 
         // e.Nombre,
@@ -398,7 +412,7 @@ class MapaController extends Controller
             $Resultado['Error'] = $error;
         }
 
-        echo json_encode($Resultado);
+        return response::json($Resultado);
 
 
     }
@@ -658,8 +672,8 @@ class MapaController extends Controller
         // $consulta1 = mysqli_query($con,"SELECT IDempresa FROM as_users WHERE user_id = '$user_id'")
         // or die ($error ="Error description: " . mysqli_error($consulta1));
         // $row = mysqli_fetch_assoc($consulta1);
-        $IDempresa = $miuser->IDempres;
-
+        $IDempresa = $miuser->IDempresa;
+        
 
         // $All_Date = array();
         // $All_Date[0] = date('d-m-Y');
@@ -708,7 +722,7 @@ class MapaController extends Controller
                                             ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
                                             ->join('especie as e', 'mf.IDespecie', '=', 'e.IDespecie')
                                             //->whereRaw($whereespecies)
-                                            //->whereRaw($wherecolab)
+                                            ->whereRaw($wherecolab)
                                             //->whereRaw($where)
                                             ->whereRaw($whereestado)
                                             ->where('m.Estado', '=', 1)
@@ -737,7 +751,8 @@ class MapaController extends Controller
                                                     'e.Grupo',
                                                     'b.Nombre as ACS'   
                                                     )
-                                            ->get();
+                                            ->get()
+                                            ->toArray();
                                             
                 //return response::json($consulta);
         //     (centro c INNER JOIN barrio b ON c.IDbarrio = b.IDbarrio),
@@ -786,7 +801,9 @@ class MapaController extends Controller
         //     WHERE c.IDempresa = em.IDempresa  AND c.IDarea = a.IDarea AND c.IDcentro = m.IDcentro AND e.IDespecie = mf.IDespecie "
         //.$whereespecies.$wherecolab.$where.$whereestado." AND m.Estado = 1 ORDER BY em.Nombre, a.Nombre, c.Nombre, e.Nombre ASC")
            // or die ($error ="Error description 1: " . mysqli_error($con));
-
+           //$consulta = explode(',', $consulta);         
+           //return Response::json($consulta);
+           
         $ultimaesp = array();
         $Resultado = array();
         $centroespecie = array();
@@ -803,7 +820,7 @@ class MapaController extends Controller
             /*###################################################################### */
             /*------------Comentado solo param avanzar---------------------- */           
             $ultimaesp = array_slice($row, -8);
-
+            
             if($max == 1 ){
                 $med = max($row->Medicion_1,$row->Medicion_2,$row->Medicion_3,$row->Medicion_4,$row->Medicion_5,$row->Medicion_6,$row->Medicion_7);
             }else{
@@ -889,7 +906,7 @@ class MapaController extends Controller
                                             ->join('empresa as em', 'c.IDempresa', '=', 'em.IDempresa')
                                             ->whereIn('c.IDcentro', $centros_ausencia1)
                                             ->whereRaw($wherecolab)
-                                            ->whereRaw($where)
+                                            //->whereRaw($where)
                                             ->whereRaw($whereestado)
                                             ->where('m.Estado', '=', 1)
                                             ->select('a.Nombre as Area',

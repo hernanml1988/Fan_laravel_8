@@ -12,6 +12,7 @@ use App\Models\MedicionFan;
 use App\Models\Opciones;
 use App\Models\Pambientales;
 use App\Models\Region;
+use App\Models\User;
 use App\Models\UsuarioPermiso;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
@@ -817,71 +818,56 @@ class HistorialController extends Controller
         $Centros = $request->input('Centros');//$_GET['Centros'];
         $Centros = str_replace('"', '', $Centros);
         $Centros = str_replace(",", "','", $Centros);
-        $Inicio = date('Y-m-d', strtotime($request->input('Inicio')));//$_GET['Inicio']));
+        $Inicio = date('Y-m-d', strtotime($request->input('Inicio')));
         $Inicio = date('Y-m-d 00:00:00', strtotime($Inicio));
-        $Termino = date('Y-m-d', strtotime($request->input('Termino'). ' +1 day'));//$_GET['Termino']. ' +1 day'));
+        $Termino = date('Y-m-d', strtotime($request->input('Termino'). ' +1 day'));
         $Termino = date('Y-m-d 00:00:00', strtotime($Termino));
         $user_id = $miuser->id;
 
 
         if ($Centros == '') {
-            $resultado = array(
+            echo json_encode(array(
                 'total' => 0, 			// select count(*) from table ...
                 'rows' => 0
-            );
-            return Response::json($resultado);
-            // echo json_encode(array(
-            //     'total' => 0, 			// select count(*) from table ...
-            //     'rows' => 0
-            // ));
-            // die();
+            ));
+            die();
         }
-
-        $anio_periodo =$request->input('anio_periodo');//$_GET['anio_periodo'];
-
+    
+        $anio_periodo =$request->input('anio_periodo');
+    
         if($anio_periodo>0){
-
-            $consultaDesde = CentrosProductivos::whereYear('Siembra', '=',  $anio_periodo)
-                                                    ->select('*')
-                                                    ->orderBy('Siembra', 'ASC')
-                                                    ->first();
-            // mysqli_query($con,"SELECT * FROM centrosproductivos WHERE YEAR(Siembra) = $anio_periodo ORDER BY Siembra ASC LIMIT 1")
-            // or die ($error ="Error description: " . mysqli_error($consultaDesde));
-            if($consultaDesde)
-            {
-                $Inicio = $consultaDesde->Siembra;
+    
+            $consultaDesde = DB::connection('mysql')->table('centrosproductivos as cp')
+                                                        ->whereYear('Siembra', $anio_periodo)
+                                                        ->orderBy('Siembra', 'ASC')
+                                                        ->select('*')
+                                                        ->first();
+                
+                // mysqli_query($con,"SELECT * FROM centrosproductivos WHERE YEAR(Siembra) = $anio_periodo ORDER BY Siembra ASC LIMIT 1")
+                // or die ($error ="Error description: " . mysqli_error($consultaDesde));
+            $row_menor = $consultaDesde;
+            if($row_menor){
+                $Inicio = $row_menor->Siembra;
+    
                 $Inicio= $anio_periodo."-01-01 00:00:00";
             }
-                
-            // $row_menor = mysqli_fetch_assoc($consultaDesde);
-
-            // forea($row_menor){
-            //     $Inicio = $row_menor['Siembra'];
-
-            //     $Inicio= $anio_periodo."-01-01 00:00:00";
-            // }
-
-
-            $consultaHesta = CentrosProductivos::whereYear('Siembra', '=',  $anio_periodo)
-                                                    ->select('*')
+            $consultaHasta = DB::connection('mysql')->table('centrosproductivos as cp')
+                                                    ->whereYear('Siembra', $anio_periodo)
                                                     ->orderBy('Siembra', 'ASC')
+                                                    ->select('*')
                                                     ->first();
             // mysqli_query($con,"SELECT * FROM centrosproductivos WHERE YEAR(Siembra) = $anio_periodo ORDER BY Siembra DESC LIMIT 1")
             // or die ($error ="Error description: " . mysqli_error($consultaHesta));
-            // $row_mayor = mysqli_fetch_assoc($consultaHesta);
-
-            if($consultaHesta){
-                $Termino = $consultaHesta->Siembra;
+            $row_mayor = $consultaHasta;
+    
+            if($row_mayor){
+                $Termino = $row_mayor->Siembra;
                 $Termino=$anio_periodo."-12-31 00:00:00";
             }
-
-
-
-
         }
-
-
-
+    
+    
+    
         $estado_alarma = [];
         if ($request->input('Critico')) {
             $estado_alarma[] = 'Nivel Crítico';
@@ -895,185 +881,432 @@ class HistorialController extends Controller
         if ($request->input('Ausencia')) {
             $estado_alarma[] = 'Ausencia Microalgas';
         }
-        $estado_alarma_aux = implode("','",$estado_alarma);
-        // echo json_encode($estado_alarma_aux);
-        // die();
-        //IDempresa
-        // $consulta0 = mysqli_query($con,"SELECT IDempresa FROM as_users WHERE user_id = '$user_id' ")
-        // or die ($error ="Error description: " . mysqli_error($consulta0));
-        // $row0 = mysqli_fetch_assoc($consulta0);
-        // if($row0){
-        //     $IDempresa = $row0['IDempresa'];
-        // }
-        $IDempresa= $miuser->IDempresa;
+        //$estado_alarma_aux = implode("','",$estado_alarma);
+          $estado_alarma_aux = $estado_alarma;//implode("','",$estado_alarma);
+          $Centros = explode(',', $Centros);
+        //return Response::json($Centros);
+        // IDempresa        
+        $IDempresa = $miuser->IDempresa;
+        
+    
         $start0 = microtime(true);
         //Contar las filas
-
+        //return Response::json($start0);
         if($anio_periodo>0){
-
-            $consulta1 = Medicion::join('centrosproductivos', function($query) use ($anio_periodo){
-                                      $query->on('centrosproductivos.IDcentro', '=', 'medicion.IDcentro')
-                                            ->whereBetween('medicion.Fecha_Reporte', ['centrosproductivos.Siembra', 'centrosproductivos.Cosecha']) 
-                                            ->where('centrosproductivos.Estado', '=', 1)
-                                            ->whereYear('centrosproductivos.Siembra', '=', $anio_periodo);
-                                    })
-                                    ->join('medicion_fan', function($query)use ($Inicio, $Termino){
-                                      $query->on('medicion.IDmedicion', '=', 'medicion_fan.IDmedicion')
-                                            ->where([['medicion.Fecha_Reporte', '>=', $Inicio],
-                                                        ['medicion.Fecha_Reporte', '<=', $Termino],
-                                                        ['medicion.Estado', '=', 1]]);
-                                    })
-                                    ->join('especie','especie.IDespecied', '=', 'medicion_fan.IDespecie')
-                                    ->where('especie.IDespecie', 'medicion_fan.IDespecie')
-                                    ->whereIn('medicion.Estado_Alarma', $estado_alarma)
-                                    ->select('medicion_fan.IDmedicionfan as cuenta')
-                                    ->count();
+    
+            $consulta1 = DB::connection('mysql')->table('medicion as m')
+                                                ->join('centrosproductivos as cp',function($query) use ($anio_periodo, $Centros){
+                                                                                $query->on('cp.IDcentro', '=', 'm.IDcentro')  
+                                                                                        ->whereBetween('m.Fecha_Reporte', ['cp.Siembra', 'cp.Cosecha'])
+                                                                                        ->where('cp.estado', '=', 1)
+                                                                                        ->whereYear('cp.Siembra', '=', $anio_periodo) 
+                                                                                        ->whereIn('cp.IDcentro', $Centros);                                  
+                                                                                    })
+                                                ->join('medicion_fan as mf', function($query) use ($Inicio,$Termino,$estado_alarma_aux){
+                                                                                $query->on('m.IDmedicion', '=', 'mf.IDmedicion')  
+                                                                                        ->where('m.Fecha_Reporte', '>=', $Inicio) 
+                                                                                        ->where('m.Fecha_Reporte', '<=', $Termino) 
+                                                                                        ->where('m.Estado', '=', 1)
+                                                                                        ->whereIn('m.Estado_Alarma', $estado_alarma_aux);   
+                                                                                    })
+                                                ->join('especie', 'e.IDespecie', '=', 'mf.IDespecie')
+                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                ->select('mf.IDmedicionfan as cuenta')
+                                                ->count();
+                // DB::connection('mysql')->table('medicion as m')
+                //                                 ->join('centrosproductivos as cp','cp.IDcentro', '=', 'm.IDcentro')
+                //                                 ->whereIn('cp.IDcentro', $Centros)
+                //                                 ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion')
+                //                                 ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie')
+                //                                 ->whereBetween('m.Fecha_Reporte', ['cp.Siembra','cp.Cosecha'])
+                //                                 ->where([['cp.estado', '=', 1],
+                //                                             ['m.Fecha_Reporte', '>=', $Inicio],
+                //                                             ['m.Fecha_Reporte', '<=', $Termino],
+                //                                             ['m.Estado', '=', 1],
+                //                                             ['m.Estado', '=', 1],
+                //                                             [],
+                //                                             ])
+                //                                 ->whereYear('cp.Siembra', $anio_periodo)                                                
+                //                                 ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                //                                 ->select('mf.IDmedicionfan as cuenta')
+                //                                 ->count();
+            //     DB::select("SELECT COUNT(mf.IDmedicionfan) as cuenta
+            // FROM gtr_medicion m INNER JOIN gtr_centrosproductivos cp 
+            // ON (cp.IDcentro = m.IDcentro 
+            // AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha 
+            // AND cp.estado = 1 
+            // AND YEAR(cp.Siembra) = $anio_periodo 
+            // AND cp.IDcentro IN ('$Centros')) 
+            // INNER JOIN gtr_medicion_fan mf 
+            // ON (m.IDmedicion = mf.IDmedicion 
+            // AND m.Fecha_Reporte >= '$Inicio' 
+            // AND m.Fecha_Reporte <= '$Termino' 
+            // AND m.Estado = 1 
+            // AND m.IDcentro IN ('$Centros') ),  
+            // gtr_especie e 
+            // WHERE e.IDespecie = mf.IDespecie 
+            // AND m.Estado_Alarma IN ('$estado_alarma_aux') ");
+            
 
             
-        // mysqli_query($con,"SELECT COUNT(mf.IDmedicionfan) as cuenta
-        // -- FROM medicion m INNER JOIN centrosproductivos cp 
-        // -- ON (cp.IDcentro = m.IDcentro AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha AND cp.estado = 1 AND YEAR(cp.Siembra) = $anio_periodo 
-        // --     AND cp.IDcentro IN ('$Centros')
-        // ) INNER JOIN medicion_fan mf 
-
-        // ON (m.IDmedicion = mf.IDmedicion 
-        // AND m.Fecha_Reporte >= '$Inicio' 
-        // AND m.Fecha_Reporte <= '$Termino' 
-        // AND m.Estado = 1 
-        // AND m.IDcentro IN ('$Centros') )
-
-        // ,  especie e WHERE e.IDespecie = mf.IDespecie AND m.Estado_Alarma IN ('$estado_alarma_aux') ")
-        // // or die ($error ="Error description: " . mysqli_error($consulta1));
-
+            
+    
         }else{
+    
+            $consulta1 = DB::connection('mysql')->table('medicion as m')
+                                                ->join('medicion_fan as mf', function($query) use ($Inicio,$Termino,$Centros){
+                                                                               $query->on('m.IDmedicion', '=', 'mf.IDmedicion') 
+                                                                                        ->where([['m.Fecha_Reporte', '>=', $Inicio],
+                                                                                                    ['m.Fecha_Reporte', '<=', $Termino],
+                                                                                                    ['m.Estado', '=', 1 ],])
+                                                                                        ->whereIn('m.IDcentro', $Centros);
+                                                                        })
+                                                ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie')
+                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                ->select('mf.IDmedicionfan as cuenta')
+                                                ->count();
+                // DB::connection('mysql')->table('medicion as m')
+                // ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion' )
+                // ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie' )
+                // ->where([['m.Fecha_Reporte', '>=', $Inicio],
+                //             ['m.Fecha_Reporte', '<=', $Termino],
+                //             ['m.Estado', '=', 1 ],])
+                // ->whereIn('m.IDcentro', $Centros)
+                // ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                // ->select('mf.IDmedicionfan as cuenta')
+                // ->count();
+            // DB::select("SELECT COUNT(mf.IDmedicionfan) as cuenta
+            // FROM gtr_medicion m INNER JOIN gtr_medicion_fan mf 
+            // ON (m.IDmedicion = mf.IDmedicion 
+            // AND m.Fecha_Reporte >= '$Inicio' 
+            // AND m.Fecha_Reporte <= '$Termino' 
+            // AND m.Estado = 1 
+            // AND m.IDcentro IN ('$Centros') ),  
+            // especie e 
+            // WHERE e.IDespecie = mf.IDespecie 
+            // AND m.Estado_Alarma IN ('$estado_alarma_aux') ");
+                                  
 
-            $consulta1 = Medicion::join('medicion_fan', function($query) use ($Inicio, $Termino, $Centros){
-                                        $query->on('medicion.IDmedicion', '=', 'medicion_fan.IDmedicion')
-                                                ->where([['medicion.Fecha_Reporte', '>=', $Inicio],
-                                                            ['medicion.Fecha_Reporte', '<=', $Termino],
-                                                            ['medicion.Estado', '=',  1]])
-                                                ->whereIn('medicion.IDcentro', $Centros);                       
-                                    })
-                                    ->join('especie', 'especie.IDespecie', 'medicion_fan.IDespecie')
-                                    ->where('especie.IDespecie', 'medicion_fan.IDespecie')
-                                    ->whereIn('medicion.Estado_Alarma', $estado_alarma_aux)
-                                    ->select('medicion_fan.IDmedicionfan as cuenta')
-                                    ->count();
-        //     mysqli_query($con,"SELECT COUNT(mf.IDmedicionfan) as cuenta
-        // FROM medicion m INNER JOIN medicion_fan mf 
-        // ON (m.IDmedicion = mf.IDmedicion 
-        // AND m.Fecha_Reporte >= '$Inicio' 
-        // AND m.Fecha_Reporte <= '$Termino' 
-        // AND m.Estado = 1 
-        // AND m.IDcentro IN ('$Centros') ),  
-        // especie e WHERE e.IDespecie = mf.IDespecie AND m.Estado_Alarma IN ('$estado_alarma_aux') ")
-        // or die ($error ="Error description: " . mysqli_error($consulta1));
 
+            
         }
-
-        $count1 = $consulta1->cuenta;
-        // $row1 = mysqli_fetch_assoc($consulta1);
-        // if($row1){
-        //     $count1 = $row1['cuenta'];
-        // }
-        // // echo json_encode($count1);
-        // // die();
-        // //Contar las filas
-
+        //return Response::json($consulta1);
+    
+        $row1 = $consulta1;
+        if($consulta1){
+            $count1 = $consulta1->cuenta;
+        }
+        //return Response::json($count1);
+        // echo json_encode($count1);
+        // die();
+        //Contar las filas
+    
         if($anio_periodo>0){
+    
+    
+            $consulta1 = DB::connection('mysql')->table('medicion as m')
+                                                ->join('centrosproductivos as cp', 'cp.IDcentro', '=', 'm.IDcentro')
+                                                ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
+                                                ->whereBetween('m.Fecha_Reporte', ['cp.Siembra', 'cp.Cosecha'])
+                                                ->whereYear('cp.Siembra', $anio_periodo)
+                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
+                                                            ['cp.estado', '=', 1],
+                                                            ['c.IDempresa', '=', $IDempresa],
+                                                            ['m.Fecha_Reporte', '>=', $Inicio],
+                                                            ['m.Fecha_Reporte'. '<=', $Termino],
+                                                            ['m.Estado', '=', 1]])
+                                                ->whereIn('cp.IDcentro', $Centros)
+                                                ->whereIn('m.IDcentro', $Centros)
+                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux) 
+                                                ->select('m.IDcentro as cuenta')
+                                                ->get();
 
-
-            $consulta1 = Medicion::join('centrosproductivos', function($query) use ($anio_periodo, $Centros){
-                                                $query->on('centrosproductivos.IDcentro', '=', 'medicion.IDcentro')
-                                                        ->whereBetween('medicion.Fecha_Reporte', ['centrosproductivos.Siembra', 'centrosproductivos.Cosecha'])
-                                                        ->where('Estado','=',  1)
-                                                        ->whereYear('centrosproductivos.Siembra', $anio_periodo)
-                                                        ->whereIn('centrosproductivos.IDcentro', $Centros);
-                                            })
-                                    ->join('centro', function($query) use ($Centros,$IDempresa,$Inicio,$Termino,$estado_alarma_aux){
-                                        $query->on('centro.IDcentro', '=', 'medicion.IDcentro')
-                                                ->where('medicion.Estado_Alarma', 'Ausencia Microalgas')
-                                                ->whereIn('medicion.IDcentro', $Centros)
-                                                ->where(['centro.IDempresa', '=', $IDempresa],
-                                                        ['medicion.Fecha_Reporte', '>=', $Inicio],
-                                                        ['medicion.Fecha_Reporte', '<=', $Termino],
-                                                        ['medicion.Estado',  1])
-                                                ->whereIn('medicion.Estado_Alarma', $estado_alarma_aux);
-                                                })
-                                    ->select('medicion.IDcentro as cuenta')
-                                    ->count();
-                            //     mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
-                            // FROM medicion m 
-                            // INNER JOIN centrosproductivos cp 
-                            // ON (cp.IDcentro = m.IDcentro AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha 
-                            // AND cp.estado = 1 
-                            // AND YEAR(cp.Siembra) = $anio_periodo 
-                            // AND cp.IDcentro IN ('$Centros')) 
-                            // INNER JOIN centro c 
-                            // ON (c.IDcentro = m.IDcentro 
-                            // AND m.Estado_Alarma = 'Ausencia Microalgas' 
-                            // AND m.IDcentro IN ('$Centros') 
-                            // AND c.IDempresa = '$IDempresa' 
-                            // AND m.Fecha_Reporte >= '$Inicio' 
-                            // AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.Estado_Alarma IN ('$estado_alarma_aux') ) ")
-                            // or die ($error ="Error description: " . mysqli_error($consulta1));
-
+            // mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
+            // FROM medicion m INNER JOIN centrosproductivos cp 
+            // ON (cp.IDcentro = m.IDcentro 
+            // AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha 
+            // AND cp.estado = 1 
+            // AND YEAR(cp.Siembra) = $anio_periodo 
+            // AND cp.IDcentro IN ('$Centros')) 
+            // INNER JOIN centro c 
+            // ON (c.IDcentro = m.IDcentro 
+            // AND m.Estado_Alarma = 'Ausencia Microalgas' 
+            // AND m.IDcentro IN ('$Centros') 
+            // AND c.IDempresa = '$IDempresa' 
+            // AND m.Fecha_Reporte >= '$Inicio' 
+            // AND m.Fecha_Reporte <= '$Termino' 
+            // AND m.Estado = 1 
+            // AND m.Estado_Alarma IN ('$estado_alarma_aux') ) ")
+            // or die ($error ="Error description: " . mysqli_error($consulta1));
+    
         }else{
+    
+            $consulta1 = DB::connection('mysql')->table('medicion as m')
+                                                ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
+                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
+                                                        ['c.IDempresa', '=', $IDempresa ],
+                                                        ['m.Fecha_Reporte', '>=', $Inicio],
+                                                        ['m.Fecha_Reporte', '<=', $Termino],
+                                                        ['m.Estado', '=', 1]])
+                                                ->whereIn('m.IDcentro', $Centros)
+                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                ->select('m.IDcentro as cuenta')
+                                                ->get();
 
-            $consulta1 = mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
-        FROM medicion m  INNER JOIN centro c ON (c.IDcentro = m.IDcentro AND m.Estado_Alarma = 'Ausencia Microalgas' AND m.IDcentro IN ('$Centros') AND c.IDempresa = '$IDempresa' AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.Estado_Alarma IN ('$estado_alarma_aux') ) ")
-        or die ($error ="Error description: " . mysqli_error($consulta1));
 
+            // mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
+            // FROM medicion m  INNER JOIN centro c 
+            // ON (c.IDcentro = m.IDcentro 
+            // AND m.Estado_Alarma = 'Ausencia Microalgas' 
+            // AND c.IDempresa = '$IDempresa' 
+            // AND m.Fecha_Reporte >= '$Inicio' 
+            // AND m.Fecha_Reporte <= '$Termino' 
+            // AND m.Estado = 1 
+            // AND m.IDcentro IN ('$Centros') 
+            // AND m.Estado_Alarma IN ('$estado_alarma_aux') ) ")
+            // or die ($error ="Error description: " . mysqli_error($consulta1));
+    
         }
-
-
-        $row1 = mysqli_fetch_assoc($consulta1);
+    
+    
+        $row1 =$consulta1;
         if($row1){
-            $count = $row1['cuenta'] + $count1;
+            $count = $row1->cuenta + $count1;
         }
-
-
+        //return response::json($consulta1);
+    
         $time_elapsed_secs0 = microtime(true) - $start0;
-
+    
         $start1 = microtime(true);
-
+    
         //Ausencia Microalgas
-
+    
         if($anio_periodo>0){
+    
+    
+    
+            $consulta = DB::connection('mysql')->table('medicion as m')
+                                                            ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro'  )
+                                                            ->join('centrosproductivos as cp', 'cp.IDcentro', '=', 'm.IDcentro')
+                                                            ->join('region as r', 'c.IDregion', '=', 'r.IDregion')
+                                                            ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
+                                                            ->join('barrio as b', 'c.IDbarrio', '=', 'b.IDbarrio')
+                                                            ->whereYear('cp.Siembra', $anio_periodo)
+                                                            ->whereBetween('m.Fecha_Reporte', ['cp.Siembra','cp.Cosecha' ])
+                                                            ->whereIn('m.IDcentro', $Centros)
+                                                            ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                            ->whereIn('cp.IDcentro', $Centros)
+                                                            ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
+                                                                    ['c.IDempresa', '=', $IDempresa],
+                                                                    ['m.Estado', '=', 1],
+                                                                    ['cp.estado', '=', 1]])
+                                                            ->offset($offset)
+                                                            ->limit($limit)
+                                                            ->orederBy('Fecha_Order', 'DESC')
+                                                            ->select(
+                                                            DB::raw("DATE_FORMAT(gtr_cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra"), 
+                                                            DB::raw("DATE_FORMAT(gtr_cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha"), 
+                                                            DB::raw("DATE_FORMAT(gtr_m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio"),
+                                                            DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"), 
+                                                            DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
+                                                            DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
+                                                            DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+                                                            DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                            DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+                                                            DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"), 
+                                                            'm.Fecha_Reporte as Fecha_Order', 
+                                                            'm.Estado_Alarma', 
+                                                            'm.Tecnica', 
+                                                            'm.Observaciones', 
+                                                            'm.Firma', 
+                                                            '"" as Medicion_1',
+                                                            '"" as Medicion_2', 
+                                                            '"" as Medicion_3', 
+                                                            '"" as Medicion_4', 
+                                                            '"" as Medicion_5', 
+                                                            '"" as Medicion_6', 
+                                                            '"" as Medicion_7',
+                                                            '"" as Nombre_Especie', 
+                                                            '"" as Grupo',
+                                                            '"" as Fiscaliza', 
+                                                            '"" as Nociva',
+                                                            '"" as Nivel_Critico', 
+                                                            '"" as Alarma_Rojo', 
+                                                            '"" as Alarma_Amarillo', 
+                                                            'a.Nombre as Area', 
+                                                            'b.Nombre as Barrio', 
+                                                            'r.Nombre as Region', 
+                                                            'c.Nombre as Centro')
+                                                            ->get();
 
-
-
-            $consulta = mysqli_query($con,"SELECT   DATE_FORMAT(cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra, DATE_FORMAT(cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha, DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio, CAST(m.Fecha_Envio AS TIME) as Time_Envio, DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, m.Fecha_Reporte as Fecha_Order, m.Estado_Alarma, m.Tecnica, m.Observaciones, m.Firma, '' as Medicion_1, '' as Medicion_2, '' as Medicion_3, '' as Medicion_4, '' as Medicion_5, '' as Medicion_6, '' as Medicion_7,
-        '' as Nombre_Especie, '' as Grupo,
-        '' as Fiscaliza, '' as Nociva,
-        '' as Nivel_Critico, '' as Alarma_Rojo, '' as Alarma_Amarillo, a.Nombre as Area, b.Nombre as Barrio, r.Nombre as Region, c.Nombre as Centro
-        FROM medicion m  INNER JOIN centro c ON (c.IDcentro = m.IDcentro AND m.Estado_Alarma = 'Ausencia Microalgas' AND m.IDcentro IN ('$Centros') AND c.IDempresa = '$IDempresa' AND m.Estado = 1 ) INNER JOIN centrosproductivos cp ON (cp.IDcentro = m.IDcentro AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha AND cp.estado = 1 AND YEAR(cp.Siembra) = $anio_periodo AND cp.IDcentro IN ('$Centros')), region r, area a, barrio b  WHERE  c.IDregion = r.IDregion AND c.IDarea = a.IDarea AND c.IDbarrio = b.IDbarrio AND m.Estado_Alarma IN ('$estado_alarma_aux') ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
-        or die ($error ="Error description: " . mysqli_error($consulta));
-
-
-
+           
+            // mysqli_query($con,"SELECT   DATE_FORMAT(cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra, 
+            // DATE_FORMAT(cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha, 
+            // DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
+            // DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio, 
+            // CAST(m.Fecha_Envio AS TIME) as Time_Envio, 
+            // DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, 
+            // DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,
+            // CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, 
+            // DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,
+            // CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, 
+            // m.Fecha_Reporte as Fecha_Order, 
+            // m.Estado_Alarma, 
+            // m.Tecnica, 
+            // m.Observaciones, 
+            // m.Firma, 
+            // '' as Medicion_1,
+            // '' as Medicion_2, 
+            // '' as Medicion_3, 
+            // '' as Medicion_4, 
+            // '' as Medicion_5, 
+            // '' as Medicion_6, 
+            // '' as Medicion_7,
+            // '' as Nombre_Especie, 
+            // '' as Grupo,
+            // '' as Fiscaliza, 
+            // '' as Nociva,
+            // '' as Nivel_Critico, 
+            // '' as Alarma_Rojo, 
+            // '' as Alarma_Amarillo, 
+            // a.Nombre as Area, 
+            // b.Nombre as Barrio, 
+            // r.Nombre as Region, 
+            // c.Nombre as Centro
+            // FROM medicion m  INNER JOIN centro c 
+            // ON (c.IDcentro = m.IDcentro 
+            // AND m.Estado_Alarma = 'Ausencia Microalgas' 
+            // AND m.IDcentro IN ('$Centros') 
+            // AND c.IDempresa = '$IDempresa' 
+            // AND m.Estado = 1 ) 
+            // INNER JOIN centrosproductivos cp 
+            // ON (cp.IDcentro = m.IDcentro 
+            // AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha 
+            // AND cp.estado = 1 
+            // AND YEAR(cp.Siembra) = $anio_periodo 
+            // AND cp.IDcentro IN ('$Centros')),
+            // region r, area a, barrio b  
+            // WHERE  c.IDregion = r.IDregion 
+            // AND c.IDarea = a.IDarea 
+            // AND c.IDbarrio = b.IDbarrio 
+            // AND m.Estado_Alarma IN ('$estado_alarma_aux') 
+            // ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
+            // or die ($error ="Error description: " . mysqli_error($consulta));
+    
+    
+    
         }else{
+    
+            $consulta = DB::connection('mysql')->table('medicion as m')
+                                                ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
+                                                ->join('region as r', 'c.IDregion', '=', 'r.IDregion')
+                                                ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
+                                                ->join('barrio as b', 'c.IDbarrio', '=', 'b.IDbarrio')
+                                                ->whereIn('m.IDcentro', $Centros)
+                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
+                                                            ['c.IDempresa', '=', $IDempresa],
+                                                            ['m.Fecha_Reporte', '>=', $Inicio],
+                                                            ['m.Fecha_Reporte', '<=', $Termino],
+                                                            ['m.Estado', '=', 1]])
+                                                ->offset($offset)
+                                                ->limit($limit)
+                                                ->select(
+                                                DB::raw("DATE_FORMAT(gtr_m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio"),
+                                                DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+                                                DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
+                                                DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
+                                                DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+                                                DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+                                                DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"), 
+                                                'm.Fecha_Reporte as Fecha_Order', 
+                                                'm.Estado_Alarma', 
+                                                'm.Tecnica', 
+                                                'm.Observaciones', 
+                                                'm.Firma', 
+                                                '"" as Medicion_1', 
+                                                '"" as Medicion_2', 
+                                                '"" as Medicion_3', 
+                                                '"" as Medicion_4', 
+                                                '"" as Medicion_5', 
+                                                '"" as Medicion_6', 
+                                                '"" as Medicion_7',
+                                                '"" as Nombre_Especie', 
+                                                '"" as Grupo',
+                                                '"" as Fiscaliza', 
+                                                '"" as Nociva',
+                                                '"" as Nivel_Critico', 
+                                                '"" as Alarma_Rojo', 
+                                                '"" as Alarma_Amarillo', 
+                                                'a.Nombre as Area', 
+                                                'b.Nombre as Barrio', 
+                                                'r.Nombre as Region', 
+                                                'c.Nombre as Centro')
+                                                ->orderBy('Fecha_Order', 'DESC')
+                                                ->get();
 
-            $consulta = mysqli_query($con,"SELECT DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,CAST(m.Fecha_Envio AS TIME) as Time_Envio, DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, m.Fecha_Reporte as Fecha_Order, m.Estado_Alarma, m.Tecnica, m.Observaciones, m.Firma, '' as Medicion_1, '' as Medicion_2, '' as Medicion_3, '' as Medicion_4, '' as Medicion_5, '' as Medicion_6, '' as Medicion_7,
-        '' as Nombre_Especie, '' as Grupo,
-        '' as Fiscaliza, '' as Nociva,
-        '' as Nivel_Critico, '' as Alarma_Rojo, '' as Alarma_Amarillo, a.Nombre as Area, b.Nombre as Barrio, r.Nombre as Region, c.Nombre as Centro
-        FROM medicion m INNER JOIN centro c ON (c.IDcentro = m.IDcentro AND m.Estado_Alarma = 'Ausencia Microalgas' AND m.IDcentro IN ('$Centros') AND c.IDempresa = '$IDempresa' AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 ), region r, area a, barrio b  WHERE  c.IDregion = r.IDregion AND c.IDarea = a.IDarea AND c.IDbarrio = b.IDbarrio AND m.Estado_Alarma IN ('$estado_alarma_aux') ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
-        or die ($error ="Error description: " . mysqli_error($consulta));
-
+                //     mysqli_query($con,"SELECT 
+                //     DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
+                //     DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,
+                //     CAST(m.Fecha_Envio AS TIME) as Time_Envio, 
+                //     DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, 
+                //     DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,
+                //     CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, 
+                //     DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,
+                //     CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, 
+                //     m.Fecha_Reporte as Fecha_Order, 
+                //     m.Estado_Alarma, 
+                //     m.Tecnica, 
+                //     m.Observaciones, 
+                //     m.Firma, 
+                //     '' as Medicion_1, 
+                //     '' as Medicion_2, 
+                //     '' as Medicion_3, 
+                //     '' as Medicion_4, 
+                //     '' as Medicion_5, 
+                //     '' as Medicion_6, 
+                //     '' as Medicion_7,
+                //     '' as Nombre_Especie, 
+                //     '' as Grupo,
+                //     '' as Fiscaliza, 
+                //     '' as Nociva,
+                //     '' as Nivel_Critico, 
+                //     '' as Alarma_Rojo, 
+                //     '' as Alarma_Amarillo, 
+                //     a.Nombre as Area, 
+                //     b.Nombre as Barrio, 
+                //     r.Nombre as Region, 
+                //     c.Nombre as Centro
+                //    FROM medicion m INNER JOIN centro c 
+                //    ON (c.IDcentro = m.IDcentro 
+                //    AND m.Estado_Alarma = 'Ausencia Microalgas' 
+                //    AND m.IDcentro IN ('$Centros') 
+                //    AND c.IDempresa = '$IDempresa' 
+                //    AND m.Fecha_Reporte >= '$Inicio' 
+                //    AND m.Fecha_Reporte <= '$Termino' 
+                //    AND m.Estado = 1 ), 
+                //    region r, area a, barrio b  
+                //    WHERE  c.IDregion = r.IDregion 
+                //    AND c.IDarea = a.IDarea 
+                //    AND c.IDbarrio = b.IDbarrio 
+                //    AND m.Estado_Alarma IN ('$estado_alarma_aux') 
+                //    ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
+                // or die ($error ="Error description: " . mysqli_error($consulta));
+    
         }
-
-
+    
+    
         $Resultado1 = array();
-        while($row = mysqli_fetch_assoc($consulta))
+        foreach($consulta as $row)
         {
             $Resultado1[]  = $row;
-
+    
         }
-
+    
             $time_elapsed_secs1 = microtime(true) - $start1;
-
-
+    
+    
         // FROM medicion m LEFT JOIN medicion_fan mf ON (m.IDmedicion = mf.IDmedicion AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.IDcentro IN ('$Centros'))
         //	   LEFT JOIN centro c ON (c.IDcentro = m.IDcentro AND c.IDempresa = '$IDempresa')
         //	   LEFT JOIN especie e ON (e.IDespecie = mf.IDespecie)
@@ -1081,89 +1314,283 @@ class HistorialController extends Controller
         //	   LEFT JOIN area a ON (c.IDarea = a.IDarea)
         //	   LEFT JOIN barrio b ON (c.IDbarrio = b.IDbarrio)
         //	   WHERE m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.IDcentro IN ('$Centros')
-
-
-
+        
+        
+        
         //FROM medicion m INNER JOIN medicion_fan mf ON (m.IDmedicion = mf.IDmedicion AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.IDcentro IN ('$Centros') ), especie e, region r, area a, barrio b, centro c WHERE e.IDespecie = mf.IDespecie AND c.IDregion = r.IDregion AND c.IDarea = a.IDarea AND c.IDbarrio = b.IDbarrio AND c.IDcentro = m.IDcentro AND c.IDempresa = '$IDempresa'
-
+    
             $start2 = microtime(true);
-
-
+    
+    
             if($anio_periodo>0){
+    
+    
+                $consulta = DB::connection('mysql')->table('medicion as m')
+                                                    ->join('centrosproductivos as cp', 'cp.IDcentro', '=', 'm.IDcentro')
+                                                    ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion')
+                                                    ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie')
+                                                    ->join('region as r', 'c.IDregion', '=', 'r.IDregion')
+                                                    ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
+                                                    ->join('barrio as b', 'c.IDbarrio', '=', 'b.IDbarrio')
+                                                    ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
+                                                    ->whereBetween('m.Fecha_Reporte', ['cp.Siembra', 'cp.Cosecha'])
+                                                    ->WhereYear('cp.Siembra', $anio_periodo)
+                                                    ->whereIn('cp.IDcentro', $Centros)
+                                                    ->whereIn('m.IDcentro', $Centros)
+                                                    ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                    ->where([['m.Fecha_Reporte', '>=', $Inicio],['m.Fecha_Reporte', '<=', $Termino],
+                                                            ['m.Estado', '=', 1],['cp.estado', '=', 1],['c.IDempresa', '=', $IDempresa]])
+                                                    ->offset($offset)
+                                                    ->limit($limit)
+                                                    ->select(DB::raw("DATE_FORMAT(gtr_cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra"),
+                                                    DB::raw("DATE_FORMAT(gtr_cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha"), 
+                                                    DB::raw("DATE_FORMAT(gtr_m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio"),
+                                                    DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+                                                    DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
+                                                    DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
+                                                    DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+                                                    DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                    DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+                                                    DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"), 
+                                                    'm.Fecha_Reporte as Fecha_Order', 
+                                                    'm.Estado_Alarma', 
+                                                    'm.Tecnica', 
+                                                    'm.Observaciones', 
+                                                    'm.Firma', 
+                                                    'mf.Medicion_1',
+                                                    'mf.Medicion_2', 
+                                                    'mf.Medicion_3', 
+                                                    'mf.Medicion_4', 
+                                                    'mf.Medicion_5', 
+                                                    'mf.Medicion_6', 
+                                                    'mf.Medicion_7',
+                                                    'e.Nombre as Nombre_Especie', 
+                                                    'e.Grupo',
+                                                    DB::raw("CASE WHEN gtr_e.Fiscaliza = '1' THEN 'Si' ELSE '' END as Fiscaliza"),
+                                                    DB::raw("CASE WHEN gtr_e.Nociva = '1' THEN 'Nociva' ELSE '' END as Nociva"),
+                                                    'e.Nivel_Critico', 
+                                                    'e.Alarma_Rojo', 
+                                                    'e.Alarma_Amarillo', 
+                                                    'a.Nombre as Area', 
+                                                    'b.Nombre as Barrio', 
+                                                    'r.Nombre as Region', 
+                                                    'c.Nombre as Centro')
+                                                    ->orderBy('Fecha_Order', 'DESC')
+                                                    ->get();
 
-
-                $consulta = mysqli_query($con,"SELECT DATE_FORMAT(cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra,DATE_FORMAT(cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha, DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,CAST(m.Fecha_Envio AS TIME) as Time_Envio, DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, m.Fecha_Reporte as Fecha_Order, m.Estado_Alarma, m.Tecnica, m.Observaciones, m.Firma, mf.Medicion_1,mf.Medicion_2, mf.Medicion_3, mf.Medicion_4, mf.Medicion_5, mf.Medicion_6, mf.Medicion_7,
-        e.Nombre as Nombre_Especie, e.Grupo,
-        CASE
-                WHEN e.Fiscaliza = '1'
-                THEN 'Si'
-                ELSE ''
-        END as Fiscaliza,
-        CASE
-                WHEN e.Nociva = '1'
-                THEN 'Nociva'
-                ELSE ''
-        END as Nociva,
-        e.Nivel_Critico, e.Alarma_Rojo, e.Alarma_Amarillo, a.Nombre as Area, b.Nombre as Barrio, r.Nombre as Region, c.Nombre as Centro
-
-            FROM medicion m INNER JOIN centrosproductivos cp ON (cp.IDcentro = m.IDcentro AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha AND cp.estado = 1 AND YEAR(cp.Siembra) = $anio_periodo AND cp.IDcentro IN ('$Centros')) INNER JOIN medicion_fan mf ON (m.IDmedicion = mf.IDmedicion AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.IDcentro IN ('$Centros') ), especie e, region r, area a, barrio b, centro c WHERE e.IDespecie = mf.IDespecie AND c.IDregion = r.IDregion AND c.IDarea = a.IDarea AND c.IDbarrio = b.IDbarrio AND c.IDcentro = m.IDcentro AND c.IDempresa = '$IDempresa' AND m.Estado_Alarma IN ('$estado_alarma_aux')
-
-        ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
-        or die ($error ="Error description: " . mysqli_error($consulta));
-
-
+                    //         mysqli_query($con,"SELECT 
+                    //         DATE_FORMAT(cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra,
+                    //         DATE_FORMAT(cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha, 
+                    //         DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
+                    //         DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,
+                    //         CAST(m.Fecha_Envio AS TIME) as Time_Envio, 
+                    //         DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, 
+                    //         DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,
+                    //         CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, 
+                    //         DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,
+                    //         CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, 
+                    //         m.Fecha_Reporte as Fecha_Order, 
+                    //         m.Estado_Alarma, 
+                    //         m.Tecnica, 
+                    //         m.Observaciones, 
+                    //         m.Firma, 
+                    //         mf.Medicion_1,
+                    //         mf.Medicion_2, 
+                    //         mf.Medicion_3, 
+                    //         mf.Medicion_4, 
+                    //         mf.Medicion_5, 
+                    //         mf.Medicion_6, 
+                    //         mf.Medicion_7,
+                    //         e.Nombre as Nombre_Especie, 
+                    //         e.Grupo,
+                    //         CASE
+                    //                 WHEN e.Fiscaliza = '1'
+                    //                 THEN 'Si'
+                    //                 ELSE ''
+                    //         END as Fiscaliza,
+                    //         CASE
+                    //                 WHEN e.Nociva = '1'
+                    //                 THEN 'Nociva'
+                    //                 ELSE ''
+                    //         END as Nociva,
+                    //         e.Nivel_Critico, 
+                    //         e.Alarma_Rojo, 
+                    //         e.Alarma_Amarillo, 
+                    //         a.Nombre as Area, 
+                    //         b.Nombre as Barrio, 
+                    //         r.Nombre as Region, 
+                    //         c.Nombre as Centro
+                
+                    //     FROM medicion m INNER JOIN centrosproductivos cp 
+                    //     ON (cp.IDcentro = m.IDcentro 
+                    //     AND m.Fecha_Reporte BETWEEN cp.Siembra AND cp.Cosecha 
+                    //     AND cp.estado = 1 
+                    //     AND YEAR(cp.Siembra) = $anio_periodo 
+                    //     AND cp.IDcentro IN ('$Centros')) 
+                    //     INNER JOIN medicion_fan mf ON 
+                    //     (m.IDmedicion = mf.IDmedicion 
+                    //     AND m.Fecha_Reporte >= '$Inicio' 
+                    //     AND m.Fecha_Reporte <= '$Termino' 
+                    //     AND m.Estado = 1 
+                    //     AND m.IDcentro IN ('$Centros') ), 
+                    //     especie e, 
+                    //     region r, 
+                    //     area a, 
+                    //     barrio b, 
+                    //     centro c 
+                    //     WHERE e.IDespecie = mf.IDespecie 
+                    //     AND c.IDregion = r.IDregion 
+                    //     AND c.IDarea = a.IDarea 
+                    //     AND c.IDbarrio = b.IDbarrio 
+                    //     AND c.IDcentro = m.IDcentro 
+                    //     AND c.IDempresa = '$IDempresa' 
+                    //     AND m.Estado_Alarma IN ('$estado_alarma_aux')    
+                    //     ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
+                    // or die ($error ="Error description: " . mysqli_error($consulta));
+    
+    
             }else{
+    
+    
+    
+                $consulta = DB::connection('mysql')->table('medicion as m')
+                                                    ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion' )
+                                                    ->join('especie e', 'e.IDespecie', '=', 'mf.IDespecie'  )
+                                                    ->join('region r', 'c.IDregion', '=', 'r.IDregion' )
+                                                    ->join('area a', 'c.IDarea', '=', 'a.IDarea')
+                                                    ->join('barrio b', 'c.IDbarrio', '=', 'b.IDbarrio' )
+                                                    ->join('centro c', 'c.IDcentro', '=', 'm.IDcentro' )
+                                                    ->whereIn('m.IDcentro', $Centros)
+                                                    ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                    ->where([['m.Fecha_Reporte', '>=', '$Inicio'],['m.Fecha_Reporte', '<=', '$Termino'],
+                                                                ['m.Estado', '=', 1], ['c.IDempresa', '=', $IDempresa]])
+                                                    ->offset($offset)
+                                                    ->limit($limit)
+                                                    ->select(
+                                                        DB::raw("DATE_FORMAT(gtr_m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio"),
+                                                        DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+                                                        DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
+                                                        DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
+                                                        DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+                                                        DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                        DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+                                                        DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"),
+                                                        'm.Fecha_Reporte as Fecha_Order', 
+                                                        'm.Estado_Alarma', 
+                                                        'm.Tecnica', 
+                                                        'm.Observaciones', 
+                                                        'm.Firma', 
+                                                        'mf.Medicion_1',
+                                                        'mf.Medicion_2', 
+                                                        'mf.Medicion_3', 
+                                                        'mf.Medicion_4', 
+                                                        'mf.Medicion_5', 
+                                                        'mf.Medicion_6', 
+                                                        'mf.Medicion_7',
+                                                        'e.Nombre as Nombre_Especie', 
+                                                        'e.Grupo',
+                                                        DB::raw("CASE WHEN gtr_e.Fiscaliza = '1' THEN 'Si' ELSE '' END as Fiscaliza"),
+                                                        DB::raw("CASE WHEN gtr_e.Nociva = '1' THEN 'Nociva' ELSE '' END as Nociva"),
+                                                        'e.Nivel_Critico', 
+                                                        'e.Alarma_Rojo', 
+                                                        'e.Alarma_Amarillo', 
+                                                        'a.Nombre as Area', 
+                                                        'b.Nombre as Barrio', 
+                                                        'r.Nombre as Region', 
+                                                        'c.Nombre as Centro'
+                                                    )
+                                                    ->orderBy('Fecha_Order', 'DESC')
+                                                    ->get();
 
-
-
-                $consulta = mysqli_query($con,"SELECT DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,CAST(m.Fecha_Envio AS TIME) as Time_Envio, DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,CAST(m.Fecha_Analisis AS TIME) as Time_Analisis, m.Fecha_Reporte as Fecha_Order, m.Estado_Alarma, m.Tecnica, m.Observaciones, m.Firma, mf.Medicion_1,mf.Medicion_2, mf.Medicion_3, mf.Medicion_4, mf.Medicion_5, mf.Medicion_6, mf.Medicion_7,
-        e.Nombre as Nombre_Especie, e.Grupo,
-        CASE
-                WHEN e.Fiscaliza = '1'
-                THEN 'Si'
-                ELSE ''
-        END as Fiscaliza,
-        CASE
-                WHEN e.Nociva = '1'
-                THEN 'Nociva'
-                ELSE ''
-        END as Nociva,
-        e.Nivel_Critico, e.Alarma_Rojo, e.Alarma_Amarillo, a.Nombre as Area, b.Nombre as Barrio, r.Nombre as Region, c.Nombre as Centro
-
-            FROM medicion m  INNER JOIN medicion_fan mf ON (m.IDmedicion = mf.IDmedicion AND m.Fecha_Reporte >= '$Inicio' AND m.Fecha_Reporte <= '$Termino' AND m.Estado = 1 AND m.IDcentro IN ('$Centros') ), especie e, region r, area a, barrio b, centro c WHERE e.IDespecie = mf.IDespecie AND c.IDregion = r.IDregion AND c.IDarea = a.IDarea AND c.IDbarrio = b.IDbarrio AND c.IDcentro = m.IDcentro AND c.IDempresa = '$IDempresa' AND m.Estado_Alarma IN ('$estado_alarma_aux')
-
-        ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
-        or die ($error ="Error description: " . mysqli_error($consulta));
-
-
+                            // mysqli_query($con,"SELECT DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
+                            // DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,
+                            // CAST(m.Fecha_Envio AS TIME) as Time_Envio, 
+                            // DATE_FORMAT(m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte, 
+                            // DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte,
+                            // CAST(m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis, 
+                            // DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis,
+                            // CAST(m.Fecha_Analisis AS TIME) as Time_Analisis,
+                            // m.Fecha_Reporte as Fecha_Order, 
+                            // m.Estado_Alarma, 
+                            // m.Tecnica, 
+                            // m.Observaciones, 
+                            // m.Firma, 
+                            // mf.Medicion_1,
+                            // mf.Medicion_2, 
+                            // mf.Medicion_3, 
+                            // mf.Medicion_4, 
+                            // mf.Medicion_5, 
+                            // mf.Medicion_6, 
+                            // mf.Medicion_7,
+                            // e.Nombre as Nombre_Especie, e.Grupo,
+                            // CASE
+                            //         WHEN e.Fiscaliza = '1'
+                            //         THEN 'Si'
+                            //         ELSE ''
+                            // END as Fiscaliza,
+                            // CASE
+                            //         WHEN e.Nociva = '1'
+                            //         THEN 'Nociva'
+                            //         ELSE ''
+                            // END as Nociva,
+                            // e.Nivel_Critico, 
+                            // e.Alarma_Rojo, 
+                            // e.Alarma_Amarillo, 
+                            // a.Nombre as Area, 
+                            // b.Nombre as Barrio, 
+                            // r.Nombre as Region, 
+                            // c.Nombre as Centro
+                
+                            // FROM medicion m  INNER JOIN medicion_fan mf ON 
+                            // (m.IDmedicion = mf.IDmedicion 
+                            // AND m.Fecha_Reporte >= '$Inicio' 
+                            // AND m.Fecha_Reporte <= '$Termino' 
+                            // AND m.Estado = 1 
+                            // AND m.IDcentro IN ('$Centros') ), 
+                            // especie e, 
+                            // region r, 
+                            // area a, 
+                            // barrio b, 
+                            // centro c 
+                            // WHERE e.IDespecie = mf.IDespecie 
+                            // AND c.IDregion = r.IDregion 
+                            // AND c.IDarea = a.IDarea 
+                            // AND c.IDbarrio = b.IDbarrio 
+                            // AND c.IDcentro = m.IDcentro 
+                            // AND c.IDempresa = '$IDempresa' 
+                            // AND m.Estado_Alarma IN ('$estado_alarma_aux')
+                            // ORDER BY Fecha_Order DESC LIMIT $offset,$limit ")
+                            // or die ($error ="Error description: " . mysqli_error($consulta));
+    
+    
             }
-
-
-
+    
+    
+    
         $Resultado2 = array();
-        while($row = mysqli_fetch_assoc($consulta))
+        foreach($consulta as $row)
         {
             $Resultado2[]  = $row;
-
+    
         }
         $time_elapsed_secs2 = microtime(true) - $start2;
-
-
+    
+    
         $start = microtime(true);
         $Resultado = array_merge($Resultado2,$Resultado1);
-
-
+    
+    
         $fecha = array();
         foreach ($Resultado as $key => $row) {
-            $fecha[$key] = strtotime($row['Fecha_Order']);
+            $fecha[$key] = strtotime($row->Fecha_Order);
         }
-
+    
         array_multisort($fecha, SORT_DESC, $Resultado);
-
+    
         $time_elapsed_secs = microtime(true) - $start;
-
+    
         $time_elapsed_secs3 = microtime(true) - $start3;
-
+    
         echo json_encode(array(
             'total' => $count, 			// select count(*) from table ...
             'rows' => $Resultado, 	  // select * from table limit ...
@@ -1176,7 +1603,7 @@ class HistorialController extends Controller
             'TODO' => $time_elapsed_secs3,
             '$Centros' => $Centros
         ));
-
+    
         //echo json_encode($Resultado);
 
 
@@ -1202,12 +1629,18 @@ class HistorialController extends Controller
         
         
         //IDempresa
-        $consulta0 = mysqli_query($con,"SELECT a.IDempresa, d.first_name, d.last_name FROM as_users a INNER JOIN as_user_details d ON (a.user_id = d.user_id AND a.user_id = '$user_id') ")
-        or die ($error ="Error description: " . mysqli_error($consulta0));
+        $consulta0 = User::join('as_user_details', 'user.user_id', '=', 'as_user_details.user_id')
+                                ->select('user.IDempresa', 'as_user_details.first_name', 'as_user_details.last_name')
+                                ->first();
+
+                                //return Response::json($consulta0);
+        // mysqli_query($con,"SELECT a.IDempresa, d.first_name, d.last_name 
+        // FROM as_users a INNER JOIN as_user_details d ON (a.user_id = d.user_id AND a.user_id = '$user_id') ")
+        // or die ($error ="Error description: " . mysqli_error($consulta0));
         $row0 = mysqli_fetch_assoc($consulta0);
-        if($row0){
-            $IDempresa = $row0['IDempresa'];
-            $Firma = $row0['first_name'].' '.$row0['last_name'];
+        if($consulta0){
+            $IDempresa = $consulta0->IDempresa;
+            $Firma = $consulta0->first_name.' '.$consulta0->last_name;
         }
             
         $consulta = mysqli_query($con,"INSERT INTO configuracion(IDempresa, Fecha, Modificacion, Observaciones, Firma) VALUES ('$IDempresa', '$fecha', '$Modificacion', '$Observaciones', '$Firma')" )or die ( $error ="Error description: " . mysqli_error($consulta) );
@@ -1227,7 +1660,7 @@ class HistorialController extends Controller
         $this->cambiar_bd($miuser->IDempresa);
 
         $error = 0;
-        $user_id = $_POST['user_id'];
+        $user_id = $miuser->id;
 
         //IDempresa usuario
         // $consulta1 = mysqli_query($con,"SELECT IDempresa,user_role FROM as_users WHERE user_id = '$user_id'")
@@ -1240,8 +1673,8 @@ class HistorialController extends Controller
         $where_id_centros = " ";
         if ($UserRole == 8) {
             $consulta = UsuarioPermiso::where([['user_id', $miuser->id],['IDempresa', $IDempresa]])
-                                        ->select(DB::raw('DISTINCT IDcentro'))
-                                        ->get();
+                                        ->distinct()
+                                        ->get(['IDcentro']);
                                         
             // mysqli_query($con,"SELECT DISTINCT IDcentro FROM usuario_permiso WHERE  user_id = '$user_id' and IDempresa = '$IDempresa' ")
             // or die ($error ="Error description1: " . mysqli_error($con));
@@ -1252,17 +1685,15 @@ class HistorialController extends Controller
                 $id_centros_user[]  = $row->IDcentro;
             }
                 /* ===========???????============ */
-            $where_id_centros = " AND c.IDcentro IN (".implode(',', $id_centros_user).") ";
+            $where_id_centros = "centro.IDcentro IN ( $id_centros_user) ";
 
         }
-
+        //return response::json($where_id_centros);
 
         //Barrios
         //AND c.Estado = 1
-        $consulta = Barrio::join('centro', function($query) use ($IDempresa){
-                                        $query->on('barrio.IDbarrio', '=', 'centro.IDbarrio')
-                                                ->where('IDempresa', '=', $IDempresa);                
-                                })
+        $consulta = Barrio::join('centro', 'barrio.IDbarrio', '=', 'centro.IDbarrio')
+                                ->where('IDempresa', '=', $IDempresa)
                                 ->where('barrio.Estado', 1)
                                 ->select('barrio.Nombre',
                                             'barrio.IDbarrio'            
@@ -1299,15 +1730,18 @@ class HistorialController extends Controller
 
         //Regiones
         //AND c.Estado = 1
-        $consulta = Region::join('centro', function($query) use ($IDempresa){
-                                $query->on('region.IDregion', '=', 'centro.IDregion')
-                                        ->where('IDempresa', '=', $IDempresa);                        
-                                })
-                                ->where('region.Estado', 1)
-                                ->select(   DB::raw('DISTINCT gtr_region.Nombre'),
-                                            DB::raw('DISTINCT gtr_region.IDregion'))
-                                ->orderBy('region.IDregion')
-                                ->get();
+        
+        $consulta = Region::join('centro', 'region.IDregion', '=', 'centro.IDregion')
+                            ->where('IDempresa', '=', $IDempresa)
+                            ->where('region.Estado', 1)
+                            ->orderBy('region.IDregion')
+                            ->distinct()                                
+                            ->get(['region.Nombre', 'region.IDregion']);
+        // DB::select("SELECT DISTINCT r.Nombre, r.IDregion 
+        //  FROM gtr_region r INNER JOIN gtr_centro c ON (r.IDregion = c.IDregion AND IDempresa = '$IDempresa' ) 
+        //  WHERE r.Estado = 1  ORDER BY r.IDregion");
+        
+        //return response::json($consulta);
         // mysqli_query($con,"SELECT DISTINCT r.Nombre, r.IDregion 
         // FROM region r INNER JOIN centro c ON (r.IDregion = c.IDregion AND IDempresa = '$IDempresa' ) 
         // WHERE r.Estado = 1  ORDER BY r.IDregion")
@@ -1321,15 +1755,17 @@ class HistorialController extends Controller
 
         //Centros por Region
         //AND c.Estado = 1
-        $consulta = Centro::join('region', function($query){
-                                    $query->on('centro.IDregion', '=', 'region.IDregion');                            
-                                    })
+        $consulta = Centro::join('region', 'centro.IDregion', '=', 'region.IDregion')
                             ->where([['centro.IDempresa', $IDempresa],['region.Estado', 1]])
-                            ->where(DB::raw($where_id_centros))
+                            //->whereIn('centro.IDcentro',$where_id_centros)
                             ->select('centro.Nombre as Centro', 'centro.IDcentro', 'centro.Estado', 'region.Nombre as Region')
                             ->orderBy('centro.Nombre')
                             ->get();
-
+        // DB::select("SELECT c.Nombre as Centro, c.IDcentro, c.Estado, r.Nombre as Region 
+        //  FROM gtr_centro c INNER JOIN gtr_region r ON (c.IDregion = r.IDregion) 
+        //  WHERE c.IDempresa = '$IDempresa' AND r.Estado = 1 ".$where_id_centros."  ORDER BY c.Nombre");
+        
+        //return response::json($consulta);
         // mysqli_query($con,"SELECT c.Nombre as Centro, c.IDcentro, c.Estado, r.Nombre as Region 
         // FROM centro c INNER JOIN region r ON (c.IDregion = r.IDregion) 
         // WHERE c.IDempresa = '$IDempresa' AND r.Estado = 1 ".$where_id_centros."  ORDER BY c.Nombre")
@@ -1343,14 +1779,17 @@ class HistorialController extends Controller
 
         //Centros por Area
         //AND c.Estado = 1
-        $consulta = Centro::join('area', function($query){
-                                $query->on('centro.IDarea', '=', 'area.IDarea');                  
-                                })
+        $consulta = Centro::join('area', 'centro.IDarea', '=', 'area.IDarea')
                                 ->where('area.IDempresa', $IDempresa)
-                                ->where(DB::raw($where_id_centros))
+                                //->whereIn('centro.IDcentro', $where_id_centros)
                                 ->select('centro.Nombre as Centro', 'centro.IDcentro', 'centro.Estado', 'area.Nombre as Area')
                                 ->orderBy('centro.Nombre')
                                 ->get();
+
+        //     DB::select("SELECT c.Nombre as Centro, c.IDcentro,c.Estado, a.Nombre as Area 
+        //   FROM gtr_centro c INNER JOIN gtr_area a ON(c.IDarea = a.IDarea) 
+        //  WHERE a.IDempresa = '$IDempresa'  ".$where_id_centros."  ORDER BY c.Nombre");
+        
         
         // mysqli_query($con,"SELECT c.Nombre as Centro, c.IDcentro,c.Estado, a.Nombre as Area 
         // --  FROM centro c INNER JOIN area a ON(c.IDarea = a.IDarea) 
@@ -1365,15 +1804,17 @@ class HistorialController extends Controller
 
         //Centros por Barrio
         //AND c.Estado = 1
-        $consulta = Centro::join('barrio', function($query) use ($IDempresa){
-                                    $query->on('centro.IDbarrio', '=', 'barrio.IDbarrio')
-                                            ->where('centro.IDempresa', '=', $IDempresa);
-                                })
+        $consulta = Centro::join('barrio', 'centro.IDbarrio', '=', 'barrio.IDbarrio')
+                                ->where('centro.IDempresa', '=', $IDempresa)
                                 ->where('barrio.Estado', 1)
-                                ->where(DB::raw($where_id_centros))
+                                //->where('centro.IDcentro', $where_id_centros)
                                 ->select('centro.Nombre as Centro', 'centro.IDcentro', 'centro.Estado', 'barrio.Nombre as Barrio')
                                 ->orderBy('centro.Nombre')
                                 ->get();
+        // DB::select("SELECT c.Nombre as Centro, c.IDcentro, c.Estado, b.Nombre as Barrio 
+        //  FROM gtr_centro c INNER JOIN gtr_barrio b ON (c.IDbarrio = b.IDbarrio AND c.IDempresa = '$IDempresa' ) 
+        //  WHERE  b.Estado = 1  ".$where_id_centros." ORDER BY c.Nombre");
+        
 
         // // mysqli_query($con,"SELECT c.Nombre as Centro, c.IDcentro, c.Estado, b.Nombre as Barrio 
         // -- FROM centro c INNER JOIN barrio b ON (c.IDbarrio = b.IDbarrio AND c.IDempresa = '$IDempresa' ) 
@@ -1403,49 +1844,55 @@ class HistorialController extends Controller
 
             //$row["IDempresa"];
 
-            $sql2 = CentrosProductivos::join('centro', function($query){
-                                            $query->on('centro.IDcentro', '=', 'centrosproductivos.IDcentro' );                               
-                                            })
-                                        ->where([['centrosproductivos.estado', 1],['centrosproductivos.estado', $IDempresa]])
-                                        ->selectRaw('YEAR(centrosproductivos.Siembra) as anio')
-                                        ->select('centrosproductivos.IDcentrosproductivos', 'centrosproductivos.IDcentro as id_centro')
-                                        ->get();
+            $consulta = CentrosProductivos::join('centro', 'centro.IDcentro', '=', 'centrosproductivos.IDcentro')
+                                            ->where([['centrosproductivos.estado', 1],['centrosproductivos.IDempresa', $IDempresa]])
+                                            //->selectRaw('YEAR(centrosproductivos.Siembra) as anio')
+                                            ->select('centrosproductivos.IDcentrosproductivos', 
+                                                        'centrosproductivos.IDcentro as id_centro',
+                                                        DB::raw('YEAR(gtr_centrosproductivos.Siembra) as anio'))
+                                            ->get();
 
-            "SELECT centrosproductivos.id, YEAR ( centrosproductivos.Siembra) as anio, centrosproductivos.IDcentro as id_centro  
-            FROM centrosproductivos INNER JOIN centro 
-            ON centro.IDcentro=centrosproductivos.IDcentro 
-            Where centrosproductivos.estado=1 
-            and centrosproductivos.IDempresa =".$id_empresa." 
-            GROUP BY (anio)";
+        //     DB::select("SELECT gtr_centrosproductivos.IDcentrosproductivos, YEAR ( gtr_centrosproductivos.Siembra) as anio, gtr_centrosproductivos.IDcentro as id_centro  
+        //     FROM gtr_centrosproductivos INNER JOIN gtr_centro 
+        //    ON gtr_centro.IDcentro = gtr_centrosproductivos.IDcentro 
+        //     Where gtr_centrosproductivos.estado=1 
+        //    and gtr_centrosproductivos.IDempresa =$IDempresa");
+        
+            // "SELECT centrosproductivos.id, YEAR ( centrosproductivos.Siembra) as anio, centrosproductivos.IDcentro as id_centro  
+            // FROM centrosproductivos INNER JOIN centro 
+            // ON centro.IDcentro=centrosproductivos.IDcentro 
+            // Where centrosproductivos.estado=1 
+            // and centrosproductivos.IDempresa =".$id_empresa." 
+            // GROUP BY (anio)";
 
-
+            
             
 
             
             //$sql2 ="INSERT INTO MyGuests (firstname, lastname, email) VALUES ('John', 'Doe', 'john@example.com')";
 
-            $consulta = mysqli_query($con, $sql2);
+            // $consulta = mysqli_query($con, $sql2);
             
-            $Resultado = array();
+            $data = [];
 
-            if (mysqli_num_rows($consulta) > 0) {
-                while($row = mysqli_fetch_assoc($consulta))
+            if ($consulta) {
+                foreach($consulta as $row)
                 {	
-                    $Resultado[]  = $row;
+                    $data[]  = $row;
                         
                 }
             }
 
             
             
-            echo json_encode(array(
-                'total' => count($Resultado), 			// select count(*) from table ...	
-                'rows' => $Resultado 	  // select * from table limit ...
-            ));
+            $Resultado = array(
+                'total' => count($data), 			// select count(*) from table ...	
+                'rows' => $data 	  // select * from table limit ...
+            );
 
+            return Response::json($Resultado);
 
-
-        mysqli_close($con);
+        // mysqli_close($con);
     }
 
     /*------------------------------------------------------------------------------------------------------------------------------*/

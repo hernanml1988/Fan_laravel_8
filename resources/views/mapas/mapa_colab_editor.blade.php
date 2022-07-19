@@ -101,7 +101,7 @@
 
       
 
-       	<div id="page-wrapper">
+       	<div id="page-wrapper" style="margin-left:-24px; margin-right: 1px">
 
 
 
@@ -852,53 +852,52 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="{{asset('js/bootstrap.min.js')}}"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/metisMenu.min.js"></script>
-    <script src="js/bootstrap-table.js"></script>
+    <script src="{{asset('js/metisMenu.min.js')}}"></script>
+    <script src="{{asset('js/bootstrap-table.js')}}"></script>
 
 
 	<!-- DatetimePicker -->
-   <script src="js/moment-with-locales.js"></script>
-   <script src="js/bootstrap-datetimepicker.js"></script>
+   <script src="{{asset('js/moment-with-locales.js')}}"></script>
+   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="js/sb-admin-2.js"></script>
+    <script src="{{asset('js/sb-admin-2.js')}}"></script>
 
 
     <!-- Multiple Select -->
-  	<script type="text/javascript" src="js/bootstrap-slider.js"></script>
+  	<script type="text/javascript" src="{{asset('js/bootstrap-slider.js')}}"></script>
 
     <!-- Autocomplete -->
-    <script src="js/jquery-ui.js"></script>
+    <script src="{{asset('js/jquery-ui.js')}}"></script>
 
-    <!-- Asigna menu para roles -->
-    <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
-
+    
 
 	 <!-- Alertas -->
-    <script src="js/sweetalert.min.js"></script>
+    <script src="{{asset('js/sweetalert.min.js')}}"></script>
 
     <!-- Export table -->
-    <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>
+    <script src="{{asset('js/tableExport.js')}}"></script>
+    <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
 
     <!-- Multiple Select -->
-  	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+  	<script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
 
     <!-- Switch button -->
   	<!--<script type="text/javascript" src="js/lc_switch.js"></script>-->
 
-    <script src="js/jquery.twbs-toggle-buttons.min.js"></script>
+    <script src="{{asset('js/jquery.twbs-toggle-buttons.min.js')}}"></script>
 
 
     <script>
 
-	var user_id = <?php echo $miuser->id; ?>;
-	var id_empresa = <?php echo $miuser->IDempresa; ?>;
-
-	roles(<?php echo '"'.$miuser->miuserrole.'"';?>);
+		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
+		var id_empresa = {!!$currentUser->IDempresa!!}//<?php echo $currentUser->IDempresa; ?>;
+		var user_role_fan = {!!$currentUser->user_role_fan!!}
+		var role = <?php echo '"'.$currentUser->role.'"';?>;
+	
 
 
 	$(".btn-group-toggle").twbsToggleButtons();

@@ -186,7 +186,7 @@
                                        Ver en Tabla
                                     </button>
                                     <button id="btndescargar2" type="button" class="btn label-info " style="margin-left:10px;">
-                                        <span class="fa fa-file-excel-o hidden-xs" style="padding: 2px;"> Exportar Excel   <img src='loader.gif' id='btndescargar2_spin' class="hidden" style="width: 12px;" /></span>
+                                        <span class="fa fa-file-excel-o hidden-xs" style="padding: 2px;"> Exportar Excel   <img src='{{ asset('img/loader.gif')}}' id='btndescargar2_spin' class="hidden" style="width: 12px;" /></span>
                                     </button>
                                     </div>
                                 </div>
@@ -249,7 +249,7 @@
                         <div class="modal-dialog " role="document" >
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                                 <div class="modal-body center-block text-center">
-                                     <img src='loader.gif' /><h5> Loading... Please Wait </h5>
+                                     <img src="{{ asset('img/loader.gif')}}" /><h5> Loading... Please Wait </h5>
                                 </div>
                              </div>
                         </div>
@@ -264,47 +264,47 @@
     </div>
 
 
+    <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
+
     <!-- Bootstrap Core JavaScript -->
-    {{-- <script src="js/bootstrap.min.js"></script>
+    <script src="{{asset('js/bootstrap.min.js')}}"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/metisMenu.min.js"></script>
-    <script src="js/bootstrap-table.js"></script>
+    <script src="{{asset('js/metisMenu.min.js')}}"></script>
+    <script src="{{asset('js/bootstrap-table.js')}}"></script>
 
     <!-- DatetimePicker -->
-   <script src="js/moment-with-locales.js"></script>
-   <script src="js/bootstrap-datetimepicker.js"></script>
+   <script src="{{asset('js/moment-with-locales.js')}}"></script>
+   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
 
 
     <!-- Custom Theme JavaScript -->
-    <script src="js/sb-admin-2.js"></script>
+    <script src="{{asset('js/sb-admin-2.js')}}"></script>
 
      <!-- Alertas -->
-    <script src="js/sweetalert.min.js"></script>
+    <script src="{{asset('js/sweetalert.min.js')}}"></script>
 
     <!-- Asigna menu para roles -->
-    <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
 
 
     <!-- Export table -->
-    <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>
+    <script src="{{asset('js/tableExport.js')}}"></script>
+    <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
 
     <!-- Multiple Select -->
-    <script src="js/jquery.multi-select.js" type="text/javascript"></script> --}}
+    <script src="{{asset('js/jquery.multi-select.js')}}" type="text/javascript"></script>
 
 
 
 
 
     <script>
-    var user_id = <?//php echo $currentUser->id; ?>;
-    var id_empresa = <?//php echo $currentUser->IDempresa; ?>;
+    
     var user_id =  {!!$currentUser->id!!}//php echo $currentUser->id; ?>;
 	var id_empresa = {!!$currentUser->IDempresa!!}//php echo $currentUser->IDempresa; ?>;
 	var user_role_fan = {!!$currentUser->user_role_fan!!}
     var role = <?php echo '"'.$currentUser->role.'"';?>;
-    roles(<?/*php echo '"'.$currentUser->role.'"';?>*/);
+    // roles(<?/*php echo '"'.$currentUser->role.'"';?>*/);
 
     var selectedfilter = [];
     var selectedfiltertext = "";
@@ -429,7 +429,7 @@
                 url: "{{Route('historial.load.options.prof')}}",//load_options_prof.php",
                 type: 'post',
                 dataType: 'json',
-                data: {
+                data: {_token: "{{ csrf_token() }}",
                     user_id:        user_id
                 },
                 success: function(dato)
@@ -465,7 +465,7 @@
                 url: "{{Route('historial.load.distribucion.descargas')}}",//load_distribucion_descargas.php",
                 type: 'post',
                 dataType: 'json',
-                data: {
+                data: {_token: "{{ csrf_token() }}",
                     user_id:    user_id
                 },
                 success: function(dato)
@@ -481,12 +481,13 @@
                                 type: 'get',
                                 dataType: 'json',
                                 data: {
+                                    _token: "{{ csrf_token() }}",
                                     id_empresa: id_empresa
                                 },
                                 success: function(dato)
                                 {
                                     d = dato.rows;
-                                    console.log("lalalal",d.length);
+                                    //console.log("lalalal",d.length);
                                     select_option = '<option value="0"> No filtrar</option>';
                                     for(var i=0; i<d.length;i++){
 
@@ -635,23 +636,7 @@
 
         $('#btndescargar').prop('disabled', true);
         var sel = '"'+selectedfilter+'"';
-        // $('#progress').html('Procesando...  0%');
-        // var refreshIntervalId = setInterval(function(){
-        //               $.ajax({
-        //                 type: "get",
-        //                 url: 'archivos/Registros_Alarma/progress.php',
-        //                 data: {_token: '{{ csrf_token() }}'
-        //                       },
-        //                 success: function( data ) {
-        //                   console.log(data);
-        //                   if (data == 100) {
-        //                     $('#progress').html('Exportar ');
-        //                   }else{
-        //                     $('#progress').html('Procesando... '+data+'%');
-        //                   }
-        //                 }
-        //               });
-        //           }, 1000);
+       
 
         if (selectedfilter.length == 0) {
           alert('Debe seleccionar una instalación');
@@ -664,6 +649,7 @@
                 type: 'post',
                 dataType: 'json',
                 data: {
+                    _token: "{{ csrf_token() }}",
                     Centros: '"'+selectedfilter+'"',
                     Inicio:      document.getElementById("fechadesde").value,
                     Termino:    document.getElementById("fechahasta").value,

@@ -40,6 +40,18 @@ use PDO;
 
 class RegistroController extends Controller
 {
+    public function __construct()
+	{
+		//\DB::setDefaultConnection('mysql');
+
+		//$this->middleware('guest');
+		$this->middleware('auth');
+		//$this->middleware('acceso.sistema');
+		//$this->middleware('politica.empresa');
+
+
+		//$this->middleware('auth.basic');
+	}
    
   
     public function loadRegistro(Request $request)

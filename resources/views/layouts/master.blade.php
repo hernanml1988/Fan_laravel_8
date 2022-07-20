@@ -28,9 +28,10 @@
     	<link href="{{ asset('css/bootstrap-editable.css') }}" rel="stylesheet">
     
     <link rel="stylesheet" href="{{ asset('css/lc_switch.css') }}">
+    <link href="{{asset('css/multiselect.css')}}" media="screen" rel="stylesheet" type="text/css">
     
     
-    
+    <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
     
     
     
@@ -48,7 +49,7 @@
 
  </style>     
 
-    <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
+    
 
 
     
@@ -127,13 +128,13 @@
                             </li>
                             
                             <li class="">
-                            	<a href="" style="background-color:inherit !important"><i class="fa-regular fa-location-dot"></i> Mapas<span class="fa arrow"></span></a>
+                            	<a href="" style="background-color:inherit !important"><i class="fa-solid fa-location-dot"></i> Historial<span class="fa arrow"></span></a>
                             	<ul class="nav nav-second-level">
                                     <li @if ($menu == "mapa") class="activo" @endif>
-                                        <a href="{{ Route('mapa.index') }}"><i class="fas fa-map-marker-alt"></i> Interno</a>
+                                        <a href="{{ Route('mapa.index') }}"><i class="fa-solid fa-font-awesome"></i> Interno</a>
                                     </li>
                                     <li @if ($menu == "colaborativo") class="activo" @endif>
-                                        <a href="{{ Route('mapa.colab') }}"><i class="fas fa-globe-americas"></i>  Colaborativo</a>
+                                        <a href="{{ Route('mapa.colab') }}"><i class="fa-solid fa-share-nodes"></i>  Colaborativo</a>
                                     </li>
                                 </ul>
                             </li>
@@ -183,6 +184,7 @@
 
 
     </div>
+   
             
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     
@@ -233,12 +235,13 @@
     <script src="{{ asset('js/bootstrap-progressbar.min.js')}}"></script>
     
     <script type="text/javascript" src="{{ asset('js/bootstrap-multiselect.js')}}"></script>
+
     <!--<script src="{{ asset('chartjs/jquery.sparkline.min.js')}}"></script>
      <script src="{{ asset('js/exif.js')}}"></script>-->
     <script src="{{ asset('js/gauge.min.js')}}"></script>
     
     
-   
+    <script src="{{asset('js/jquery-ui.js')}}"></script>
     
     
     
@@ -253,7 +256,7 @@
     
     
     
-
+     <script src="https://kit.fontawesome.com/4d137a4b1a.js" crossorigin="anonymous"></script>
     
 	<!-- Canvas -->
     <script src="{{ asset('js/jspdf.min.js')}}"></script>
@@ -261,7 +264,7 @@
     <!-- Switch button -->
   	<script type="text/javascript" src="{{ asset('js/lc_switch.js')}}"></script>
      
-     
+      <script src="{{asset('js/jquery.multi-select.js')}}" type="text/javascript"></script>
      
      
 	<script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.js')}}"> </script>

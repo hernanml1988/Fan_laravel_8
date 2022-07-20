@@ -114,8 +114,10 @@ Route::controller(MapaController::class)->group(function(){
     Route::post('mapas/load_pambientales.reporte', 'loadPambientalesReporte')->name('mapas.load.pambientales.reporte');
     Route::post('mapas/send_reporte', 'sendReporte')->name('mapas.send.reporte');
     //====Rutas Mapa colab ===
-    
-
+    Route::post('mapas/load_historial_centros_pdf_colab', 'loadHistorialCentrosPdfColab')->name('mapas.load.historial.centros.pdf.colab');
+    Route::post('mapas/load_ubicacion_centros_colab', 'loadUbicacionCentrosColab')->name('mapas.load.ubicacion.centros.colab');
+    Route::post('mapas/load_ubicacion_barrios_colab', 'loadUbicacionBarriosColab')->name('mapas.load.ubicacion.barrios.colab');
+    Route::post('mapas/load_resumen_reporte_colab', 'loadResumenReporteColab')->name('mapas.load.resumen.reporte.colab');
     });
 
 
@@ -133,6 +135,8 @@ Route::controller(EXCELLController::class)->group(function(){
 Route::get('registro_editor/download_excel', 'descargaFormatopEstandar')->name('excel.download.form.registro');
 Route::post('registro_editor/carga_excel', 'cargaRegistroAutomatico')->name('excel.cargar.form.registro');
 
+Route::get('descarga_excel/{p1}/{p2}/{p3}/{p4}/{p5}/{p6}/{p7}/{p8}' , 'descargaExcel')->name('excel.descarga.excel');
+Route::get('descargar_excel/prueba' , 'export')->name('excel.descarga.excel.prueba');
 });
 
 

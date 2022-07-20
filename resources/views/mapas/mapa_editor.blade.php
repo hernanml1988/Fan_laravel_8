@@ -105,7 +105,7 @@
 
      
 
-       	<div id="page-wrapper" style="margin-left:-24px; margin-right: 1px">
+       	<div id="page-wrapper" style="margin-left:-27px; margin-right: 1px">
 
 
 

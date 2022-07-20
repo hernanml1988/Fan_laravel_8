@@ -66,7 +66,7 @@
 @section('content')
 
 <div id="wrapper">
-		 <div id="page-wrapper" style="margin-left: -25px">
+		 <div id="page-wrapper" style="margin-left: -27px; margin-right: -1px;">
 		  <div class="row" style="padding:20px;">
 			  <button id="abrirmodalreporte" type="submit" class="btn btn-cerrada"><i class="fa fa-plus-circle"> </i>  Ingresar Registro</button>
 			  <form method="post" enctype="multipart/form-data" style="display:inline" class="form2_cargarexcel" >
@@ -131,8 +131,8 @@
 									   </button>';*/
 
 										  }else{
-											  echo '<button id="edit" class="btn label-enviada" data-title="Edit" data-toggle="" data-target="#edit">
-										  <span class="fa fa-pencil"> Editar</span>
+											  echo '<button style="height: 32px;" id="edit" class="btn label-enviada" data-title="Edit" data-toggle="" data-target="#edit">
+												<i class="fa-solid fa-pencil"></i> Editar</span>
 									  </button>
 									  <button id="trash" class="btn label-enviada" data-title="Delete" data-toggle="modal" data-target="#delete">
 										  <span class="fa fa-trash-o"> Eliminar</span>
@@ -1583,46 +1583,8 @@
   <!-- Bootstrap Core JavaScript -->
   <script src="{{asset('js/bootstrap.min.js')}}"></script>
 
-  <!-- Metis Menu Plugin JavaScript -->
-  <script src="js/metisMenu.min.js"></script>
-  <script src="js/bootstrap-table.js"></script>
-
-  <!-- DatetimePicker -->
- <script src="js/moment-with-locales.js"></script>
- <script src="js/bootstrap-datetimepicker.js"></script>
-
-
-  <!-- Custom Theme JavaScript -->
-  <script src="js/sb-admin-2.js"></script>
-
-
-	 <!-- Autocomplete -->
-<!--    <script src="js/jquery-1.10.2.js"></script>-->
-  <script src="js/jquery-ui.js"></script>
-
-
-   <!-- Alertas -->
-  <script src="js/sweetalert.min.js"></script>
-
-  <!-- Inclueye los colores para los estados -->
-  <script src="js/color-estados.js"></script>
-
-		  
-
-  <!-- Edit table -->
-  <script src="js/bootstrap-editable.js"></script>
-  <script src="js/bootstrap-table-editable.js"></script>
-
-  <!-- Export table -->
-  <script src="js/tableExport.js"></script>
-  <script src="js/bootstrap-table-export.js"></script>
-
-
-  <!-- Canvas -->
-  <script src="js/jspdf.min.js"></script>
-
-  <!-- Switch button -->
-	<script type="text/javascript" src="js/lc_switch.js"></script>
+  @endsection
+  @section('javascript')
 
 	<script>
 		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  

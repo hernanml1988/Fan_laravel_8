@@ -193,7 +193,7 @@
 
                                 <div id="modal_toolbar_new" class="btn-group " style="height: 20px; margin-bottom:-20px; margin-left:15px">
                                     <button id="btndescargar" type="button" class="btn label-enviada hidden" >
-                                        <span class="fa fa-file-excel-o hidden-xs"> Exportar </span>
+                                        <span class="fa fa-file-excel-o "> Exportar </span>
                                         <!-- <div id="progress" style="display:inline;"> Exportar </div>
                                         <div id="loading1" class="loader hidden" style="display:inline-block; margin-left:7px;margin-bottom:-2px;"></div> -->
                                     </button>
@@ -264,40 +264,12 @@
     </div>
 
 
-    <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{asset('js/bootstrap.min.js')}}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{asset('js/metisMenu.min.js')}}"></script>
-    <script src="{{asset('js/bootstrap-table.js')}}"></script>
-
-    <!-- DatetimePicker -->
-   <script src="{{asset('js/moment-with-locales.js')}}"></script>
-   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
+    
 
 
-    <!-- Custom Theme JavaScript -->
-    <script src="{{asset('js/sb-admin-2.js')}}"></script>
+@endsection
 
-     <!-- Alertas -->
-    <script src="{{asset('js/sweetalert.min.js')}}"></script>
-
-    <!-- Asigna menu para roles -->
-
-
-    <!-- Export table -->
-    <script src="{{asset('js/tableExport.js')}}"></script>
-    <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
-
-    <!-- Multiple Select -->
-    <script src="{{asset('js/jquery.multi-select.js')}}" type="text/javascript"></script>
-
-
-
-
-
+@section('javascript')
     <script>
     
     var user_id =  {!!$currentUser->id!!}//php echo $currentUser->id; ?>;
@@ -382,6 +354,7 @@
                 url: "{{Route('historial.save.historial.descarga')}}",//save_historial_descargas.php",
                 type: 'post',
                 data: {
+                    _token: "{{ csrf_token() }}",
                  Modificacion:   "Descarga datos excel",
                  Observaciones:     obs,
                  user_id:         user_id
@@ -600,6 +573,8 @@
 
     $('#btndescargar2').click( function(){
       
+        
+
         if (selectedfilter.length == 0) {
           alert('Debe seleccionar una instalación');
           return;
@@ -608,6 +583,26 @@
         $('#btndescargar2').prop('disabled', true);
         $('#btndescargar2_spin').removeClass('hidden');
 
+        savehistorial();
+
+        var url = "{{url('descarga_excel/1/2/3/4/5/6/7/8')}}";
+                    url = url.slice(0,-15);
+                    var Centros= selectedfilter;
+                    var Inicio=      document.getElementById("fechadesde").value;
+                    var Termino=    document.getElementById("fechahasta").value;
+                    var Critico=  $('#check_rojo').is(':checked') ? 1 : 0;
+                    var Precaucion= $('#check_amarillo').is(':checked') ? 1 : 0;
+                    var Presencia=  $('#check_presencia').is(':checked') ? 1 : 0;
+                    var Ausencia= $('#check_ausencia').is(':checked') ? 1 : 0;
+                    var anio_periodo= $('#anio_periodo').val();
+                    
+                    url = url+Centros+"/"+Inicio+"/"+Termino+"/"+Critico+"/"+Precaucion+"/"+Presencia+"/"+Ausencia+"/"+anio_periodo;
+                    console.log(url);
+                    
+                    window.location.href = url;
+
+                    $('#btndescargar').prop('disabled', false);
+                //return false;
         var  check_rojo =  $('#check_rojo').is(':checked') ? 1 : 0;
         var  check_amarillo =  $('#check_amarillo').is(':checked') ? 1 : 0;
         var  check_presencia =  $('#check_presencia').is(':checked') ? 1 : 0;
@@ -615,7 +610,8 @@
 
         savehistorial();
 
-        window.location.href = "https://api.fan.gtrgestion.cl/descargar_excel/"+selectedfilter+'/'+document.getElementById("fechadesde").value+'/'+document.getElementById("fechahasta").value+'/'+
+        
+        //window.location.href = "https://api.fan.gtrgestion.cl/descargar_excel/"+selectedfilter+'/'+document.getElementById("fechadesde").value+'/'+document.getElementById("fechahasta").value+'/'+
         check_rojo+'/'+
         check_amarillo+'/'+
         check_presencia+'/'+
@@ -627,6 +623,7 @@
             $('#btndescargar2_spin').addClass('hidden');
         }, 30000);
 
+        
     });
 
 
@@ -644,42 +641,60 @@
         }
 
         savehistorial();
-        $.ajax({
-                url: "{{Route('historial.alarma.generar.excel')}}",//archivos/Registros_Alarma/generar_excel.php",
-                type: 'post',
-                dataType: 'json',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    Centros: '"'+selectedfilter+'"',
-                    Inicio:      document.getElementById("fechadesde").value,
-                    Termino:    document.getElementById("fechahasta").value,
-                    Critico:  $('#check_rojo').is(':checked') ? 1 : 0,
-                    Precaucion: $('#check_amarillo').is(':checked') ? 1 : 0,
-                    Presencia:  $('#check_presencia').is(':checked') ? 1 : 0,
-                    Ausencia: $('#check_ausencia').is(':checked') ? 1 : 0,
-                    user_id:        user_id,
-                    anio_periodo: $('#anio_periodo').val()
-                },
-                success: function(dato)
-                {
+
+        // var url = "{{url('descarga_excel/{p1}/{p2}/{p3}/{p4}/{p5}/{p6}/{p7}/{p8}')}}";
+                    // url = url.slice(0,-13);
+                    // var Centros= '"'+selectedfilter+'"';
+                    // var Inicio=      document.getElementById("fechadesde").value;
+                    // var Termino=    document.getElementById("fechahasta").value;
+                    // var Critico=  $('#check_rojo').is(':checked') ? 1 : 0;
+                    // var Precaucion= $('#check_amarillo').is(':checked') ? 1 : 0;
+                    // var Presencia=  $('#check_presencia').is(':checked') ? 1 : 0;
+                    // var Ausencia= $('#check_ausencia').is(':checked') ? 1 : 0;
+                    // var anio_periodo= $('#anio_periodo').val();
+                    
+                    // url = url+Centros+"/"+Inicio+"/"+Termino+"/"+Critico+"/"+Precaucion+"/"+Presencia+"/"+Ausencia+"/"+anio_periodo;
+
+                    // window.location.href = url;
+
+                    $('#btndescargar').prop('disabled', false);
+        // $.ajax({
+        //         url: "{{Route('historial.alarma.generar.excel')}}",//archivos/Registros_Alarma/generar_excel.php",
+        //         type: 'post',
+        //         dataType: 'json',
+        //         data: {
+        //             _token: "{{ csrf_token() }}",
+        //             Centros: '"'+selectedfilter+'"',
+        //             Inicio:      document.getElementById("fechadesde").value,
+        //             Termino:    document.getElementById("fechahasta").value,
+        //             Critico:  $('#check_rojo').is(':checked') ? 1 : 0,
+        //             Precaucion: $('#check_amarillo').is(':checked') ? 1 : 0,
+        //             Presencia:  $('#check_presencia').is(':checked') ? 1 : 0,
+        //             Ausencia: $('#check_ausencia').is(':checked') ? 1 : 0,
+        //             user_id:        user_id,
+        //             anio_periodo: $('#anio_periodo').val()
+        //         },
+        //         success: function(dato)
+        //         {
+                    
                     // clearInterval(refreshIntervalId);
                     // $('#progress').html('Exportar ');
                     // $('#loading1').addClass("hidden");
                     //window.location("archivos/Registros_Alarma/descargar_registro.php?n="+dato);
-                    window.location.href = "archivos/Registros_Alarma/descargar_excel.php?n="+dato;
-                    $('#btndescargar').prop('disabled', false);
+                    //window.location.href = "archivos/Registros_Alarma/descargar_excel.php?n="+dato;
+                    
 
 
 
-                },error: function(err){
-                    console.log(err);
-                    $('#btndescargar').prop('disabled', false);
-                    // $('#loading1').addClass("hidden");
-                    // clearInterval(refreshIntervalId);
-                    // $('#progress').html('Exportar ');
-                }
-        });
-    });
+    //             },error: function(err){
+    //                 console.log(err);
+    //                 $('#btndescargar').prop('disabled', false);
+    //                 // $('#loading1').addClass("hidden");
+    //                 // clearInterval(refreshIntervalId);
+    //                 // $('#progress').html('Exportar ');
+    //             }
+    //     });
+     });
 
     $('#filtercentrosoperando').change( function(){
         $('#region').empty().multiSelect('refresh');
@@ -808,7 +823,7 @@
 
 
 
-</script>
+    </script>
 
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportDescargas;
 use App\Imports\RegistroAutoImport;
 use App\Models\Barrio;
 use App\Models\Centro;
@@ -35,6 +36,7 @@ use Illuminate\Support\Facades\Response;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\FacadesDB;
+// use Maatwebsite\Excel\Excel as Excel;
 
 class EXCELLController extends Controller
 {
@@ -56,6 +58,18 @@ class EXCELLController extends Controller
 
 			//$this->middleware('auth.basic');
 		}
+
+	public function export() 
+	{
+		$miuser = Auth::user();
+		$this->cambiar_bd($miuser->IDempresa);
+		$Resultado = [12 , 12 ,23 , 34];
+		$Titulos = ['hola', 'chao'];
+
+		$export = new ExportDescargas($Resultado,$Titulos);
+		return Excel::download($export, 'users.xlsx');
+	}
+		
 	public function cargaRegistroAutomatico(Request $request)
     {
         $miuser = Auth::user();
@@ -159,11 +173,17 @@ class EXCELLController extends Controller
         									$IDcentro_siep = str_replace(' ', '',$IDcentro_siep);
         						}else
         						if($totalrow == 11){
-        									$Fecha_Medicion = date_format($row[1],'Y-m-d');
-        									$Fecha_Analisis = date_format($row[5],'Y-m-d');
+									$fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1]);
+									$Fecha_Medicion = $fecha->format('Y-m-d');
+        									// $Fecha_Medicion = date_format($row[1],'Y-m-d');
+									$fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[5]);
+									$Fecha_Analisis = $fecha->format('Y-m-d');
+        									// $Fecha_Analisis = date_format($row[5],'Y-m-d');
         						}else
         						if($totalrow == 12){
         									//$Hora_Medicion = $row[1];
+									$fecha = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[5]);
+									$fecha = $fecha->format('Y-m-d');
         									$fecha =date_format($row[5],'Y-m-d');
         						}else
         						if($totalrow == 13){
@@ -434,15 +454,24 @@ class EXCELLController extends Controller
         								$IDcentro_siep = str_replace(' ', '',$IDcentro_siep);
         					}else
         					if($totalrow == 11){
-        								$fecha_med_aux = new \DateTime($row[1]);
-        							  	$Fecha_Medicion = date_format($fecha_med_aux,'Y-m-d');
-        								$fecha_ana_aux = new \DateTime($row[5]);
-        							 	$Fecha_Analisis = date_format($fecha_ana_aux,'Y-m-d');
+								$Fecha_Analisis = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[1]);								
+								$Fecha_Analisis = $Fecha_Analisis->format('Y-m-d');
+								//return Response::json($Fecha_Analisis);
+        								// $fecha_med_aux = new \DateTime($row[1]);
+        							  	// $Fecha_Medicion = date_format($fecha_med_aux,'Y-m-d');
+								$fecha_ana_aux = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[5]);								
+								$fecha_ana_aux = $fecha_ana_aux->format('Y-m-d');
+        								// $fecha_ana_aux = new \DateTime($row[5]);
+        							 	// $Fecha_Analisis = date_format($fecha_ana_aux,'Y-m-d');
+										//  return Response::json($fecha_ana_aux);
         					}else
         					if($totalrow == 12){
         								//$Hora_Medicion = $row[1];
-        								$fecha_aux = new \DateTime($row[5]);
-        								$fecha = date_format($fecha_aux,'Y-m-d');
+										$fecha_aux = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[5]);								
+										$fecha = $fecha_aux->format('Y-m-d');
+        								// $fecha_aux = new \DateTime($row[5]);
+        								// $fecha = date_format($fecha_aux,'Y-m-d');
+										//return Response::json($fecha);
         					}else
         					if($totalrow == 13){
         								$Disco = str_replace("'",chr(34),$row[1]);
@@ -1780,7 +1809,7 @@ class EXCELLController extends Controller
 		$file = Storage::disk('public')->get('Formato Carga Registro V2.2.xlsm');
 		//return \Response::json($entry);
 	
-		return Response($file, 200)->header('Content-Type', 'application/vnd.ms-excel.sheet.macroEnabled.12');
+		return Response($file, 200)->header('Content-Type', 'application/vnd.ms-excel.sheet.macroEnabled.12', 'Formato Carga Registro V2.2');
 	}
 
 		/*================================================================================================================================= */
@@ -1794,10 +1823,10 @@ class EXCELLController extends Controller
 		$Termino = date('Y-m-d 00:00:00', strtotime($p3. ' +1 day'));
 		$estado_alarma = [];
 		if ($p4) {
-			$estado_alarma[] = 'Nivel Crítico';
+			$estado_alarma[] = 'Nivel';
 		}
 		if ($p5) {
-			$estado_alarma[] = 'Precaución';
+			$estado_alarma[] = 'Precauci';
 		}
 		if ($p6) {
 			$estado_alarma[] = 'Presencia Microalgas';
@@ -1806,10 +1835,14 @@ class EXCELLController extends Controller
 			$estado_alarma[] = 'Ausencia Microalgas';
 		}
 
+		
+		
 		$anio_periodo = $p8;
 
-		$miuser = Auth::user();
+		$miuser = Auth::user();		
+		$this->cambiar_bd($miuser->IDempresa);
 		$IDempresa = $miuser->IDempresa;
+
 
 		if ($miuser->fan != 1) {
 				return Response::json('Acceso Restringido');
@@ -1825,8 +1858,8 @@ class EXCELLController extends Controller
 		$pamb = DB::connection('mysql')->table('pambientales')
 							->where('IDempresa', '=', $miuser->IDempresa)
 							->select('Nombre','Grupo')
-							->orderByRaw("CASE WHEN pambientales.Grupo = 'Columna de Agua' THEN 0 ELSE 1 END")
-							->orderByRaw("CASE WHEN pambientales.Grupo = 'Peces' THEN 0 ELSE 1 END")
+							->orderByRaw("CASE WHEN gtr_pambientales.Grupo = 'Columna de Agua' THEN 0 ELSE 1 END")
+							->orderByRaw("CASE WHEN gtr_pambientales.Grupo = 'Peces' THEN 0 ELSE 1 END")
 							->orderBy( 'Grupo')
 							->orderBy( 'Nombre')
 							->get();
@@ -1864,29 +1897,39 @@ class EXCELLController extends Controller
 				if($anio_periodo>0){
 					$medicion_ids = DB::connection('mysql')->table('medicion as m')
 															->join('centrosproductivos as cp','cp.IDcentro','=','m.IDcentro')
-															->where('cp.estado', 1)
+															->where('cp.Estado', 1)
 															->whereIn('cp.IDcentro', $Centros)
 															->whereYear('cp.Siembra','=', $anio_periodo)
 															->where('m.Estado', 1)
 															->where('m.Fecha_Reporte','>=', 'cp.Siembra')
 															->where('m.Fecha_Reporte','<=', 'cp.Cosecha')
 															->whereIn('m.IDcentro', $Centros)
-															->whereIn('m.Estado_Alarma', $estado_alarma)
-															->lists('IDmedicion');
+															->Where(function ($query) use($estado_alarma) {
+																for ($i = 0; $i < count($estado_alarma); $i++){
+																   $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma[$i] .'%');
+																}      
+															})//->whereIn('m.Estado_Alarma', $estado_alarma)
+															->pluck('IDmedicion');
 				}else{
 					$medicion_ids = DB::connection('mysql')->table('medicion as m')
 															->where('m.Estado', 1)
 															->where('m.Fecha_Reporte','>=', $Inicio)
 															->where('m.Fecha_Reporte','<', $Termino)
 															->whereIn('m.IDcentro', $Centros)
-															->whereIn('m.Estado_Alarma', $estado_alarma)
-															->lists('IDmedicion');
-
+															->Where(function ($query) use($estado_alarma) {
+																for ($i = 0; $i < count($estado_alarma); $i++){
+																   $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma[$i] .'%');
+																}      
+															})
+															//->whereIn('m.Estado_Alarma', $estado_alarma)
+															->pluck('IDmedicion');
+					//return Response::json($medicion_ids);
 				}
 
 				$max = 2000;
 				if (count($medicion_ids) > $max) { // Mayor a XX registros
-					return  redirect()->to("https://fan2.gtrgestion.cl/descargas_editor.php?p1=".$p1."&p2=".$p2."&p3=".$p3."&p4=".$p4."&p5=".$p5."&p6=".$p6."&p7=".$p7."&p8=".$p8."&error=Supera el máximo de ".$max." registros (".count($medicion_ids) ."). Favor acotar el rango de búsqueda."); // ->withErrors('SUPERA EL MAXIMO DE'.$max.' REGISTROS ('.count($medicion_ids) .'). FAVOR ACOTAR EL RANGO DE BUSQUEDA O CONTACTAR AL ADMINISTRADOR');
+					return 'max 2000';
+					//return  redirect()->to("https://fan2.gtrgestion.cl/descargas_editor.php?p1=".$p1."&p2=".$p2."&p3=".$p3."&p4=".$p4."&p5=".$p5."&p6=".$p6."&p7=".$p7."&p8=".$p8."&error=Supera el máximo de ".$max." registros (".count($medicion_ids) ."). Favor acotar el rango de búsqueda."); // ->withErrors('SUPERA EL MAXIMO DE'.$max.' REGISTROS ('.count($medicion_ids) .'). FAVOR ACOTAR EL RANGO DE BUSQUEDA O CONTACTAR AL ADMINISTRADOR');
 				}
 
 
@@ -1896,8 +1939,8 @@ class EXCELLController extends Controller
 						->whereIn('m.IDmedicion',$medicion_ids)
 						->select( 'm.IDmedicion',
 											DB::raw("CASE
-																WHEN d.Fecha_Envio
-																THEN DATE_FORMAT(CAST(d.Fecha_Envio AS DATE), '%d-%m-%Y')
+																WHEN gtr_d.Fecha_Envio
+																THEN DATE_FORMAT(CAST(gtr_d.Fecha_Envio AS DATE), '%d-%m-%Y')
 																ELSE ''
 																END as Date_Declaracion")
 										)
@@ -1928,56 +1971,56 @@ class EXCELLController extends Controller
 												->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
 												->where('c.IDempresa','=', $IDempresa)
 												->select( 'm.IDmedicion','m.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
-																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
-																	DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
-																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
-																	DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
-																	DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
-																	DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+																	DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+																	DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte"),
+																	DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+																	DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"),
+																	DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+																	DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"),
 																	'e.Grupo','e.Nombre as Nombre_Especie',
 																	DB::raw("CASE
-																			WHEN mf.Fiscaliza = '1'
+																			WHEN gtr_mf.Fiscaliza = '1'
 																				THEN 'Si'
 																				ELSE '-'
 																		END as Fiscaliza"),
 																	DB::raw("CASE
-																			WHEN mf.Nivel_Fiscaliza > '0'
-																				THEN mf.Nivel_Fiscaliza
+																			WHEN gtr_mf.Nivel_Fiscaliza > '0'
+																				THEN gtr_mf.Nivel_Fiscaliza
 																				ELSE '-'
 																		END as Nivel_Fiscaliza"),
 																	DB::raw("CASE
-																			WHEN mf.Nociva = '1'
+																			WHEN gtr_mf.Nociva = '1'
 																				THEN 'Nociva'
 																				ELSE '-'
 																		END as Nociva"),
 																	DB::raw("CASE
-																			WHEN mf.Nivel_Critico > '0'
-																				THEN mf.Nivel_Critico
+																			WHEN gtr_mf.Nivel_Critico > '0'
+																				THEN gtr_mf.Nivel_Critico
 																				ELSE '-'
 																		END as Nivel_Critico"),
 																	DB::raw("CASE
-																			WHEN mf.Alarma_Rojo > '0'
-																				THEN mf.Alarma_Rojo
+																			WHEN gtr_mf.Alarma_Rojo > '0'
+																				THEN gtr_mf.Alarma_Rojo
 																				ELSE '-'
 																		END as Alarma_Rojo"),
 																	DB::raw("CASE
-																			WHEN mf.Alarma_Amarillo > '0'
-																				THEN mf.Alarma_Amarillo
+																			WHEN gtr_mf.Alarma_Amarillo > '0'
+																				THEN gtr_mf.Alarma_Amarillo
 																				ELSE '-'
 																		END as Alarma_Amarillo"),
 																	DB::raw("CASE
-																			WHEN e.Nivel_Fiscaliza > '0'
-																				THEN e.Nivel_Fiscaliza
+																			WHEN gtr_e.Nivel_Fiscaliza > '0'
+																				THEN gtr_e.Nivel_Fiscaliza
 																				ELSE '-'
 																		END as 	Nivel_Fiscaliza_Actual"),
 																	DB::raw("CASE
-																			WHEN e.Nociva = '1'
+																			WHEN gtr_e.Nociva = '1'
 																				THEN 'Nociva'
 																				ELSE '-'
 																		END as Nociva_Actual"),
 																	DB::raw("CASE
-																			WHEN e.Nivel_Critico > '0'
-																				THEN e.Nivel_Critico
+																			WHEN gtr_e.Nivel_Critico > '0'
+																				THEN gtr_e.Nivel_Critico
 																				ELSE '-'
 																		END as Nivel_Critico_Actual"),
 																	'm.Estado_Alarma',
@@ -2018,73 +2061,75 @@ class EXCELLController extends Controller
 								->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
 								->where('c.IDempresa','=', $IDempresa)
 								->select( 'm.IDmedicion','m.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
-													DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
-													DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
-													DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
-													DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
-													DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
-													DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+													DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+													DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte"),
+													DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+													DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"),
+													DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+													DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"),
 													'e.Grupo','e.Nombre as Nombre_Especie',
 													DB::raw("CASE
-															WHEN mf.Fiscaliza = '1'
+															WHEN gtr_mf.Fiscaliza = '1'
 																THEN 'Si'
 																ELSE '-'
 														END as Fiscaliza"),
 													DB::raw("CASE
-															WHEN mf.Nivel_Fiscaliza > '0'
-																THEN mf.Nivel_Fiscaliza
+															WHEN gtr_mf.Nivel_Fiscaliza > '0'
+																THEN gtr_mf.Nivel_Fiscaliza
 																ELSE '-'
 														END as Nivel_Fiscaliza"),
 													DB::raw("CASE
-															WHEN mf.Nociva = '1'
+															WHEN gtr_mf.Nociva = '1'
 																THEN 'Nociva'
 																ELSE '-'
 														END as Nociva"),
 													DB::raw("CASE
-															WHEN mf.Nivel_Critico > '0'
-																THEN mf.Nivel_Critico
+															WHEN gtr_mf.Nivel_Critico > '0'
+																THEN gtr_mf.Nivel_Critico
 																ELSE '-'
 														END as Nivel_Critico"),
 													DB::raw("CASE
-															WHEN mf.Alarma_Rojo > '0'
-																THEN mf.Alarma_Rojo
+															WHEN gtr_mf.Alarma_Rojo > '0'
+																THEN gtr_mf.Alarma_Rojo
 																ELSE '-'
 														END as Alarma_Rojo"),
 													DB::raw("CASE
-															WHEN mf.Alarma_Amarillo > '0'
-																THEN mf.Alarma_Amarillo
+															WHEN gtr_mf.Alarma_Amarillo > '0'
+																THEN gtr_mf.Alarma_Amarillo
 																ELSE '-'
 														END as Alarma_Amarillo"),
 													DB::raw("CASE
-															WHEN e.Nivel_Fiscaliza > '0'
-																THEN e.Nivel_Fiscaliza
+															WHEN gtr_e.Nivel_Fiscaliza > '0'
+																THEN gtr_e.Nivel_Fiscaliza
 																ELSE '-'
 														END as 	Nivel_Fiscaliza_Actual"),
 													DB::raw("CASE
-															WHEN e.Nociva = '1'
+															WHEN gtr_e.Nociva = '1'
 																THEN 'Nociva'
 																ELSE '-'
 														END as Nociva_Actual"),
 													DB::raw("CASE
-															WHEN e.Nivel_Critico > '0'
-																THEN e.Nivel_Critico
+															WHEN gtr_e.Nivel_Critico > '0'
+																THEN gtr_e.Nivel_Critico
 																ELSE '-'
 														END as Nivel_Critico_Actual"),
 													'm.Estado_Alarma',
 													'm.Estado_Alarma','mf.Medicion_1','mf.Medicion_2', 'mf.Medicion_3', 'mf.Medicion_4', 'mf.Medicion_5', 'mf.Medicion_6', 'mf.Medicion_7', 'm.Tecnica', 'm.Observaciones', 'm.Firma',
 
 												DB::raw("CASE
-													WHEN m.Laboratorio > '0'
+													WHEN gtr_m.Laboratorio > '0'
 														THEN 'Externa'
 														ELSE 'Interna'
 												END as Laboratorio"),
 												DB::raw(	"'' as Date_Declaracion"),
 													'm.Modulo','m.Jaula','m.TopLeft'
 										)
-								->orderBy('m.Fecha_Reporte', 'DESC')
+								->orderBy('m.Fecha_Reporte', 'desc')
 								->get();
-
+						//return Response::json($medicion_fan);
 					}
+
+					
 
 				$t_fan = microtime(true) - $t_fan;
 
@@ -2165,7 +2210,8 @@ class EXCELLController extends Controller
 																	'mp.Medicion_1 as Medicion_1p', 'mp.Medicion_2 as Medicion_2p','mp.Medicion_3 as Medicion_3p','mp.Medicion_4 as Medicion_4p', 'mp.Medicion_5 as Medicion_5p', 'mp.Medicion_6 as Medicion_6p', 'mp.Medicion_7 as Medicion_7p'
 															)
 													->orderByRaw("CASE WHEN Grupop = 'Columna de Agua' THEN 0 ELSE 1 END")
-													->orderBy('Grupop', 'Nombrep')
+													->orderBy('Grupop', 'asc')
+													->orderBy( 'Nombrep', 'asc')
 													->get();
 
 
@@ -2177,12 +2223,12 @@ class EXCELLController extends Controller
 													->join('barrio as b','b.IDbarrio','=','c.IDbarrio')
 													->where('c.IDempresa','=', $IDempresa)
 													->select( 'm.Fecha_Reporte as Fecha_Order', 'r.Nombre as Region', 'a.Nombre as Area', 'b.Nombre as Barrio', 'c.Nombre as Centro',
-																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
-																		DB::raw("CAST(m.Fecha_Reporte AS TIME) as Time_Reporte"),
-																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
-																		DB::raw("CAST(m.Fecha_Analisis AS TIME) as Time_Analisis"),
-																		DB::raw("DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
-																		DB::raw("CAST(m.Fecha_Envio AS TIME) as Time_Envio"),
+																		DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
+																		DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte"),
+																		DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
+																		DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"),
+																		DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio"),
+																		DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"),
 																		DB::raw(	"'' as Grupo"),
 																		DB::raw(	"'' as Nombre_Especie"),
 																		DB::raw(	"'' as Fiscaliza"),
@@ -2198,7 +2244,7 @@ class EXCELLController extends Controller
 																		DB::raw("'' as Medicion_1"), DB::raw("'' as Medicion_2"), DB::raw("'' as Medicion_3"), DB::raw("'' as Medicion_4"), DB::raw("'' as Medicion_5"), DB::raw("'' as Medicion_6"), DB::raw("'' as Medicion_7"),
 																		'm.Tecnica', 'm.Observaciones', 'm.Firma',
 																		DB::raw("CASE
-																			WHEN m.Laboratorio > '0'
+																			WHEN gtr_m.Laboratorio > '0'
 																				THEN 'Externa'
 																				ELSE 'Interna'
 																		END as Laboratorio"),
@@ -2386,7 +2432,11 @@ class EXCELLController extends Controller
 						$titulos = array_merge($titulos,$Titulo_pamb);
 
 						// return \Response::json($Resultado);
+						
+						$export = new ExportDescargas($Resultado,$titulos);
+						return Excel::download($export, 'Archivo.xlsx');
 
+						
 						Excel::create('GTR fan - Historial', function($excel) use($Resultado,$titulos) {
 							// header('Content-Encoding: UTF-8');
 					// header('Content-type: text/csv; charset=UTF-8');
@@ -2410,11 +2460,12 @@ class EXCELLController extends Controller
 
 	}
 
+	
 
 
 
-
-
+	
+   
 
 
 

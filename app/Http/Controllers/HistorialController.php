@@ -823,8 +823,11 @@ class HistorialController extends Controller
         $Termino = date('Y-m-d', strtotime($request->input('Termino'). ' +1 day'));
         $Termino = date('Y-m-d 00:00:00', strtotime($Termino));
         $user_id = $miuser->id;
+        
+        $Inicio = new \DateTime ($Inicio);
+        $Termino = new \DateTime ($Termino);
 
-
+        $start3 = microtime(true);
         if ($Centros == '') {
             echo json_encode(array(
                 'total' => 0, 			// select count(*) from table ...
@@ -870,10 +873,10 @@ class HistorialController extends Controller
     
         $estado_alarma = [];
         if ($request->input('Critico')) {
-            $estado_alarma[] = 'Nivel Crítico';
+            $estado_alarma[] = 'Nivel';
         }
         if ($request->input('Precaucion')) {
-            $estado_alarma[] = 'Precaución';
+            $estado_alarma[] = 'Precauci';
         }
         if ($request->input('Presencia')) {
             $estado_alarma[] = 'Presencia Microalgas';
@@ -891,7 +894,7 @@ class HistorialController extends Controller
     
         $start0 = microtime(true);
         //Contar las filas
-        //return Response::json($start0);
+        //return Response::json($anio_periodo);
         if($anio_periodo>0){
     
             $consulta1 = DB::connection('mysql')->table('medicion as m')
@@ -910,9 +913,13 @@ class HistorialController extends Controller
                                                                                         ->whereIn('m.Estado_Alarma', $estado_alarma_aux);   
                                                                                     })
                                                 ->join('especie', 'e.IDespecie', '=', 'mf.IDespecie')
-                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
-                                                ->select('mf.IDmedicionfan as cuenta')
-                                                ->count();
+                                                ->Where(function ($query) use($estado_alarma_aux) {
+                                                    for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                       $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                    }      
+                                                })
+                                                ->select(DB::raw("count('mf.IDmedicionfan') as cuenta"))
+                                                ->first();
                 // DB::connection('mysql')->table('medicion as m')
                 //                                 ->join('centrosproductivos as cp','cp.IDcentro', '=', 'm.IDcentro')
                 //                                 ->whereIn('cp.IDcentro', $Centros)
@@ -962,9 +969,14 @@ class HistorialController extends Controller
                                                                                         ->whereIn('m.IDcentro', $Centros);
                                                                         })
                                                 ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie')
-                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
-                                                ->select('mf.IDmedicionfan as cuenta')
-                                                ->count();
+                                                ->Where(function ($query) use($estado_alarma_aux) {
+                                                    for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                       $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                    }      
+                                                })
+                                                ->select(DB::raw("count('mf.IDmedicionfan') as cuenta"))
+                                                ->first();
+                                                //return Response::json($consulta1);
                 // DB::connection('mysql')->table('medicion as m')
                 // ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion' )
                 // ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie' )
@@ -990,9 +1002,8 @@ class HistorialController extends Controller
 
             
         }
-        //return Response::json($consulta1);
-    
-        $row1 = $consulta1;
+        // return Response::json($consulta1);
+
         if($consulta1){
             $count1 = $consulta1->cuenta;
         }
@@ -1009,17 +1020,20 @@ class HistorialController extends Controller
                                                 ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
                                                 ->whereBetween('m.Fecha_Reporte', ['cp.Siembra', 'cp.Cosecha'])
                                                 ->whereYear('cp.Siembra', $anio_periodo)
-                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
-                                                            ['cp.estado', '=', 1],
+                                                ->where([ ['cp.estado', '=', 1],
                                                             ['c.IDempresa', '=', $IDempresa],
                                                             ['m.Fecha_Reporte', '>=', $Inicio],
                                                             ['m.Fecha_Reporte'. '<=', $Termino],
                                                             ['m.Estado', '=', 1]])
                                                 ->whereIn('cp.IDcentro', $Centros)
                                                 ->whereIn('m.IDcentro', $Centros)
-                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux) 
-                                                ->select('m.IDcentro as cuenta')
-                                                ->get();
+                                                ->Where(function ($query) use($estado_alarma_aux) {
+                                                    for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                       $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                    }      
+                                                })
+                                                ->select(DB::raw("count('m.IDcentro') as cuenta"))
+                                                ->first();
 
             // mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
             // FROM medicion m INNER JOIN centrosproductivos cp 
@@ -1043,15 +1057,18 @@ class HistorialController extends Controller
     
             $consulta1 = DB::connection('mysql')->table('medicion as m')
                                                 ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
-                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
-                                                        ['c.IDempresa', '=', $IDempresa ],
+                                                ->where([['c.IDempresa', '=', $IDempresa ],
                                                         ['m.Fecha_Reporte', '>=', $Inicio],
                                                         ['m.Fecha_Reporte', '<=', $Termino],
                                                         ['m.Estado', '=', 1]])
                                                 ->whereIn('m.IDcentro', $Centros)
-                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
-                                                ->select('m.IDcentro as cuenta')
-                                                ->get();
+                                                ->Where(function ($query) use($estado_alarma_aux) {
+                                                    for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                       $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                    }      
+                                                })
+                                                ->select(DB::raw("count('m.IDcentro') as cuenta"))
+                                                ->first();
 
 
             // mysqli_query($con,"SELECT COUNT(m.IDcentro) as cuenta
@@ -1068,12 +1085,12 @@ class HistorialController extends Controller
     
         }
     
-    
-        $row1 =$consulta1;
-        if($row1){
-            $count = $row1->cuenta + $count1;
+       
+        //return Response::json($row1);
+        if($consulta1){
+            $count = $consulta1->cuenta + $count1;
         }
-        //return response::json($consulta1);
+        //return response::json($count);
     
         $time_elapsed_secs0 = microtime(true) - $start0;
     
@@ -1094,10 +1111,13 @@ class HistorialController extends Controller
                                                             ->whereYear('cp.Siembra', $anio_periodo)
                                                             ->whereBetween('m.Fecha_Reporte', ['cp.Siembra','cp.Cosecha' ])
                                                             ->whereIn('m.IDcentro', $Centros)
-                                                            ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                            ->Where(function ($query) use($estado_alarma_aux) {
+                                                                for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                                   $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                                }      
+                                                            })
                                                             ->whereIn('cp.IDcentro', $Centros)
-                                                            ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
-                                                                    ['c.IDempresa', '=', $IDempresa],
+                                                            ->where([['c.IDempresa', '=', $IDempresa],
                                                                     ['m.Estado', '=', 1],
                                                                     ['cp.estado', '=', 1]])
                                                             ->offset($offset)
@@ -1119,20 +1139,20 @@ class HistorialController extends Controller
                                                             'm.Tecnica', 
                                                             'm.Observaciones', 
                                                             'm.Firma', 
-                                                            '"" as Medicion_1',
-                                                            '"" as Medicion_2', 
-                                                            '"" as Medicion_3', 
-                                                            '"" as Medicion_4', 
-                                                            '"" as Medicion_5', 
-                                                            '"" as Medicion_6', 
-                                                            '"" as Medicion_7',
-                                                            '"" as Nombre_Especie', 
-                                                            '"" as Grupo',
-                                                            '"" as Fiscaliza', 
-                                                            '"" as Nociva',
-                                                            '"" as Nivel_Critico', 
-                                                            '"" as Alarma_Rojo', 
-                                                            '"" as Alarma_Amarillo', 
+                                                            DB::raw(" '' as Medicion_1"),
+                                                            DB::raw(" '' as Medicion_2"), 
+                                                            DB::raw(" '' as Medicion_3"), 
+                                                            DB::raw(" '' as Medicion_4"), 
+                                                            DB::raw(" '' as Medicion_5"), 
+                                                            DB::raw(" '' as Medicion_6"), 
+                                                            DB::raw(" '' as Medicion_7"),
+                                                            DB::raw(" '' as Nombre_Especie"), 
+                                                            DB::raw(" '' as Grupo"),
+                                                            DB::raw(" '' as Fiscaliza"), 
+                                                            DB::raw(" '' as Nociva"),
+                                                            DB::raw(" '' as Nivel_Critico"), 
+                                                            DB::raw(" '' as Alarma_Rojo"), 
+                                                            DB::raw(" '' as Alarma_Amarillo"), '"" as Medicion_1',
                                                             'a.Nombre as Area', 
                                                             'b.Nombre as Barrio', 
                                                             'r.Nombre as Region', 
@@ -1196,19 +1216,20 @@ class HistorialController extends Controller
     
     
         }else{
-    
+            //return Response::json($estado_alarma_aux);
             $consulta = DB::connection('mysql')->table('medicion as m')
                                                 ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro')
                                                 ->join('region as r', 'c.IDregion', '=', 'r.IDregion')
                                                 ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
                                                 ->join('barrio as b', 'c.IDbarrio', '=', 'b.IDbarrio')
                                                 ->whereIn('m.IDcentro', $Centros)
-                                                ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
-                                                ->where([['m.Estado_Alarma', '=', 'Ausencia Microalgas'],
+                                                                                                
+                                                ->where([   ['m.Estado_Alarma', '=', 'Ausencia Microalgas' ],
                                                             ['c.IDempresa', '=', $IDempresa],
                                                             ['m.Fecha_Reporte', '>=', $Inicio],
                                                             ['m.Fecha_Reporte', '<=', $Termino],
-                                                            ['m.Estado', '=', 1]])
+                                                            ['m.Estado', '=', 1]
+                                                            ])
                                                 ->offset($offset)
                                                 ->limit($limit)
                                                 ->select(
@@ -1217,7 +1238,8 @@ class HistorialController extends Controller
                                                 DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
                                                 DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
                                                 DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
-                                                DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte"), 
+                                                'm.Fecha_Analisis', 
                                                 DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
                                                 DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"), 
                                                 'm.Fecha_Reporte as Fecha_Order', 
@@ -1225,27 +1247,27 @@ class HistorialController extends Controller
                                                 'm.Tecnica', 
                                                 'm.Observaciones', 
                                                 'm.Firma', 
-                                                '"" as Medicion_1', 
-                                                '"" as Medicion_2', 
-                                                '"" as Medicion_3', 
-                                                '"" as Medicion_4', 
-                                                '"" as Medicion_5', 
-                                                '"" as Medicion_6', 
-                                                '"" as Medicion_7',
-                                                '"" as Nombre_Especie', 
-                                                '"" as Grupo',
-                                                '"" as Fiscaliza', 
-                                                '"" as Nociva',
-                                                '"" as Nivel_Critico', 
-                                                '"" as Alarma_Rojo', 
-                                                '"" as Alarma_Amarillo', 
+                                                DB::raw(" '' as Medicion_1"),
+                                                DB::raw(" '' as Medicion_2"), 
+                                                DB::raw(" '' as Medicion_3"), 
+                                                DB::raw(" '' as Medicion_4"), 
+                                                DB::raw(" '' as Medicion_5"), 
+                                                DB::raw(" '' as Medicion_6"), 
+                                                DB::raw(" '' as Medicion_7"),
+                                                DB::raw(" '' as Nombre_Especie"), 
+                                                DB::raw(" '' as Grupo"),
+                                                DB::raw(" '' as Fiscaliza"), 
+                                                DB::raw(" '' as Nociva"),
+                                                DB::raw(" '' as Nivel_Critico"), 
+                                                DB::raw(" '' as Alarma_Rojo"), 
+                                                DB::raw(" '' as Alarma_Amarillo"), 
                                                 'a.Nombre as Area', 
                                                 'b.Nombre as Barrio', 
                                                 'r.Nombre as Region', 
                                                 'c.Nombre as Centro')
                                                 ->orderBy('Fecha_Order', 'DESC')
                                                 ->get();
-
+                                            //return Response::json($consulta);
                 //     mysqli_query($con,"SELECT 
                 //     DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
                 //     DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,
@@ -1324,7 +1346,7 @@ class HistorialController extends Controller
     
             if($anio_periodo>0){
     
-    
+                
                 $consulta = DB::connection('mysql')->table('medicion as m')
                                                     ->join('centrosproductivos as cp', 'cp.IDcentro', '=', 'm.IDcentro')
                                                     ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion')
@@ -1337,7 +1359,11 @@ class HistorialController extends Controller
                                                     ->WhereYear('cp.Siembra', $anio_periodo)
                                                     ->whereIn('cp.IDcentro', $Centros)
                                                     ->whereIn('m.IDcentro', $Centros)
-                                                    ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
+                                                    ->Where(function ($query) use($estado_alarma_aux) {
+                                                        for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                           $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                        }      
+                                                    })
                                                     ->where([['m.Fecha_Reporte', '>=', $Inicio],['m.Fecha_Reporte', '<=', $Termino],
                                                             ['m.Estado', '=', 1],['cp.estado', '=', 1],['c.IDempresa', '=', $IDempresa]])
                                                     ->offset($offset)
@@ -1377,7 +1403,7 @@ class HistorialController extends Controller
                                                     'c.Nombre as Centro')
                                                     ->orderBy('Fecha_Order', 'DESC')
                                                     ->get();
-
+                                                    //return response::json($consulta); 
                     //         mysqli_query($con,"SELECT 
                     //         DATE_FORMAT(cp.Siembra, '%d-%m-%Y %H:%i:%s') as Siembra,
                     //         DATE_FORMAT(cp.Cosecha, '%d-%m-%Y %H:%i:%s') as Cosecha, 
@@ -1450,19 +1476,23 @@ class HistorialController extends Controller
     
     
             }else{
-    
+                
     
     
                 $consulta = DB::connection('mysql')->table('medicion as m')
                                                     ->join('medicion_fan as mf', 'm.IDmedicion', '=', 'mf.IDmedicion' )
-                                                    ->join('especie e', 'e.IDespecie', '=', 'mf.IDespecie'  )
-                                                    ->join('region r', 'c.IDregion', '=', 'r.IDregion' )
-                                                    ->join('area a', 'c.IDarea', '=', 'a.IDarea')
-                                                    ->join('barrio b', 'c.IDbarrio', '=', 'b.IDbarrio' )
-                                                    ->join('centro c', 'c.IDcentro', '=', 'm.IDcentro' )
+                                                    ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie'  )
+                                                    ->join('centro as c', 'c.IDcentro', '=', 'm.IDcentro' )
+                                                    ->join('barrio as b', 'c.IDbarrio', '=', 'b.IDbarrio' )
+                                                    ->join('area as a', 'c.IDarea', '=', 'a.IDarea')
+                                                    ->join('region as r', 'c.IDregion', '=', 'r.IDregion' )
                                                     ->whereIn('m.IDcentro', $Centros)
-                                                    ->whereIn('m.Estado_Alarma', $estado_alarma_aux)
-                                                    ->where([['m.Fecha_Reporte', '>=', '$Inicio'],['m.Fecha_Reporte', '<=', '$Termino'],
+                                                    ->Where(function ($query) use($estado_alarma_aux) {
+                                                        for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                           $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                        }      
+                                                    })
+                                                    ->where([['m.Fecha_Reporte', '>=', $Inicio],['m.Fecha_Reporte', '<=', $Termino],
                                                                 ['m.Estado', '=', 1], ['c.IDempresa', '=', $IDempresa]])
                                                     ->offset($offset)
                                                     ->limit($limit)
@@ -1472,7 +1502,8 @@ class HistorialController extends Controller
                                                         DB::raw("CAST(gtr_m.Fecha_Envio AS TIME) as Time_Envio"), 
                                                         DB::raw("DATE_FORMAT(gtr_m.Fecha_Reporte, '%d-%m-%Y %H:%i:%s') as Fecha_Reporte"), 
                                                         DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Reporte AS DATE), '%d-%m-%Y') as Date_Reporte"),
-                                                        DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte, m.Fecha_Analisis"), 
+                                                        DB::raw("CAST(gtr_m.Fecha_Reporte AS TIME) as Time_Reporte"),
+                                                        'm.Fecha_Analisis', 
                                                         DB::raw("DATE_FORMAT(CAST(gtr_m.Fecha_Analisis AS DATE), '%d-%m-%Y') as Date_Analisis"),
                                                         DB::raw("CAST(gtr_m.Fecha_Analisis AS TIME) as Time_Analisis"),
                                                         'm.Fecha_Reporte as Fecha_Order', 
@@ -1501,7 +1532,7 @@ class HistorialController extends Controller
                                                     )
                                                     ->orderBy('Fecha_Order', 'DESC')
                                                     ->get();
-
+                              //return response::json($consulta);                           
                             // mysqli_query($con,"SELECT DATE_FORMAT(m.Fecha_Envio, '%d-%m-%Y %H:%i:%s') as Fecha_Envio,
                             // DATE_FORMAT(CAST(m.Fecha_Envio AS DATE), '%d-%m-%Y') as Date_Envio,
                             // CAST(m.Fecha_Envio AS TIME) as Time_Envio, 
@@ -1591,7 +1622,7 @@ class HistorialController extends Controller
     
         $time_elapsed_secs3 = microtime(true) - $start3;
     
-        echo json_encode(array(
+         return Response::json(array(
             'total' => $count, 			// select count(*) from table ...
             'rows' => $Resultado, 	  // select * from table limit ...
             'Sort' => $time_elapsed_secs,
@@ -1628,22 +1659,8 @@ class HistorialController extends Controller
         $fecha = date('Y-m-d H:i:s');
         
         
-        //IDempresa
-        $consulta0 = User::join('as_user_details', 'user.user_id', '=', 'as_user_details.user_id')
-                                ->select('user.IDempresa', 'as_user_details.first_name', 'as_user_details.last_name')
-                                ->first();
-
-                                //return Response::json($consulta0);
-        // mysqli_query($con,"SELECT a.IDempresa, d.first_name, d.last_name 
-        // FROM as_users a INNER JOIN as_user_details d ON (a.user_id = d.user_id AND a.user_id = '$user_id') ")
-        // or die ($error ="Error description: " . mysqli_error($consulta0));
-        $row0 = mysqli_fetch_assoc($consulta0);
-        if($consulta0){
-            $IDempresa = $consulta0->IDempresa;
-            $Firma = $consulta0->first_name.' '.$consulta0->last_name;
-        }
             
-        $consulta = mysqli_query($con,"INSERT INTO configuracion(IDempresa, Fecha, Modificacion, Observaciones, Firma) VALUES ('$IDempresa', '$fecha', '$Modificacion', '$Observaciones', '$Firma')" )or die ( $error ="Error description: " . mysqli_error($consulta) );
+        //$consulta = mysqli_query($con,"INSERT INTO configuracion(IDempresa, Fecha, Modificacion, Observaciones, Firma) VALUES ('$IDempresa', '$fecha', '$Modificacion', '$Observaciones', '$Firma')" )or die ( $error ="Error description: " . mysqli_error($consulta) );
 
         
                 

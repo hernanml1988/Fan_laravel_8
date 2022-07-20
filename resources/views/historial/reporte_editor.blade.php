@@ -22,12 +22,12 @@
 
 
 
-       	<div id="page-wrapper" style="margin-left: -21px; margin-right: -40px">
+       	<div id="page-wrapper" style="margin-left: -28px; margin-right: -37px">
 
             	<div class="row" >
                     <div class="col-lg-10 col-lg-offset-1 col-md-10 col-xs-12">
                         <div class="panel panel-black" style="margin-top:20px;">
-                            <div class="panel-heading" style="height:90px;">
+                            <div class="panel-heading" style="height:90px; ">
                                 <div class="row text-center">
                                     <span class="text-center" style="display:inline; font-weight:bold">H I S T O R I A L&emsp; D E&emsp;  R E G I S T R O S</span>
                                 </div>

@@ -101,7 +101,7 @@
 
       
 
-       	<div id="page-wrapper" style="margin-left:-24px; margin-right: 1px">
+       	<div id="page-wrapper" style="margin-left:-27px; margin-right: -1px; margin-top: -1px">
 
 
 
@@ -148,7 +148,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
                                             </select>
                                             <select id="especiesselectmap" class="form-control center-block" style="max-width:200px; margin-top:5px; height:27px; padding-bottom:3px; padding-top:3px;cursor:pointer">
                                             </select>
-                                            <div id="loading1" class="" style="display:inline; position:absolute; margin-top:-26px; width:75%"><img class="pull-right" style="width: 25px;" src='loader.gif' /></div>
+                                            <div id="loading1" class="" style="display:inline; position:absolute; margin-top:-26px; width:75%"><img class="pull-right" style="width: 25px;" src="{{ asset('img/loader.gif') }}" /></div>
 
                                         </div>
                                     </div>
@@ -842,7 +842,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
                         <div class="modal-dialog " role="document" >
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                             	<div class="modal-body center-block text-center">
-                                	 <img src='loader.gif'/><h5> Loading... Please Wait </h5>
+                                	 <img src="{{ asset('img/loader.gif') }}"/><h5> Loading... Please Wait </h5>
                                 </div>
                              </div>
                         </div>
@@ -914,10 +914,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 			ext = 1;
 		}
 		$.ajax({
-			url: "load_historial_centros_pdf_colab.php",
+			url: "{{Route('mapas.load.historial.centros.pdf.colab')}}",//load_historial_centros_pdf_colab.php",
 			type: 'post',
 			dataType: 'json',
 			data: {
+				_token: "{{ csrf_token() }}",
 				IDcentro:		 parseInt(idcentro_info),
 				Interna:		  int,	 //$('#internaswitch').is(':checked') ? 1 : 0,
 				Externa:		  ext,	//$('#externaswitch').is(':checked') ? 1 : 0,
@@ -2080,15 +2081,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 		opt = [];
 
 		$.ajax({
-				url: "load_ubicacion_centros_colab.php",
+				url: "{{Route('mapas.load.ubicacion.centros.colab')}}",//load_ubicacion_centros_colab.php",
 				type: 'post',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:			user_id
 				},
 				success: function(dato)
 				{
 
-					datos = JSON.parse(dato);
+					datos = dato;//JSON.parse(dato);
 
 					$( '#showcentros' ).empty();
 					$('#opcionescentros').empty();
@@ -2148,15 +2150,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 
 			//Buscar los poligonos de los barrios
 			$.ajax({
-				url: "load_ubicacion_barrios_colab.php",
+				url: "{{Route('mapas.load.ubicacion.barrios.colab')}}",//load_ubicacion_barrios_colab.php",
 				type: 'post',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:			user_id
 				},
 				success: function(dato)
 				{
 
-					datosbarrio = JSON.parse(dato);
+					datosbarrio = dato;//JSON.parse(dato);
 
 					$( '#showbarrio' ).empty();
 
@@ -2205,11 +2208,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 
 			//Load opciones profundidad
 			$.ajax({
-					url: "load_options_prof.php",
+					url: "{{Route('mapas.load.options.prof')}}",//load_options_prof.php",
 					type: 'post',
 					dataType: 'json',
 					data: {
-						user_id:		user_id
+						_token: "{{ csrf_token() }}"
+						//user_id:		user_id
 					},
 					success: function(dato)
 					{
@@ -2956,9 +2960,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 		if(especies_aux == ""){especies_aux = "vacio";}
 		$('#loading1').removeClass("hidden");
 		$.ajax({
-				url: "load_resumen_reporte_colab.php",
+				url: "{{Route('mapas.load.resumen.reporte.colab')}}",//load_resumen_reporte_colab.php",
 				type: 'post',
 				data: {
+					_token: "{{ csrf_token() }}",
 					user_id:			user_id,
 					Nombre_Region: 	  nombreregion,
 					//Dias: 	 		   dias,
@@ -2971,7 +2976,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 				success: function(dato)
 				{
 
-					var myobjaux = JSON.parse(dato);
+					var myobjaux = dato;//JSON.parse(dato);
 
 					var myobj = myobjaux['Resultado'];
 					tablacompleta = myobj;

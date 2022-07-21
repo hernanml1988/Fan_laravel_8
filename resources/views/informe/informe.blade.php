@@ -1351,47 +1351,9 @@
 
     </div>
 </div>
+@endsection
 
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/metisMenu.min.js"></script>
-
-    <script src="js/bootstrap-table.js"></script>
-
-
-	<!-- Export table -->
-    <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>
-
-
-    <!-- DatetimePicker -->
-   <script src="js/moment-with-locales.js"></script>
-   <script src="js/bootstrap-datetimepicker.js"></script>
-
-
-    <!-- Custom Theme JavaScript -->
-    <script src="js/sb-admin-2.js"></script>
-
-	<!-- Asigna menu para roles -->
-    <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script>
-
-    <!-- Multiple Select -->
-  	<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-  	<script src="js/jquery.multi-select.js" type="text/javascript"></script>
-
-    <!-- gauge.js -->
-    <script src="js/gauge.min.js"></script>
-
-    <script src="js/chartjs/hammer.min.js"></script>
-    <script src="js/chartjs/chartjs-plugin-zoom.min.js"></script>
-
-    <script src="js/chartjs/jquery.sparkline.min.js"></script>
-
-
-    <script  src="js/bootstrap-progressbar.min.js"></script>
+@section('javascript')
 
 
 
@@ -1399,7 +1361,7 @@
 
 	var user_id = <?php echo $currentUser->id; ?>;
 	var id_empresa = <?php echo $currentUser->IDempresa; ?>;
-	roles(<?php echo '"'.$currentUser->role.'"';?>);
+	//roles(<?php echo '"'.$currentUser->role.'"';?>);
 
 
 	function sticky_relocate() {

@@ -6,6 +6,7 @@ use App\Models\Area;
 use App\Models\Barrio;
 use App\Models\Centro;
 use App\Models\CentrosProductivos;
+use App\Models\Configuracion;
 use App\Models\Documento;
 use App\Models\Medicion;
 use App\Models\MedicionFan;
@@ -817,7 +818,9 @@ class HistorialController extends Controller
         $offset = $request->input('offset');//$_GET['offset'];
         $Centros = $request->input('Centros');//$_GET['Centros'];
         $Centros = str_replace('"', '', $Centros);
-        $Centros = str_replace(",", "','", $Centros);
+        $Centros = str_replace('"', '', $Centros);
+        
+        
         $Inicio = date('Y-m-d', strtotime($request->input('Inicio')));
         $Inicio = date('Y-m-d 00:00:00', strtotime($Inicio));
         $Termino = date('Y-m-d', strtotime($request->input('Termino'). ' +1 day'));
@@ -835,7 +838,7 @@ class HistorialController extends Controller
             ));
             die();
         }
-    
+        //return response::json($Centros);
         $anio_periodo =$request->input('anio_periodo');
     
         if($anio_periodo>0){
@@ -886,8 +889,9 @@ class HistorialController extends Controller
         }
         //$estado_alarma_aux = implode("','",$estado_alarma);
           $estado_alarma_aux = $estado_alarma;//implode("','",$estado_alarma);
-          $Centros = explode(',', $Centros);
-        //return Response::json($Centros);
+
+           $Centros = explode(',', $Centros);
+         //return Response::json($Centros);
         // IDempresa        
         $IDempresa = $miuser->IDempresa;
         
@@ -904,13 +908,18 @@ class HistorialController extends Controller
                                                                                         ->where('cp.estado', '=', 1)
                                                                                         ->whereYear('cp.Siembra', '=', $anio_periodo) 
                                                                                         ->whereIn('cp.IDcentro', $Centros);                                  
+                                                                                        
                                                                                     })
                                                 ->join('medicion_fan as mf', function($query) use ($Inicio,$Termino,$estado_alarma_aux){
                                                                                 $query->on('m.IDmedicion', '=', 'mf.IDmedicion')  
                                                                                         ->where('m.Fecha_Reporte', '>=', $Inicio) 
                                                                                         ->where('m.Fecha_Reporte', '<=', $Termino) 
                                                                                         ->where('m.Estado', '=', 1)
-                                                                                        ->whereIn('m.Estado_Alarma', $estado_alarma_aux);   
+                                                                                        ->Where(function ($query) use($estado_alarma_aux) {
+                                                                                            for ($i = 0; $i < count($estado_alarma_aux); $i++){
+                                                                                               $query->orwhere('m.Estado_Alarma', 'like',  '%' . $estado_alarma_aux[$i] .'%');
+                                                                                            }      
+                                                                                        });
                                                                                     })
                                                 ->join('especie', 'e.IDespecie', '=', 'mf.IDespecie')
                                                 ->Where(function ($query) use($estado_alarma_aux) {
@@ -966,7 +975,7 @@ class HistorialController extends Controller
                                                                                         ->where([['m.Fecha_Reporte', '>=', $Inicio],
                                                                                                     ['m.Fecha_Reporte', '<=', $Termino],
                                                                                                     ['m.Estado', '=', 1 ],])
-                                                                                        ->whereIn('m.IDcentro', $Centros);
+                                                                                        ->whereIn('m.IDcentro', $Centros);                                                                                        
                                                                         })
                                                 ->join('especie as e', 'e.IDespecie', '=', 'mf.IDespecie')
                                                 ->Where(function ($query) use($estado_alarma_aux) {
@@ -1002,7 +1011,7 @@ class HistorialController extends Controller
 
             
         }
-        // return Response::json($consulta1);
+         //return Response::json($consulta1);
 
         if($consulta1){
             $count1 = $consulta1->cuenta;
@@ -1654,13 +1663,25 @@ class HistorialController extends Controller
         $Modificacion = $request->input('Modificacion'); //$_POST['Modificacion'];
         $Observaciones = $request->input('Observaciones');//$_POST['Observaciones'];
         $user_id = $miuser->id;
-        
+        $IDempresa = $miuser->IDempresa;
+        $Firma = $miuser->name;
+
         date_default_timezone_set('america/santiago');
         $fecha = date('Y-m-d H:i:s');
         
         
             
-        //$consulta = mysqli_query($con,"INSERT INTO configuracion(IDempresa, Fecha, Modificacion, Observaciones, Firma) VALUES ('$IDempresa', '$fecha', '$Modificacion', '$Observaciones', '$Firma')" )or die ( $error ="Error description: " . mysqli_error($consulta) );
+        $consulta = new Configuracion;
+        $consulta->IDempresa = $IDempresa;
+        $consulta->Fecha = $fecha;
+        $consulta->Modificacion = $Modificacion;
+        $consulta->Observaciones = $Observaciones;
+        $consulta->Firma = $Firma;
+        $consulta->save();
+
+
+        // mysqli_query($con,"INSERT INTO configuracion(IDempresa, Fecha, Modificacion, Observaciones, Firma) 
+        // VALUES ('$IDempresa', '$fecha', '$Modificacion', '$Observaciones', '$Firma')" )or die ( $error ="Error description: " . mysqli_error($consulta) );
 
         
                 

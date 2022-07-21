@@ -669,20 +669,10 @@ class MapaController extends Controller
         $Fecha_Termino = date('Y-m-d', strtotime($Fecha_Inicio. ' +7 day'));
 
         //IDempresa usuario
-        // $consulta1 = mysqli_query($con,"SELECT IDempresa FROM as_users WHERE user_id = '$user_id'")
-        // or die ($error ="Error description: " . mysqli_error($consulta1));
-        // $row = mysqli_fetch_assoc($consulta1);
+        
         $IDempresa = $miuser->IDempresa;
         
 
-        // $All_Date = array();
-        // $All_Date[0] = date('d-m-Y');
-        // $All_Date_aux = array();
-        // $All_Date_aux[0] = date('d-m');
-        // for($i=1; $i<$Dias; $i++){
-        // 	$All_Date[$i] = date('d-m-Y', strtotime(date('d-m-Y'). -$i.' day'));
-        // 	$All_Date_aux[$i] = date('d-m', strtotime(date('d-m-Y'). -$i.' day'));
-        // }
 
         $All_Date = array();
         $All_Date[0] = date('d-m-Y', strtotime($Fecha_Termino. '-1 day'));;//date('d-m-Y');
@@ -692,7 +682,7 @@ class MapaController extends Controller
             $All_Date[$i-1] = date('d-m-Y', strtotime($Fecha_Termino. -$i.' day'));
             $All_Date_aux[$i-1] = date('d-m', strtotime($Fecha_Termino. -$i.' day'));
         }
-
+        //return Response::json($All_Date);
         $whereespecies = "";
         if($Especies == '1'){
             $whereespecies = "gtr_e.Fiscaliza = '1' ";
@@ -704,11 +694,6 @@ class MapaController extends Controller
         if($Colaborativo == 1){
             $wherecolab = "gtr_c.Colaborativo = 1";
         }
-
-        
-
-        //$where = "c.IDempresa = (SELECT c.IDempresa FROM centro c,usuario_permiso u WHERE c.IDcentro = u.IDcentro AND c.Estado = 1 AND u.user_id = '$user_id') AND c.IDbarrio IN (SELECT c.IDbarrio FROM  region r, area a, barrio b, centro c WHERE r.Nombre = '$Nombre_Region' AND r.IDempresa = (SELECT c.IDempresa FROM centro c,usuario_permiso u WHERE c.IDcentro = u.IDcentro AND c.Estado = 1 AND u.user_id = '$user_id') AND r.IDregion = a.IDregion AND a.IDarea = b.IDarea AND b.IDbarrio = c.IDbarrio ) ";
-
 
         $where = "";//" c.IDregion = (SELECT IDregion FROM region WHERE Nombre = '$Nombre_Region' ) ";
         //echo 'hola';die();
@@ -751,8 +736,8 @@ class MapaController extends Controller
                                                     'e.Grupo',
                                                     'b.Nombre as ACS'   
                                                     )
-                                            ->get()
-                                            ->toArray();
+                                            ->get();
+                                            
                                             
                 //return response::json($consulta);
         //     (centro c INNER JOIN barrio b ON c.IDbarrio = b.IDbarrio),
@@ -800,14 +785,16 @@ class MapaController extends Controller
         //     especie e
         //     WHERE c.IDempresa = em.IDempresa  AND c.IDarea = a.IDarea AND c.IDcentro = m.IDcentro AND e.IDespecie = mf.IDespecie "
         //.$whereespecies.$wherecolab.$where.$whereestado." AND m.Estado = 1 ORDER BY em.Nombre, a.Nombre, c.Nombre, e.Nombre ASC")
-           // or die ($error ="Error description 1: " . mysqli_error($con));
+           
            //$consulta = explode(',', $consulta);         
            //return Response::json($consulta);
-           
+           //$consulta = explode(',', $consulta); 
+
         $ultimaesp = array();
         $Resultado = array();
         $centroespecie = array();
         $lista_idcentro = array();
+        
         foreach($consulta as $row)
         {
             if(array_search($row->Centro.$row->Especie, $centroespecie) === false){
@@ -818,13 +805,15 @@ class MapaController extends Controller
             //para ausencia de registros agregar la ultima esp
             
             /*###################################################################### */
-            /*------------Comentado solo param avanzar---------------------- */           
-            $ultimaesp = array_slice($row, -8);
+            /*------------Comentado solo param avanzar---------------------- */    
             
+           
+            $ultimaesp = array_slice($row, -8);
+             
             if($max == 1 ){
                 $med = max($row->Medicion_1,$row->Medicion_2,$row->Medicion_3,$row->Medicion_4,$row->Medicion_5,$row->Medicion_6,$row->Medicion_7);
             }else{
-                $med = $row[$Medicion];
+                $med = $row->$Medicion;
                 }
 
             if( isset($Resultado[array_search($row->Centro.$row->Especie, $centroespecie)][array_search($row->Date_Reporte, $All_Date)]) ){
@@ -922,7 +911,7 @@ class MapaController extends Controller
                                             ->orderBy('a.Nombre', 'ASC')
                                             ->orderBy('c.Nombre', 'ASC')
                                             ->get();
-                // return Response::json($consulta);
+                 //return Response::json($consulta);
         // mysqli_query($con,"SELECT a.Nombre as Area
         // ,em.Nombre as Empresa
         // , c.Nombre as Centro

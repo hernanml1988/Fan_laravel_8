@@ -1172,85 +1172,9 @@
                     </div>
 
 
-					<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
-
-    <!-- Bootstrap Core JavaScript -->
-    {{-- ****<script src="js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    ******<script src="js/metisMenu.min.js"></script>
-    ******<script src="js/bootstrap-table.js"></script>
-
-
-	<!-- DatetimePicker -->
-   ******<script src="js/moment-with-locales.js"></script>
-   ******<script src="js/bootstrap-datetimepicker.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-       ***<script src="js/sb-admin-2.js"></script>
-
-
-    <!-- Multiple Select -->
-  	<script type="text/javascript" src="js/bootstrap-slider.js"></script>
-
-    <!-- Autocomplete -->
-    *****<script src="js/jquery-ui.js"></script>
-
-    	 <!-- Alertas -->
-    ******<script src="js/sweetalert.min.js"></script>
-
-    <!-- Export table -->
-    ****<script src="js/tableExport.js"></script>
-    ****<script src="js/bootstrap-table-export.js"></script>
-
-    <!-- Multiple Select -->
-  	**<script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
-
-    <!-- Switch button -->
-  	 --}}
-
-	 
-
-	   <!-- Bootstrap Core JavaScript -->
-	   <script src="{{asset('js/bootstrap.min.js')}}"></script>
-
-	   <!-- Metis Menu Plugin JavaScript -->
-	   <script src="{{asset('js/metisMenu.min.js')}}"></script>
-	   <script src="{{asset('js/bootstrap-table.js')}}"></script>
-   
-   
-	   <!-- DatetimePicker -->
-	  <script src="{{asset('js/moment-with-locales.js')}}"></script>
-	  <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
-   
-	   <!-- Custom Theme JavaScript -->
-	   <script src="{{asset('js/sb-admin-2.js')}}"></script>
-   
-   
-	   <!-- Multiple Select -->
-		 <script type="text/javascript" src="{{asset('js/bootstrap-slider.js')}}"></script>
-   
-	   <!-- Autocomplete -->
-	   <script src="{{asset('js/jquery-ui.js')}}"></script>
-   
-	   <!-- Asigna menu para roles -->
-	   {{-- <script src="js/menu_role.js?random=<?php echo uniqid(); ?>"></script> --}}
-   
-   
-		<!-- Alertas -->
-	   <script src="{{asset('js/sweetalert.min.js')}}"></script>
-   
-	   <!-- Export table -->
-	   <script src="{{asset('js/tableExport.js')}}"></script>
-	   <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
-   
-	   <!-- Multiple Select -->
-		 <script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
-   
-	   <!-- Switch button -->
-		 <script type="text/javascript" src="{{asset('js/lc_switch.js')}}"></script>
-
-    <script>
+@endsection
+@section('javascript')
+    	<script>
 		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
 		var id_empresa = {!!$currentUser->IDempresa!!}//<?php echo $currentUser->IDempresa; ?>;
 		var user_role_fan = {!!$currentUser->user_role_fan!!}
@@ -1259,6 +1183,7 @@
 		// var id_empresa = <?php echo $miuser->IDempresa; ?>;
 
 		// roles(<?php echo '"'.$miuser->role.'"';?>);
+		
 		
 
 	$('#nombreswitch').lc_switch('Auto', 'No');
@@ -1670,13 +1595,13 @@
      }
 
 
-//
-//	 function clearMarkers() {
-//			for (var i = 0; i < markers.length; i++) {
-//			  markers[i].setMap(null);
-//			}
-//			markers = [];
-//		 }
+	//
+	//	 function clearMarkers() {
+	//			for (var i = 0; i < markers.length; i++) {
+	//			  markers[i].setMap(null);
+	//			}
+	//			markers = [];
+	//		 }
 
 
 	var nombreregion = "Región de los Lagos";
@@ -1820,12 +1745,12 @@
 
 	});
 
-function replaceElement($elem) {
-  var html = $elem[0].outerHTML;
-  var parent = $elem.parent();
-  $elem.remove();
-  $(html).appendTo(parent);
-}
+	function replaceElement($elem) {
+	var html = $elem[0].outerHTML;
+	var parent = $elem.parent();
+	$elem.remove();
+	$(html).appendTo(parent);
+	}
 
 
 
@@ -2513,808 +2438,808 @@ function replaceElement($elem) {
 		}
 
 	//$("#placeholder").bind("plotpan plotzoom",function (event, pos, item) {
-//
-//				var axes = plot.getAxes();
-//				axesmax = axes.xaxis.max.toFixed(0);
-//				axesmin = axes.xaxis.min.toFixed(0);
-//
-//			setTimeout(function() {
-//				loaddatagrafico(axesmax,axesmin);
-//				console.log(axesmin);
-//			}, 200);
-//
-//
-//		});
+	//
+	//				var axes = plot.getAxes();
+	//				axesmax = axes.xaxis.max.toFixed(0);
+	//				axesmin = axes.xaxis.min.toFixed(0);
+	//
+	//			setTimeout(function() {
+	//				loaddatagrafico(axesmax,axesmin);
+	//				console.log(axesmin);
+	//			}, 200);
+	//
+	//
+	//		});
 
 
-  var idmedicionarchivo = "";
-	function tablasverreporte(IDmedicion){
+	var idmedicionarchivo = "";
+		function tablasverreporte(IDmedicion){
 
-			$('#tabladiatomeasver').bootstrapTable("removeAll");
-			$('#tabladinoflageladosver').bootstrapTable("removeAll");
-			$('#tablaoespeciesver').bootstrapTable("removeAll");
-			$('[name="outputver"]').text("");
-			$('#modalloading').modal({backdrop: 'static', keyboard: false});
-			$.ajax({
-					url: "{{Route('mapas.load.fan.reporte')}}",//load_fan_reporte.php",
-					type: 'post',
-					data: {
-						_token: "{{ csrf_token() }}",
-						IDmedicion: 	 IDmedicion,
-						user_id:		user_id
-					},
-					success: function(msg)
-					{
-						$('#modalloading').modal('hide');
-						if(msg != 0){
-							var datos2 = msg;// JSON.parse(msg);
-							$('#tabladiatomeasver').bootstrapTable("load", datos2['Diatomeas']);
-							$('#tabladinoflageladosver').bootstrapTable("load", datos2['Dinoflagelados']);
-							$('#tablaoespeciesver').bootstrapTable("load", datos2['OEsp']);
-							$('#fechaverreporte').text(datos2['Fecha_Reporte']);
-							$('#fechaanalisisverreporte').text(datos2['Fecha_Analisis']);
-							$('#fechaenvioverreporte').text(datos2['Fecha_Envio']);
-							$('#tecnicaverreporte').text(datos2['Tecnica']);
-							$('#obsverreporte').text(datos2['Observaciones']);
+				$('#tabladiatomeasver').bootstrapTable("removeAll");
+				$('#tabladinoflageladosver').bootstrapTable("removeAll");
+				$('#tablaoespeciesver').bootstrapTable("removeAll");
+				$('[name="outputver"]').text("");
+				$('#modalloading').modal({backdrop: 'static', keyboard: false});
+				$.ajax({
+						url: "{{Route('mapas.load.fan.reporte')}}",//load_fan_reporte.php",
+						type: 'post',
+						data: {
+							_token: "{{ csrf_token() }}",
+							IDmedicion: 	 IDmedicion,
+							user_id:		user_id
+						},
+						success: function(msg)
+						{
+							$('#modalloading').modal('hide');
+							if(msg != 0){
+								var datos2 = msg;// JSON.parse(msg);
+								$('#tabladiatomeasver').bootstrapTable("load", datos2['Diatomeas']);
+								$('#tabladinoflageladosver').bootstrapTable("load", datos2['Dinoflagelados']);
+								$('#tablaoespeciesver').bootstrapTable("load", datos2['OEsp']);
+								$('#fechaverreporte').text(datos2['Fecha_Reporte']);
+								$('#fechaanalisisverreporte').text(datos2['Fecha_Analisis']);
+								$('#fechaenvioverreporte').text(datos2['Fecha_Envio']);
+								$('#tecnicaverreporte').text(datos2['Tecnica']);
+								$('#obsverreporte').text(datos2['Observaciones']);
 
-              var texto = '';
-              if (datos2['Modulo']) {
-                texto = texto + 'Módulo '+ datos2['Modulo'];
-              }
-              if (datos2['Jaula']) {
-                var coma = '';
-                if (texto != '') {
-                  coma = ', ';
-                }
-                texto = texto + coma +' Jaula '+ datos2['Jaula'];
-              }
-              if (datos2['latitud']['deg']) {
-                var coma = '';
-                if (texto != '') {
-                  coma = ', ';
-                }
-                texto = texto + coma + ' Latitud: S '+ datos2['latitud']['deg']+'° '+datos2['latitud']['min'] +"' "+ datos2['latitud']['sec'] +'"';
-                texto = texto + coma + ' Longitud: O '+datos2['longitud']['deg']+'° '+datos2['longitud']['min'] +"' "+ datos2['longitud']['sec'] +'"';
-              }
-
-              $('#ubicacionverreporte').text(texto);
-              if (texto != '') {
-                $('#hidden_ubicación').removeClass('hidden');
-              }else{
-                $('#hidden_ubicación').addClass('hidden');
-              }
-
-			  var nombrearchivo = "";
-								if(datos['Archivo']){
-								  html= '<a style="display:inline;"  class="like eliminar_doc_'+0+'" href=\"{{Route("registro.get.archivo")}}/'+datos['Archivo']['IDdocumento']+'\" target="_blank" > '
-											  + datos['Archivo']['Titulo']+ 
-												  ' </a> ';
-								  $('#archivoverreporte').html(html);}
-							//$('#archivoverreporte').text(nombrearchivo);
-							$('#firmaverreporte').text(datos2['Firma']);
-							$('#nombreverreporte').text(datos2['Nombre']);
-							$('#acsverreporte').text(datos2['Barrio']);
-							$('#especieverreporte').text(datos2['Especie']);
-              $('#pecesverreporte').text(datos2['Mortalidad']);
-							$('#siepverreporte').text(datos2['Codigo']);
-							$('#siembraverreporte').text(datos2['Siembra']);
-							$('#cosechaverreporte').text(datos2['Cosecha']);
-
-							//Print
-							$('#tabladiatomeasverprint').bootstrapTable("load", datos2['Diatomeas']);
-							$('#tabladinoflageladosverprint').bootstrapTable("load", datos2['Dinoflagelados']);
-							$('#tablaoespeciesverprint').bootstrapTable("load", datos2['OEsp']);
-							$('#fechaverreporteprint').text(datos2['Fecha_Reporte']);
-							$('#fechaenvioverreporteprint').text(datos2['Fecha_Envio']);
-							$('#tecnicaverreporteprint').text(datos2['Tecnica']);
-							$('#obsverreporteprint').text(datos2['Observaciones']);
-							$('#archivoverreporteprint').text(nombrearchivo);
-							$('#firmaverreporteprint').text(datos2['Firma']);
-							$('#nombreverreporteprint').text(datos2['Nombre']);
-							$('#especieverreporteprint').text(datos2['Especie']);
-							$('#siembraverreporteprint').text(datos2['Siembra']);
-							$('#cosechaverreporteprint').text(datos2['Cosecha']);
-
-							idmedicionarchivo = IDmedicion;
-						}else{swal("Error", "Error al cargar el reporte.", "error");}
+				var texto = '';
+				if (datos2['Modulo']) {
+					texto = texto + 'Módulo '+ datos2['Modulo'];
+				}
+				if (datos2['Jaula']) {
+					var coma = '';
+					if (texto != '') {
+					coma = ', ';
 					}
-				});
-
-			//Parámetros Ambientales
-			$.ajax({
-					url: "{{Route('mapas.load.pambientales.reporte')}}",//load_pambientales_reporte.php",
-					type: 'post',
-					data: {
-						_token: "{{ csrf_token() }}",
-						IDmedicion: 	 IDmedicion,
-						user_id:		user_id
-					},
-					success: function(msg)
-					{
-						$('#tablapambientalesver').bootstrapTable("removeAll");
-						$('#tablapambientalesotrosver').bootstrapTable("removeAll");
-						if(msg != 0){
-							var datos2 = datos2; //JSON.parse(msg);
-							$('#tablapambientalesver').bootstrapTable("load", datos2['PAmbientales']);
-							$('#tablapambientalesotrosver').bootstrapTable("load", datos2['PAmbientalesotros']);
-
-							//Print
-							$('#tablapambientalesverprint').bootstrapTable("load", datos2['PAmbientales']);
-							$('#tablapambientalesotrosverprint').bootstrapTable("load", datos2['PAmbientalesotros']);
-						}else{swal("Error", "Error al cargar el reporte.", "error");}
+					texto = texto + coma +' Jaula '+ datos2['Jaula'];
+				}
+				if (datos2['latitud']['deg']) {
+					var coma = '';
+					if (texto != '') {
+					coma = ', ';
 					}
-				});
-
-	}
-
-	function runningFormatterreporte(value, row, index) {
-		return (index + 1);
-	}
-	function runningFormatterfoto(value, row, index) {
-		return '<img href="'+row['Imagen']+'" src="'+row['Imagen']+'" class="img-circle center-block" />';
-	}
-
-
-
-
-
-	var samegrupo1 = 0;
-	var res1 = 0;
-	var n1 = 0;
-	var rowsp1 = [];
-	var indx1 = [];
-	function runningFormatterambientales(value, row, index) {
-
-		var grupo = row['Grupo'];
-
-		if(samegrupo1 != grupo ){
-
-			rowsp1[n1] = index-res1;
-			indx1[n1] = index;
-			n1++;
-			res1 = index;
-			samegrupo1 = grupo;
-
-		}
-		rowsp1[n1] = index-res1+1;
-
-		var aux = index - res1+1;
-		return aux;
-	}
-
-
-	$('#tablapambientales').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx1.length ; i++){
-        	$('#tablapambientales').bootstrapTable('mergeCells', {index: indx1[i], field: "Grupo", colspan: 1, rowspan: rowsp1[i+1]});
-		}
-    });
-	$('#tablapambientalesver').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx1.length ; i++){
-        	$('#tablapambientalesver').bootstrapTable('mergeCells', {index: indx1[i], field: "Grupo", colspan: 1, rowspan: rowsp1[i+1]});
-		}
-    });
-
-
-
-	var samegrupo2 = 0;
-	var res2 = 0;
-	var n2 = 0;
-	var rowsp2 = [];
-	var indx2 = [];
-	function runningFormatterambientalesotros(value, row, index) {
-
-		var grupo = row['Grupo'];
-
-		if(samegrupo2 != grupo ){
-
-			rowsp2[n2] = index-res2;
-			indx2[n2] = index;
-			n2++;
-			res2 = index;
-			samegrupo2 = grupo;
-
-		}
-		rowsp2[n2] = index-res2+1;
-
-		var aux = index - res2+1;
-		return aux;
-	}
-
-
-	$('#tablapambientalesotrosver').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx2.length ; i++){
-        	$('#tablapambientalesotrosver').bootstrapTable('mergeCells', {index: indx2[i], field: "Grupo", colspan: 1, rowspan: rowsp2[i+1]});
-		}
-    });
-
-	$('.change-tab').click(function() {
-	  var $this = $(this);
-	  var $nav = $($this.data('target'))
-	  var $tabs = $nav.find('li');
-	  var $curTab = $tabs.filter('.active');
-	  var cur = $tabs.index($curTab);
-	  if ($this.data('direction') == 'next') var $showTab = cur == $tabs.length - 1 ? $tabs.eq(0).find('a') : $tabs.eq(cur + 1).find('a');
-	  else var $showTab = cur == 0 ? $tabs.eq($tabs.length - 1).find('a') : $tabs.eq(cur - 1).find('a');
-	  $showTab.tab('show');
-
-	});
-
-
-
-	$('#tabladiatomeasver, #tabladinoflageladosver, #tablaoespeciesver,#tabladiatomeasverprint, #tabladinoflageladosverprint, #tablaoespeciesverprint').bootstrapTable({
-		formatNoMatches: function () {
-        	return 'Ausencia de Microalgas';
-   	 	},
-		formatLoadingMessage: function (a,b,c,d,e) {
-			return '';
-		}
-	});
-
-	$('#tablapambientalesverprint, #tablapambientalesotrosverprint').bootstrapTable({
-		formatLoadingMessage: function () {
-			return '';
-		}
-	});
-
-
-
-
-	 $('#print').click( function(){
-		var prtContent = document.getElementById("myModalgrafico");
-
-		var WinPrint = window.open('', '', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
-		WinPrint.document.write('<html><head><title></title>');
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/metisMenu.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/timeline.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/sb-admin-2.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/morris.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap-table.css\" type=\"text/css\" media=\"screen\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap-datetimepicker.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/font-awesome.css\" type=\"text/css\" media=\"print\"/>" );
-		WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/jquery-ui.css\" type=\"text/css\" media=\"print\"/>" );
-//
-		WinPrint.document.write('</head><body >');
-
-		WinPrint.document.write(prtContent.innerHTML);
-
-		WinPrint.document.write('</body></html>');
-
-
-		WinPrint.document.close();
-		WinPrint.focus();//WinPrint.print();
-		setTimeout(function(){WinPrint.print();},700);
-
-
-	});
-
-
-
-	function sendreporte(WinPrint){
-		$.ajax({
-					url: "{{Route('mapas.send.reporte')}}",//send_reporte.php",
-					type: 'post',
-					data: {
-						_token: "{{ csrf_token() }}",
-						Page: WinPrint
-					},
-					success: function(msg)
-					{
-
-					}
-		});
-	}
-
-	$('#especiesselectmap' ).change( function(){
-		//if($('#especiesselectmap option:selected').val() == 0 || $('#especiesselectmap option:selected').val() == 1 || $('#especiesselectmap option:selected').val() == 2){
-//
-//			$('#resumenreporte').bootstrapTable('resetSearch','');
-//			//loadresumen();
-//		}else{
-
-				var sel = $('#especiesselectmap option:selected').val();
-				if(sel == 1){
-					$('#resumenreporte').bootstrapTable('resetSearch','Fiscalizada');
-					//$('#resumenreporte').bootstrapTable('onColumnSearch','Fiscaliza','Si');
-				}else if(sel < 2){
-					$('#resumenreporte').bootstrapTable('resetSearch','');
-				}else if(sel == 2){
-					$('#resumenreporte').bootstrapTable('resetSearch','Nociva');
-				}else{
-					$('#resumenreporte').bootstrapTable('resetSearch',$('#especiesselectmap option:selected').text());
+					texto = texto + coma + ' Latitud: S '+ datos2['latitud']['deg']+'° '+datos2['latitud']['min'] +"' "+ datos2['latitud']['sec'] +'"';
+					texto = texto + coma + ' Longitud: O '+datos2['longitud']['deg']+'° '+datos2['longitud']['min'] +"' "+ datos2['longitud']['sec'] +'"';
 				}
 
-		//}
-		$("#sidebarweek").change();
+				$('#ubicacionverreporte').text(texto);
+				if (texto != '') {
+					$('#hidden_ubicación').removeClass('hidden');
+				}else{
+					$('#hidden_ubicación').addClass('hidden');
+				}
+
+				var nombrearchivo = "";
+									if(datos['Archivo']){
+									html= '<a style="display:inline;"  class="like eliminar_doc_'+0+'" href=\"{{Route("registro.get.archivo")}}/'+datos['Archivo']['IDdocumento']+'\" target="_blank" > '
+												+ datos['Archivo']['Titulo']+ 
+													' </a> ';
+									$('#archivoverreporte').html(html);}
+								//$('#archivoverreporte').text(nombrearchivo);
+								$('#firmaverreporte').text(datos2['Firma']);
+								$('#nombreverreporte').text(datos2['Nombre']);
+								$('#acsverreporte').text(datos2['Barrio']);
+								$('#especieverreporte').text(datos2['Especie']);
+				$('#pecesverreporte').text(datos2['Mortalidad']);
+								$('#siepverreporte').text(datos2['Codigo']);
+								$('#siembraverreporte').text(datos2['Siembra']);
+								$('#cosechaverreporte').text(datos2['Cosecha']);
+
+								//Print
+								$('#tabladiatomeasverprint').bootstrapTable("load", datos2['Diatomeas']);
+								$('#tabladinoflageladosverprint').bootstrapTable("load", datos2['Dinoflagelados']);
+								$('#tablaoespeciesverprint').bootstrapTable("load", datos2['OEsp']);
+								$('#fechaverreporteprint').text(datos2['Fecha_Reporte']);
+								$('#fechaenvioverreporteprint').text(datos2['Fecha_Envio']);
+								$('#tecnicaverreporteprint').text(datos2['Tecnica']);
+								$('#obsverreporteprint').text(datos2['Observaciones']);
+								$('#archivoverreporteprint').text(nombrearchivo);
+								$('#firmaverreporteprint').text(datos2['Firma']);
+								$('#nombreverreporteprint').text(datos2['Nombre']);
+								$('#especieverreporteprint').text(datos2['Especie']);
+								$('#siembraverreporteprint').text(datos2['Siembra']);
+								$('#cosechaverreporteprint').text(datos2['Cosecha']);
+
+								idmedicionarchivo = IDmedicion;
+							}else{swal("Error", "Error al cargar el reporte.", "error");}
+						}
+					});
+
+				//Parámetros Ambientales
+				$.ajax({
+						url: "{{Route('mapas.load.pambientales.reporte')}}",//load_pambientales_reporte.php",
+						type: 'post',
+						data: {
+							_token: "{{ csrf_token() }}",
+							IDmedicion: 	 IDmedicion,
+							user_id:		user_id
+						},
+						success: function(msg)
+						{
+							$('#tablapambientalesver').bootstrapTable("removeAll");
+							$('#tablapambientalesotrosver').bootstrapTable("removeAll");
+							if(msg != 0){
+								var datos2 = datos2; //JSON.parse(msg);
+								$('#tablapambientalesver').bootstrapTable("load", datos2['PAmbientales']);
+								$('#tablapambientalesotrosver').bootstrapTable("load", datos2['PAmbientalesotros']);
+
+								//Print
+								$('#tablapambientalesverprint').bootstrapTable("load", datos2['PAmbientales']);
+								$('#tablapambientalesotrosverprint').bootstrapTable("load", datos2['PAmbientalesotros']);
+							}else{swal("Error", "Error al cargar el reporte.", "error");}
+						}
+					});
+
+		}
+
+		function runningFormatterreporte(value, row, index) {
+			return (index + 1);
+		}
+		function runningFormatterfoto(value, row, index) {
+			return '<img href="'+row['Imagen']+'" src="'+row['Imagen']+'" class="img-circle center-block" />';
+		}
+
+
+
+
+
+		var samegrupo1 = 0;
+		var res1 = 0;
+		var n1 = 0;
+		var rowsp1 = [];
+		var indx1 = [];
+		function runningFormatterambientales(value, row, index) {
+
+			var grupo = row['Grupo'];
+
+			if(samegrupo1 != grupo ){
+
+				rowsp1[n1] = index-res1;
+				indx1[n1] = index;
+				n1++;
+				res1 = index;
+				samegrupo1 = grupo;
+
+			}
+			rowsp1[n1] = index-res1+1;
+
+			var aux = index - res1+1;
+			return aux;
+		}
+
+
+		$('#tablapambientales').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx1.length ; i++){
+				$('#tablapambientales').bootstrapTable('mergeCells', {index: indx1[i], field: "Grupo", colspan: 1, rowspan: rowsp1[i+1]});
+			}
+		});
+		$('#tablapambientalesver').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx1.length ; i++){
+				$('#tablapambientalesver').bootstrapTable('mergeCells', {index: indx1[i], field: "Grupo", colspan: 1, rowspan: rowsp1[i+1]});
+			}
+		});
+
+
+
+		var samegrupo2 = 0;
+		var res2 = 0;
+		var n2 = 0;
+		var rowsp2 = [];
+		var indx2 = [];
+		function runningFormatterambientalesotros(value, row, index) {
+
+			var grupo = row['Grupo'];
+
+			if(samegrupo2 != grupo ){
+
+				rowsp2[n2] = index-res2;
+				indx2[n2] = index;
+				n2++;
+				res2 = index;
+				samegrupo2 = grupo;
+
+			}
+			rowsp2[n2] = index-res2+1;
+
+			var aux = index - res2+1;
+			return aux;
+		}
+
+
+		$('#tablapambientalesotrosver').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx2.length ; i++){
+				$('#tablapambientalesotrosver').bootstrapTable('mergeCells', {index: indx2[i], field: "Grupo", colspan: 1, rowspan: rowsp2[i+1]});
+			}
+		});
+
+		$('.change-tab').click(function() {
+		var $this = $(this);
+		var $nav = $($this.data('target'))
+		var $tabs = $nav.find('li');
+		var $curTab = $tabs.filter('.active');
+		var cur = $tabs.index($curTab);
+		if ($this.data('direction') == 'next') var $showTab = cur == $tabs.length - 1 ? $tabs.eq(0).find('a') : $tabs.eq(cur + 1).find('a');
+		else var $showTab = cur == 0 ? $tabs.eq($tabs.length - 1).find('a') : $tabs.eq(cur - 1).find('a');
+		$showTab.tab('show');
+
+		});
+
+
+
+		$('#tabladiatomeasver, #tabladinoflageladosver, #tablaoespeciesver,#tabladiatomeasverprint, #tabladinoflageladosverprint, #tablaoespeciesverprint').bootstrapTable({
+			formatNoMatches: function () {
+				return 'Ausencia de Microalgas';
+			},
+			formatLoadingMessage: function (a,b,c,d,e) {
+				return '';
+			}
+		});
+
+		$('#tablapambientalesverprint, #tablapambientalesotrosverprint').bootstrapTable({
+			formatLoadingMessage: function () {
+				return '';
+			}
+		});
+
+
+
+
+		$('#print').click( function(){
+			var prtContent = document.getElementById("myModalgrafico");
+
+			var WinPrint = window.open('', '', 'left=0,top=0,width=1000,height=900,toolbar=0,scrollbars=0,status=0');
+			WinPrint.document.write('<html><head><title></title>');
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/metisMenu.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/timeline.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/sb-admin-2.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/morris.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap-table.css\" type=\"text/css\" media=\"screen\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/bootstrap-datetimepicker.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/font-awesome.css\" type=\"text/css\" media=\"print\"/>" );
+			WinPrint.document.write( "<link rel=\"stylesheet\" href=\"css/jquery-ui.css\" type=\"text/css\" media=\"print\"/>" );
+	//
+			WinPrint.document.write('</head><body >');
+
+			WinPrint.document.write(prtContent.innerHTML);
+
+			WinPrint.document.write('</body></html>');
+
+
+			WinPrint.document.close();
+			WinPrint.focus();//WinPrint.print();
+			setTimeout(function(){WinPrint.print();},700);
+
+
+		});
+
+
+
+		function sendreporte(WinPrint){
+			$.ajax({
+						url: "{{Route('mapas.send.reporte')}}",//send_reporte.php",
+						type: 'post',
+						data: {
+							_token: "{{ csrf_token() }}",
+							Page: WinPrint
+						},
+						success: function(msg)
+						{
+
+						}
+			});
+		}
+
+		$('#especiesselectmap' ).change( function(){
+			//if($('#especiesselectmap option:selected').val() == 0 || $('#especiesselectmap option:selected').val() == 1 || $('#especiesselectmap option:selected').val() == 2){
+	//
+	//			$('#resumenreporte').bootstrapTable('resetSearch','');
+	//			//loadresumen();
+	//		}else{
+
+					var sel = $('#especiesselectmap option:selected').val();
+					if(sel == 1){
+						$('#resumenreporte').bootstrapTable('resetSearch','Fiscalizada');
+						//$('#resumenreporte').bootstrapTable('onColumnSearch','Fiscaliza','Si');
+					}else if(sel < 2){
+						$('#resumenreporte').bootstrapTable('resetSearch','');
+					}else if(sel == 2){
+						$('#resumenreporte').bootstrapTable('resetSearch','Nociva');
+					}else{
+						$('#resumenreporte').bootstrapTable('resetSearch',$('#especiesselectmap option:selected').text());
+					}
+
+			//}
+			$("#sidebarweek").change();
+		});
+		$('#nromedicionresumen' ).change( function(){
+			loadresumen();
+			$("#sidebarweek").change();
+		});
+
+
+		$('#dias' ).change( function(){
+			if($('#dias' ).val()>14){
+				$('#dias' ).val(14);
+			}else if($('#dias' ).val()>=7){
+			var rowCount = $('#resumenreporte th').length;
+			var remove = "nth-last-child(-n+"+(rowCount-7)+")";
+			$('#resumenreporte').bootstrapTable('destroy');
+
+			$('#resumenreporte tr').find('th:'+remove+', td:'+remove+'').remove();
+			loadresumen();
+			}else{$('#dias' ).val(7);}
+		});
+
+	var date1 = new Date();
+	date1.setDate(date1.getDate()-6);
+	$('#datetimepicker_filtro4_1').datetimepicker({
+				locale: 'es',
+				defaultDate: date1,
+				format: 'DD-MM-YYYY',
+
 	});
-	$('#nromedicionresumen' ).change( function(){
-		loadresumen();
-		$("#sidebarweek").change();
-	});
+
+		var tablacompleta = [];
+		var especiesselectmap_anterior = "";
+		function loadresumen(){
+			//Variables para mantener los filtros al cambiar opciones
+			var dias = document.getElementById("dias").value;
+			especiesselectmap_anterior = $('#especiesselectmap option:selected').text();
+			//parseInt(document.getElementById("especiesselectmap").value)
+			$('#loading1').removeClass("hidden");
+			$.ajax({
+					url: "{{Route('mapas.load.resumen.reporte')}}",//load_resumen_reporte.php",
+					type: 'post',
+					data: {
+						_token: "{{ csrf_token() }}",
+						user_id:			user_id,
+						Nombre_Region: 	  nombreregion,
+						Dias: 	 		   dias,
+						Especies:		   document.getElementById("especiesselectmap").value,
+						Medicion:		   parseInt(document.getElementById("nromedicionresumen").value),
+						Colaborativo:	   0,
+						Operando:		   $('#operandoswitch').is(':checked') ? 1 : 0,
+						Historia:		   $('#nooperandoswitch').is(':checked') ? 1 : 0,
+			fecha_filtro_1:	 $('#fecha_filtro_4_1').val()
+
+					},
+					success: function(dato)
+					{
+
+						var myobjaux = dato;//JSON.parse(dato);
+
+						var myobj = myobjaux['Resultado'];
+						tablacompleta = myobj;
+						var cantcol = $('th', $('#resumenreporte').find('thead')).length;
+						//if(cantcol != (parseInt(dias)+7)){
+							$('#resumenreporte').bootstrapTable('destroy');
+
+							// Agrega las nuevas columnas
+							for(var i = myobj[myobj.length-1].length-1; 0<=i; i--){
+								var th = '<th data-field="'+i+'" id="asd" data-sortable="false" data-switchable="false" class="" data-valign = "middle"  data-width = "90px" data-cell-style="cellStylenivelestabla"></th>';
+								$('#resumenreporte tr').append($(th));
+								$('#resumenreporte thead tr>th:last').html(myobj[myobj.length-1][i]+'<br> [cel/ml]');
+							}
 
 
-	$('#dias' ).change( function(){
-		if($('#dias' ).val()>14){
-			$('#dias' ).val(14);
-		}else if($('#dias' ).val()>=7){
-		var rowCount = $('#resumenreporte th').length;
-		var remove = "nth-last-child(-n+"+(rowCount-7)+")";
-		$('#resumenreporte').bootstrapTable('destroy');
 
-		$('#resumenreporte tr').find('th:'+remove+', td:'+remove+'').remove();
-		loadresumen();
-		}else{$('#dias' ).val(7);}
-	});
+						//}
 
-  var date1 = new Date();
-  date1.setDate(date1.getDate()-6);
-  $('#datetimepicker_filtro4_1').datetimepicker({
-  			locale: 'es',
-  			defaultDate: date1,
-  			format: 'DD-MM-YYYY',
+						var role = <?php echo '"'.$miuser->role.'"';?>;
+						if(role != "admin_fan_empresa"){
+							$('#resumenreporte').bootstrapTable();
+						}else{
+							$('#resumenreporte').bootstrapTable({
+								showExport: true//exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+							}).trigger('change');
+						}
 
-  });
+						//Slider ticks-labels
 
-	var tablacompleta = [];
-	var especiesselectmap_anterior = "";
-	function loadresumen(){
-		//Variables para mantener los filtros al cambiar opciones
-		var dias = document.getElementById("dias").value;
-		especiesselectmap_anterior = $('#especiesselectmap option:selected').text();
-		//parseInt(document.getElementById("especiesselectmap").value)
-		$('#loading1').removeClass("hidden");
-		$.ajax({
-				url: "{{Route('mapas.load.resumen.reporte')}}",//load_resumen_reporte.php",
-				type: 'post',
-				data: {
-					_token: "{{ csrf_token() }}",
-					user_id:			user_id,
-					Nombre_Region: 	  nombreregion,
-					Dias: 	 		   dias,
-					Especies:		   document.getElementById("especiesselectmap").value,
-					Medicion:		   parseInt(document.getElementById("nromedicionresumen").value),
-					Colaborativo:	   0,
-					Operando:		   $('#operandoswitch').is(':checked') ? 1 : 0,
-					Historia:		   $('#nooperandoswitch').is(':checked') ? 1 : 0,
-          fecha_filtro_1:	 $('#fecha_filtro_4_1').val()
+						$('#sidebarweek').bootstrapSlider({
+						formatter: function(value) {
+							return 'Current value: ' + value;
+						},
+						ticks_labels: [myobj[myobj.length-1][6], myobj[myobj.length-1][5], myobj[myobj.length-1][4], myobj[myobj.length-1][3], myobj[myobj.length-1][2], myobj[myobj.length-1][1], myobj[myobj.length-1][0]]
+						//ticks_labels: ['$0', '$100', '$200', '$300', '$400']
+						});
 
-				},
-				success: function(dato)
-				{
+						myobj.splice(myobj.length-1,1);
 
-					var myobjaux = dato;//JSON.parse(dato);
+						$('#resumenreporte').bootstrapTable("removeAll");
+						$('#resumenreporte').bootstrapTable("load", myobj);
 
-					var myobj = myobjaux['Resultado'];
-					tablacompleta = myobj;
-					var cantcol = $('th', $('#resumenreporte').find('thead')).length;
-					//if(cantcol != (parseInt(dias)+7)){
-						$('#resumenreporte').bootstrapTable('destroy');
 
-						// Agrega las nuevas columnas
-						for(var i = myobj[myobj.length-1].length-1; 0<=i; i--){
-							var th = '<th data-field="'+i+'" id="asd" data-sortable="false" data-switchable="false" class="" data-valign = "middle"  data-width = "90px" data-cell-style="cellStylenivelestabla"></th>';
-							$('#resumenreporte tr').append($(th));
-							$('#resumenreporte thead tr>th:last').html(myobj[myobj.length-1][i]+'<br> [cel/ml]');
+						//Agregar lista especie en select
+						var tabladata = tablacompleta;//$('#resumenreporte').bootstrapTable('getData');
+						var listaespecies = [];
+						for (var i = 0; i<tabladata.length; i++){
+							if(listaespecies.indexOf(tabladata[i]['Especie']) === -1){listaespecies.push(tabladata[i]['Especie']);}
+						}
+						listaespecies.sort();
+						$('#especiesselectmap').empty();
+						$('#especiesselectmap').append($('<option>', {
+							text : 'Todas las Especies',
+							value: 0
+						}));
+
+						$('#especiesselectmap').append($('<option>', {
+							text : 'Especies Nocivas',
+							value: 2
+						}));
+						$('#especiesselectmap').append($('<option>', {
+							text : 'Especies Fiscalizadas',
+							value: 1
+						}));
+						$('#especiesselectmap').append($('<option>', {
+							text : 'Diatomeas',
+							value: 4
+						}));
+						$('#especiesselectmap').append($('<option>', {
+							text : 'Dinoflagelados',
+							value: 3
+						}));
+			$('#especiesselectmap').append($('<option>', {
+							text : 'Crítico y Precaución',
+							value: 5
+						}));
+
+						$('#especiesselectmap').append('<optgroup label="" disabled></optgroup>');
+						$('#especiesselectmap').append('<optgroup label="Especies Encontradas" disabled></optgroup>');
+						for(var i = 0; i<listaespecies.length; i++){
+							$('#especiesselectmap').append($('<option>', {
+								text : listaespecies[i]
+							}));
+						}
+						//$('#especiesselectmap').multiselect( 'rebuild' );
+
+						//Volver al filtro seleccionado antes de modificar alguna opción
+						if(especiesselectmap_anterior != ""){
+						//	$("#especiesselectmap option:contains("+especiesselectmap_anterior+")").attr('selected', true);
+						}
+
+						$('#resumenreporte').bootstrapTable('resetSearch','');
+						$("#sidebarweek").change();
+						//$('#especiesselectmap').val(2).trigger('change');
+
+						$('#loading1').addClass("hidden");
+
+					}
+				});
+
+		}
+
+
+		//Slider
+
+		$(document).on('change','#sidebarweek', function(){
+
+			//console.log(6-$("#sidebarweek").val());
+			var day = 6-$("#sidebarweek").val();
+			var tabladata = $('#resumenreporte').bootstrapTable('getData');
+			var esp = $('#especiesselectmap option:selected').text();
+			var nociva = fisc = grupo = "asd";
+			if(esp == "Especies Fiscalizadas"){esp = "Si"; fisc = "Fiscalizada";}else if(esp == "Especies Nocivas"){esp = "Si"; nociva = "Nociva";
+			}else if(esp == "Diatomeas"){esp = "Si"; grupo = "Diatomeas";}else if(esp == "Dinoflagelados"){esp = "Si"; grupo = "Dinoflagelados";}
+			var classindicador = "";
+			var indicadorcentro = "";
+			var idcentro = "";
+			var idcentronuevo = "";
+			var alarma = 0;
+			var espinfo = "Sin Registro";
+			var nocivainfo = "-";
+			var encontradasinfo = "-";
+			var nivelnocivoinfo = "-";
+			var alarmarojoinfo = "-";
+			var alarmaamarilloinfo = "-";
+		var  topleft = '';
+
+			emptyMarkers(day);
+			for (var i = 0; i<tabladata.length; i++){
+
+
+					idcentro = tabladata[i]['IDcentro'];
+					if(i == 0){idcentronuevo = idcentro; }
+
+					if(idcentro != idcentronuevo){
+
+						switch (alarma){
+							case 0:
+								classindicador = sinmarker;
+								break;
+							case 1:
+								classindicador = "green1.png";
+								break;
+							case 2:
+								classindicador = "gray1.png";
+								break;
+							case 3:
+								classindicador = "yellow1.png";
+								break;
+							case 4:
+								classindicador = "red1.png";
+								break;
 						}
 
 
+						eliminarArreglo(idcentronuevo);
+			if (topleft == '') {
+				topleft = tabladata[i-1]['TopLeft'].split(",");
+			}
+						asdfa({lat: parseFloat(topleft[0]), lng: parseFloat(topleft[1])},tabladata[i-1]['Centro'],idcentronuevo,classindicador,espinfo,nocivainfo,encontradasinfo,nivelnocivoinfo,alarmarojoinfo,alarmaamarilloinfo);
 
-					//}
 
-					var role = <?php echo '"'.$miuser->role.'"';?>;
-					if(role != "admin_fan_empresa"){
-						$('#resumenreporte').bootstrapTable();
-					}else{
-						$('#resumenreporte').bootstrapTable({
-							showExport: true//exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
-						}).trigger('change');
+						idcentronuevo = idcentro;
+						//if( !(alarma >= 0)){
+							alarma = 0
+						//};
+						espinfo = "Sin Registro";
+						nocivainfo = "-";
+						encontradasinfo = "-";
+						nivelnocivoinfo = "-";
+						alarmarojoinfo ="-";
+						alarmaamarilloinfo ="-";
+			topleft = '';
 					}
 
-					//Slider ticks-labels
+					if( esp == "Todas las Especies" || ( tabladata[i]['Especie'] == esp || tabladata[i]['Fiscaliza'] == fisc || tabladata[i]['Nociva'] == nociva ) || tabladata[i]['Grupo'] == grupo ){
+			var topleft_aux = '';
+			if (tabladata[i][day+'_TopLeftM'] != null) {
+				topleft_aux = tabladata[i][day+'_TopLeftM'].split(",");
+			}
+			if(parseInt(tabladata[i][day]) >= parseInt(tabladata[i]["Alarma_Rojo"]) && parseInt(tabladata[i]["Alarma_Rojo"])>0 ){
+							if(alarma < 4){alarma = 4; topleft = topleft_aux;};
+						}else if(parseInt(tabladata[i][day]) >= parseInt(tabladata[i]["Alarma_Amarillo"]) && parseInt(tabladata[i]["Alarma_Amarillo"])>0){
+							if(alarma < 3){alarma = 3; topleft = topleft_aux;}
+						}else if(parseInt(tabladata[i][day]) > 0){
+							if(alarma < 2){alarma = 2; topleft = topleft_aux;}
+						}else if(parseInt(tabladata[i][day]) == 0){
+							if(alarma < 1){alarma = 1; topleft = topleft_aux;}
+						}
 
-					$('#sidebarweek').bootstrapSlider({
-					  formatter: function(value) {
-						return 'Current value: ' + value;
-					  },
-					  ticks_labels: [myobj[myobj.length-1][6], myobj[myobj.length-1][5], myobj[myobj.length-1][4], myobj[myobj.length-1][3], myobj[myobj.length-1][2], myobj[myobj.length-1][1], myobj[myobj.length-1][0]]
-					  //ticks_labels: ['$0', '$100', '$200', '$300', '$400']
-					});
-
-					myobj.splice(myobj.length-1,1);
-
-					$('#resumenreporte').bootstrapTable("removeAll");
-					$('#resumenreporte').bootstrapTable("load", myobj);
-
-
-					//Agregar lista especie en select
-					var tabladata = tablacompleta;//$('#resumenreporte').bootstrapTable('getData');
-					var listaespecies = [];
-					for (var i = 0; i<tabladata.length; i++){
-						if(listaespecies.indexOf(tabladata[i]['Especie']) === -1){listaespecies.push(tabladata[i]['Especie']);}
-					}
-					listaespecies.sort();
-					$('#especiesselectmap').empty();
-					$('#especiesselectmap').append($('<option>', {
-						text : 'Todas las Especies',
-						value: 0
-					}));
-
-					$('#especiesselectmap').append($('<option>', {
-						text : 'Especies Nocivas',
-						value: 2
-					}));
-					$('#especiesselectmap').append($('<option>', {
-						text : 'Especies Fiscalizadas',
-						value: 1
-					}));
-					$('#especiesselectmap').append($('<option>', {
-						text : 'Diatomeas',
-						value: 4
-					}));
-					$('#especiesselectmap').append($('<option>', {
-						text : 'Dinoflagelados',
-						value: 3
-					}));
-          $('#especiesselectmap').append($('<option>', {
-						text : 'Crítico y Precaución',
-						value: 5
-					}));
-
-					$('#especiesselectmap').append('<optgroup label="" disabled></optgroup>');
-					$('#especiesselectmap').append('<optgroup label="Especies Encontradas" disabled></optgroup>');
-					for(var i = 0; i<listaespecies.length; i++){
-						$('#especiesselectmap').append($('<option>', {
-							text : listaespecies[i]
-						}));
-					}
-					//$('#especiesselectmap').multiselect( 'rebuild' );
-
-					//Volver al filtro seleccionado antes de modificar alguna opción
-					if(especiesselectmap_anterior != ""){
-					//	$("#especiesselectmap option:contains("+especiesselectmap_anterior+")").attr('selected', true);
+						if(parseInt(tabladata[i][day])){
+							espinfo = tabladata[i]["Especie"];
+							nocivainfo = tabladata[i]["Nociva"] == "" ? "-" : tabladata[i]["Nociva"];
+							encontradasinfo = parseInt(tabladata[i][day]);
+							nivelnocivoinfo = tabladata[i]["Nivel_Critico"];
+							alarmarojoinfo = tabladata[i]["Alarma_Rojo"];
+							alarmaamarilloinfo = tabladata[i]["Alarma_Amarillo"];
+						}
+						//if(idcentro == "152")	{
+						//console.log("IDcentro: "+idcentro+"  Alarma: "+alarma+" Value: "+tabladata[i][day]+ " Alarma_Rojo: "+tabladata[i]["Alarma_Rojo"]+ " Especie: "+tabladata[i]["Especie"]);
+						//}
 					}
 
-					$('#resumenreporte').bootstrapTable('resetSearch','');
-					$("#sidebarweek").change();
-					//$('#especiesselectmap').val(2).trigger('change');
 
-					$('#loading1').addClass("hidden");
 
+					//Ultimo
+					if(i == (tabladata.length - 1)){
+
+						switch (alarma){
+							case 0:
+								classindicador = sinmarker;
+								break;
+							case 1:
+								classindicador = "green1.png";
+								break;
+							case 2:
+								classindicador = "gray1.png";
+								break;
+							case 3:
+								classindicador = "yellow1.png";
+								break;
+							case 4:
+								classindicador = "red1.png";
+								break;
+						}
+						//if(idcentro == "152")	{
+						//console.log("IDcentro: "+idcentro+"  Alarma: "+alarma+" Value: "+tabladata[i][day]+ " Alarma_Rojo: "+tabladata[i]["Alarma_Rojo"]+ " Especie: "+tabladata[i]["Especie"]);
+						//}
+						eliminarArreglo(idcentro);
+			if (topleft == '') {
+				topleft = tabladata[tabladata.length - 1]['TopLeft'].split(",");
+			}
+						// topleft = tabladata[tabladata.length - 1]['TopLeft'].split(",");
+						asdfa({lat: parseFloat(topleft[0]), lng: parseFloat(topleft[1])},tabladata[tabladata.length - 1]['Centro'],idcentro,classindicador,espinfo,nocivainfo,encontradasinfo,nivelnocivoinfo,alarmarojoinfo,alarmaamarilloinfo);
+
+
+					}
+
+
+
+
+			}
+
+
+
+
+		});
+
+
+
+
+
+
+
+
+
+
+		$('#resumenreporte').on('click-cell.bs.table',function(field, value, row, $element){
+			opencentro($element['IDcentro']);
+		});
+
+
+		function runningFormatterfiscalizada(value, row, index) {
+
+			if (row['Fiscaliza'] == "Si"){
+				return "Fiscalizada";
+			}else {return row['Fiscaliza'];}
+
+		}
+
+
+		var samegrupo3 = 0;
+		var res3 = 0;
+		var n3 = 0;
+		var rowsp3 = [];
+		var indx3 = [];
+		var samegrupo4 = 0;
+		var res4 = 0;
+		var n4 = 0;
+		var rowsp4 = [];
+		var indx4 = [];
+	var samegrupo5 = 0;
+		var res5 = 0;
+		var n5= 0;
+		var rowsp5 = [];
+		var indx5 = [];
+		var lastindex = 0;
+		function runningFormatterarea(value, row, index) {
+
+			var grupo = row['Area'];
+
+
+			if(samegrupo3 != grupo ){
+
+				rowsp3[n3] = index-res3;
+				indx3[n3] = index;
+				n3++;
+				res3 = index;
+				samegrupo3 = grupo;
+
+			}
+			rowsp3[n3] = index-res3+1;
+
+			var centro = row['Centro'];
+			if(samegrupo4 != centro ){
+
+				rowsp4[n4] = index-res4;
+				indx4[n4] = index;
+				n4++;
+				res4 = index;
+				samegrupo4 = centro;
+				lastindex = index;
+
+			}
+			rowsp4[n4] = index-res4+1;
+
+		var acs = row['ACS'];
+			if(samegrupo5 != acs ){
+
+				rowsp5[n5] = index-res5;
+				indx5[n5] = index;
+				n5++;
+				res5 = index;
+				samegrupo5 = acs;
+				lastindex = index;
+
+			}
+			rowsp5[n5] = index-res5+1;
+
+			return (index-lastindex)+1;
+		}
+
+	function runningFormattercritico_precaucion(value, row, index) {
+		console.log(Math.max(row[0], row[0]));
+		console.log('ada');
+
+		if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
+		return 'Crítico y Precaución';
+		}
+	}
+		$('#resumenreporte').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx3.length ; i++){
+				$('#resumenreporte').bootstrapTable('mergeCells', {index: indx3[i], field: "Area", colspan: 1, rowspan: rowsp3[i+1]});
+			}
+		});
+		$('#resumenreporte').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx4.length ; i++){
+				$('#resumenreporte').bootstrapTable('mergeCells', {index: indx4[i], field: "Centro", colspan: 1, rowspan: rowsp4[i+1]});
+			}
+		});
+	$('#resumenreporte').on('post-body.bs.table', function () {
+			for(var i = 0; i<= indx5.length ; i++){
+				$('#resumenreporte').bootstrapTable('mergeCells', {index: indx5[i], field: "ACS", colspan: 1, rowspan: rowsp5[i+1]});
+			}
+		});
+
+		function cellStylenivelestabla(value, row, index) {
+
+
+			var classes = ['label-green','label-gray','label-yellow','label-red'];
+			var aux = 0;
+			var value = parseInt(value);
+			if(value == 0){
+				if(selectedverindicador.indexOf("0") >=0){
+					aux=classes[0];
 				}
+			}else if(value > 0){
+				if(selectedverindicador.indexOf("1") >=0){
+					aux=classes[1];
+				}
+			}
+			if(value >= parseInt(row['Alarma_Rojo']) && parseInt(row['Alarma_Rojo']) > 0){
+				if(selectedverindicador.indexOf("3") >=0){
+					aux=classes[3];
+				}
+			}else if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
+					if(selectedverindicador.indexOf("2") >=0){
+						aux=classes[2];
+					}
+			}
+
+			return {
+				classes: aux
+			};
+		}
+
+		function cellStyleniveles(value, row, index) {
+			var classes = ['label-green','label-gray','label-yellow','label-red'];
+			var aux = 0;
+			var value = parseInt(value);
+			if(value == 0){
+					//aux=classes[0];
+			}else if(value > 0){
+					//aux=classes[1];
+			}
+			if(value >= parseInt(row['Alarma_Rojo']) && parseInt(row['Alarma_Rojo']) > 0){
+					aux=classes[3];
+			}else if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
+						aux=classes[2];
+			}
+
+			return {
+				classes: aux
+			};
+		}
+
+
+
+
+		$('#mostrartabla').click(function(){
+				if($('#collapseOne').hasClass('in')){
+					$('#iconofiltro').removeClass('fa-minus');
+					$('#iconofiltro').addClass('fa-plus');
+					$('#iconofiltro').text(' Mostrar Tabla Resumen');
+				}else{
+
+					$('#iconofiltro').removeClass('fa-plus');
+					$('#iconofiltro').addClass('fa-minus');
+					$('#iconofiltro').text(' Ocultar Tabla Resumen');
+				}
+
 			});
 
-	}
 
 
-	//Slider
 
-	$(document).on('change','#sidebarweek', function(){
 
-		//console.log(6-$("#sidebarweek").val());
-		var day = 6-$("#sidebarweek").val();
-		var tabladata = $('#resumenreporte').bootstrapTable('getData');
-		var esp = $('#especiesselectmap option:selected').text();
-		var nociva = fisc = grupo = "asd";
-		if(esp == "Especies Fiscalizadas"){esp = "Si"; fisc = "Fiscalizada";}else if(esp == "Especies Nocivas"){esp = "Si"; nociva = "Nociva";
-		}else if(esp == "Diatomeas"){esp = "Si"; grupo = "Diatomeas";}else if(esp == "Dinoflagelados"){esp = "Si"; grupo = "Dinoflagelados";}
-		var classindicador = "";
-		var indicadorcentro = "";
-		var idcentro = "";
-		var idcentronuevo = "";
-		var alarma = 0;
-		var espinfo = "Sin Registro";
-		var nocivainfo = "-";
-		var encontradasinfo = "-";
-		var nivelnocivoinfo = "-";
-		var alarmarojoinfo = "-";
-		var alarmaamarilloinfo = "-";
-    var  topleft = '';
+	</script>
 
-		emptyMarkers(day);
-		for (var i = 0; i<tabladata.length; i++){
-
-
-				idcentro = tabladata[i]['IDcentro'];
-				if(i == 0){idcentronuevo = idcentro; }
-
-				if(idcentro != idcentronuevo){
-
-					switch (alarma){
-						case 0:
-							classindicador = sinmarker;
-							break;
-						case 1:
-							classindicador = "green1.png";
-							break;
-						case 2:
-							classindicador = "gray1.png";
-							break;
-						case 3:
-							classindicador = "yellow1.png";
-							break;
-						case 4:
-							classindicador = "red1.png";
-							break;
-					}
-
-
-					eliminarArreglo(idcentronuevo);
-          if (topleft == '') {
-          	topleft = tabladata[i-1]['TopLeft'].split(",");
-          }
-					asdfa({lat: parseFloat(topleft[0]), lng: parseFloat(topleft[1])},tabladata[i-1]['Centro'],idcentronuevo,classindicador,espinfo,nocivainfo,encontradasinfo,nivelnocivoinfo,alarmarojoinfo,alarmaamarilloinfo);
-
-
-					idcentronuevo = idcentro;
-					//if( !(alarma >= 0)){
-						alarma = 0
-					//};
-					espinfo = "Sin Registro";
-					nocivainfo = "-";
-					encontradasinfo = "-";
-					nivelnocivoinfo = "-";
-					alarmarojoinfo ="-";
-					alarmaamarilloinfo ="-";
-          topleft = '';
-				}
-
-				if( esp == "Todas las Especies" || ( tabladata[i]['Especie'] == esp || tabladata[i]['Fiscaliza'] == fisc || tabladata[i]['Nociva'] == nociva ) || tabladata[i]['Grupo'] == grupo ){
-          var topleft_aux = '';
-          if (tabladata[i][day+'_TopLeftM'] != null) {
-            topleft_aux = tabladata[i][day+'_TopLeftM'].split(",");
-          }
-          if(parseInt(tabladata[i][day]) >= parseInt(tabladata[i]["Alarma_Rojo"]) && parseInt(tabladata[i]["Alarma_Rojo"])>0 ){
-						if(alarma < 4){alarma = 4; topleft = topleft_aux;};
-					}else if(parseInt(tabladata[i][day]) >= parseInt(tabladata[i]["Alarma_Amarillo"]) && parseInt(tabladata[i]["Alarma_Amarillo"])>0){
-						if(alarma < 3){alarma = 3; topleft = topleft_aux;}
-					}else if(parseInt(tabladata[i][day]) > 0){
-						if(alarma < 2){alarma = 2; topleft = topleft_aux;}
-					}else if(parseInt(tabladata[i][day]) == 0){
-						if(alarma < 1){alarma = 1; topleft = topleft_aux;}
-					}
-
-					if(parseInt(tabladata[i][day])){
-						espinfo = tabladata[i]["Especie"];
-						nocivainfo = tabladata[i]["Nociva"] == "" ? "-" : tabladata[i]["Nociva"];
-						encontradasinfo = parseInt(tabladata[i][day]);
-						nivelnocivoinfo = tabladata[i]["Nivel_Critico"];
-						alarmarojoinfo = tabladata[i]["Alarma_Rojo"];
-						alarmaamarilloinfo = tabladata[i]["Alarma_Amarillo"];
-					}
-					//if(idcentro == "152")	{
-					//console.log("IDcentro: "+idcentro+"  Alarma: "+alarma+" Value: "+tabladata[i][day]+ " Alarma_Rojo: "+tabladata[i]["Alarma_Rojo"]+ " Especie: "+tabladata[i]["Especie"]);
-					//}
-				}
-
-
-
-				//Ultimo
-				if(i == (tabladata.length - 1)){
-
-					switch (alarma){
-						case 0:
-							classindicador = sinmarker;
-							break;
-						case 1:
-							classindicador = "green1.png";
-							break;
-						case 2:
-							classindicador = "gray1.png";
-							break;
-						case 3:
-							classindicador = "yellow1.png";
-							break;
-						case 4:
-							classindicador = "red1.png";
-							break;
-					}
-					//if(idcentro == "152")	{
-					//console.log("IDcentro: "+idcentro+"  Alarma: "+alarma+" Value: "+tabladata[i][day]+ " Alarma_Rojo: "+tabladata[i]["Alarma_Rojo"]+ " Especie: "+tabladata[i]["Especie"]);
-					//}
-					eliminarArreglo(idcentro);
-          if (topleft == '') {
-          	topleft = tabladata[tabladata.length - 1]['TopLeft'].split(",");
-          }
-					// topleft = tabladata[tabladata.length - 1]['TopLeft'].split(",");
-					asdfa({lat: parseFloat(topleft[0]), lng: parseFloat(topleft[1])},tabladata[tabladata.length - 1]['Centro'],idcentro,classindicador,espinfo,nocivainfo,encontradasinfo,nivelnocivoinfo,alarmarojoinfo,alarmaamarilloinfo);
-
-
-				}
-
-
-
-
-		}
-
-
-
-
-	});
-
-
-
-
-
-
-
-
-
-
-	$('#resumenreporte').on('click-cell.bs.table',function(field, value, row, $element){
-		opencentro($element['IDcentro']);
-	});
-
-
-	function runningFormatterfiscalizada(value, row, index) {
-
-		if (row['Fiscaliza'] == "Si"){
-			return "Fiscalizada";
-		}else {return row['Fiscaliza'];}
-
-	}
-
-
-	var samegrupo3 = 0;
-	var res3 = 0;
-	var n3 = 0;
-	var rowsp3 = [];
-	var indx3 = [];
-	var samegrupo4 = 0;
-	var res4 = 0;
-	var n4 = 0;
-	var rowsp4 = [];
-	var indx4 = [];
-  var samegrupo5 = 0;
-	var res5 = 0;
-	var n5= 0;
-	var rowsp5 = [];
-	var indx5 = [];
-	var lastindex = 0;
-	function runningFormatterarea(value, row, index) {
-
-		var grupo = row['Area'];
-
-
-		if(samegrupo3 != grupo ){
-
-			rowsp3[n3] = index-res3;
-			indx3[n3] = index;
-			n3++;
-			res3 = index;
-			samegrupo3 = grupo;
-
-		}
-		rowsp3[n3] = index-res3+1;
-
-		var centro = row['Centro'];
-		if(samegrupo4 != centro ){
-
-			rowsp4[n4] = index-res4;
-			indx4[n4] = index;
-			n4++;
-			res4 = index;
-			samegrupo4 = centro;
-			lastindex = index;
-
-		}
-		rowsp4[n4] = index-res4+1;
-
-    var acs = row['ACS'];
-		if(samegrupo5 != acs ){
-
-			rowsp5[n5] = index-res5;
-			indx5[n5] = index;
-			n5++;
-			res5 = index;
-			samegrupo5 = acs;
-			lastindex = index;
-
-		}
-		rowsp5[n5] = index-res5+1;
-
-		return (index-lastindex)+1;
-	}
-
-  function runningFormattercritico_precaucion(value, row, index) {
-    console.log(Math.max(row[0], row[0]));
-    console.log('ada');
-
-    if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
-      return 'Crítico y Precaución';
-    }
-  }
-	$('#resumenreporte').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx3.length ; i++){
-        	$('#resumenreporte').bootstrapTable('mergeCells', {index: indx3[i], field: "Area", colspan: 1, rowspan: rowsp3[i+1]});
-		}
-    });
-	$('#resumenreporte').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx4.length ; i++){
-        	$('#resumenreporte').bootstrapTable('mergeCells', {index: indx4[i], field: "Centro", colspan: 1, rowspan: rowsp4[i+1]});
-		}
-    });
-  $('#resumenreporte').on('post-body.bs.table', function () {
-		for(var i = 0; i<= indx5.length ; i++){
-        	$('#resumenreporte').bootstrapTable('mergeCells', {index: indx5[i], field: "ACS", colspan: 1, rowspan: rowsp5[i+1]});
-		}
-    });
-
-	function cellStylenivelestabla(value, row, index) {
-
-
-		var classes = ['label-green','label-gray','label-yellow','label-red'];
-		var aux = 0;
-		var value = parseInt(value);
-		if(value == 0){
-			if(selectedverindicador.indexOf("0") >=0){
-				aux=classes[0];
-			}
-		}else if(value > 0){
-			if(selectedverindicador.indexOf("1") >=0){
-				aux=classes[1];
-			}
-		}
-		if(value >= parseInt(row['Alarma_Rojo']) && parseInt(row['Alarma_Rojo']) > 0){
-			if(selectedverindicador.indexOf("3") >=0){
-				aux=classes[3];
-			}
-		}else if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
-				if(selectedverindicador.indexOf("2") >=0){
-					aux=classes[2];
-				}
-		}
-
-		return {
-			classes: aux
-		};
-	}
-
-	function cellStyleniveles(value, row, index) {
-		var classes = ['label-green','label-gray','label-yellow','label-red'];
-		var aux = 0;
-		var value = parseInt(value);
-		if(value == 0){
-				//aux=classes[0];
-		}else if(value > 0){
-				//aux=classes[1];
-		}
-		if(value >= parseInt(row['Alarma_Rojo']) && parseInt(row['Alarma_Rojo']) > 0){
-				aux=classes[3];
-		}else if(value >= parseInt(row['Alarma_Amarillo']) && parseInt(row['Alarma_Amarillo']) > 0){
-					aux=classes[2];
-		}
-
-		return {
-			classes: aux
-		};
-	}
-
-
-
-
-	$('#mostrartabla').click(function(){
-            if($('#collapseOne').hasClass('in')){
-                $('#iconofiltro').removeClass('fa-minus');
-                $('#iconofiltro').addClass('fa-plus');
-				$('#iconofiltro').text(' Mostrar Tabla Resumen');
-            }else{
-
-                $('#iconofiltro').removeClass('fa-plus');
-                $('#iconofiltro').addClass('fa-minus');
-				$('#iconofiltro').text(' Ocultar Tabla Resumen');
-            }
-
-        });
-
-
-
-
-
-</script>
-
-<script async defer
-    	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpUhp-rPo8Zev2M_lT0vPHRQZ9rftJGJI&callback=initMap">
-    </script>
+	<script async defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpUhp-rPo8Zev2M_lT0vPHRQZ9rftJGJI&callback=initMap">
+		</script>
 
 
 

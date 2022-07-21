@@ -92,14 +92,14 @@
 
 @section('content')
 
-<script type="text/javascript">
+	<script type="text/javascript">
 
-</script>
+	</script>
 
 
-	<div id="wrapper">
+		<div id="wrapper">
 
-      
+		
 
        	<div id="page-wrapper" style="margin-left:-27px; margin-right: -1px; margin-top: -1px">
 
@@ -124,13 +124,13 @@
                             </ul>
                             <div class="panel panel-black " style="margin-top:5px;">
                                 <div class="panel-heading " style="background: rgba(0,55,79,1);
-background: -moz-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
-background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,55,79,1)), color-stop(8%, rgba(3,83,119,1)), color-stop(51%, rgba(3,83,119,1)), color-stop(92%, rgba(3,83,119,1)), color-stop(100%, rgba(0,48,69,1)));
-background: -webkit-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
-background: -o-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
-background: -ms-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
-background: linear-gradient(to bottom, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', endColorstr='#003045', GradientType=0 );">
+	background: -moz-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,55,79,1)), color-stop(8%, rgba(3,83,119,1)), color-stop(51%, rgba(3,83,119,1)), color-stop(92%, rgba(3,83,119,1)), color-stop(100%, rgba(0,48,69,1)));
+	background: -webkit-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
+	background: -o-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
+	background: -ms-linear-gradient(top, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
+	background: linear-gradient(to bottom, rgba(0,55,79,1) 0%, rgba(3,83,119,1) 8%, rgba(3,83,119,1) 51%, rgba(3,83,119,1) 92%, rgba(0,48,69,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', endColorstr='#003045', GradientType=0 );">
 
 
                                     <div class="row" style="margin:10px 10px 0 10px;">
@@ -850,45 +850,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 
 
 
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{asset('js/bootstrap.min.js')}}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{asset('js/metisMenu.min.js')}}"></script>
-    <script src="{{asset('js/bootstrap-table.js')}}"></script>
-
-
-	<!-- DatetimePicker -->
-   <script src="{{asset('js/moment-with-locales.js')}}"></script>
-   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{asset('js/sb-admin-2.js')}}"></script>
-
-
-    <!-- Multiple Select -->
-  	<script type="text/javascript" src="{{asset('js/bootstrap-slider.js')}}"></script>
-
-    <!-- Autocomplete -->
-    <script src="{{asset('js/jquery-ui.js')}}"></script>
-
-    
-
-	 <!-- Alertas -->
-    <script src="{{asset('js/sweetalert.min.js')}}"></script>
-
-    <!-- Export table -->
-    <script src="{{asset('js/tableExport.js')}}"></script>
-    <script src="{{asset('js/bootstrap-table-export.js')}}"></script>
-
-    <!-- Multiple Select -->
-  	<script type="text/javascript" src="{{asset('js/bootstrap-multiselect.js')}}"></script>
-
-    <!-- Switch button -->
-  	<!--<script type="text/javascript" src="js/lc_switch.js"></script>-->
-
-    <script src="{{asset('js/jquery.twbs-toggle-buttons.min.js')}}"></script>
+@endsection
+@section('javascript')
+					
 
 
     <script>
@@ -1360,12 +1324,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
 		   iwBackground.children(':nth-child(4)').css({'display' : 'none'});
 
 		  // iwOuter.parent().parent().css({left: '115px'});
-//
-//		   // Moves the shadow of the arrow 76px to the left margin.
-//			iwBackground.children(':nth-child(1)').attr('style', function(i,s){ return s + 'left: 76px !important;'});
-//
-//			// Moves the arrow 76px to the left margin.
-//			iwBackground.children(':nth-child(3)').attr('style', function(i,s){ return s + 'left: 76px !important;'});
+	//
+	//		   // Moves the shadow of the arrow 76px to the left margin.
+	//			iwBackground.children(':nth-child(1)').attr('style', function(i,s){ return s + 'left: 76px !important;'});
+	//
+	//			// Moves the arrow 76px to the left margin.
+	//			iwBackground.children(':nth-child(3)').attr('style', function(i,s){ return s + 'left: 76px !important;'});
 
 		//	iwBackground.children(':nth-child(3)').find('div').children().css({'box-shadow': 'rgba(72, 181, 233, 0.6) 0px 1px 6px', 'z-index' : '1'});
 
@@ -1775,13 +1739,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00374f', end
     });
 
   }
-//
-//	 function clearMarkers() {
-//			for (var i = 0; i < markers.length; i++) {
-//			  markers[i].setMap(null);
-//			}
-//			markers = [];
-//		 }
+	//
+	//	 function clearMarkers() {
+	//			for (var i = 0; i < markers.length; i++) {
+	//			  markers[i].setMap(null);
+	//			}
+	//			markers = [];
+	//		 }
 
 
 

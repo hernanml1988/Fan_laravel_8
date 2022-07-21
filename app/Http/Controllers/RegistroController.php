@@ -3318,13 +3318,16 @@ class RegistroController extends Controller
 				}
 				
 			}
-		
+            
 		}else{
 			$Resultado[] = $correo1;
 			$Nombres_Destinatarios[] = $nombre1;		
 		}
 		
 		$centro = Centro::find($IDcentro);
+
+        
+        //return Response::json($centro);
 		if($centro){
 			$Nombre_Centro = $centro->Nombre;
 		}else{

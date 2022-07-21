@@ -11,7 +11,7 @@
     <meta name="author" content="GTR Gestión">
     <title>GTR Fan @yield('title')</title>  <!--agregarlo o dejar el titulo del header (como lo hace el motor de busqueda)-->
     
-        
+        <link href="{{ asset('css/bootstrap_sin_media_print.css')}}" rel="stylesheet">
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
         <link href="{{ asset('css/metisMenu.css') }}" rel="stylesheet">
         <link href="{{ asset('css/timeline.css') }}" rel="stylesheet">
@@ -19,21 +19,27 @@
         <link href="{{ asset('css/morris.css') }}" rel="stylesheet">
         <link href="{{ asset('css/bootstrap-table.css') }}" rel="stylesheet">
     	<link href="{{ asset('css/bootstrap-datetimepicker.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap-multiselect.css') }}" rel="stylesheet">
     	<link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.css') }}" > 
+        <link rel="stylesheet" href="{{ asset('css/lc_switch.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap-multiselect.css') }}" >
+        <link rel="stylesheet" href="{{asset('css/bootstrap-slider.css')}}" >
    		<link href="{{ asset('css/jquery-ui.css') }}" rel="stylesheet">
-    
-    
-		<link rel="stylesheet" type="text/css" href="{{ asset('css/sweetalert.css') }}" /> 
     	<link href="{{ asset('css/bootstrap-editable.css') }}" rel="stylesheet">
+
+
+
     
-    <link rel="stylesheet" href="{{ asset('css/lc_switch.css') }}">
-    <link href="{{asset('css/multiselect.css')}}" media="screen" rel="stylesheet" type="text/css">
-    
-    
-    <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
-    
-    
+        <link href="{{asset('css/multiselect.css')}}" media="screen" rel="stylesheet" type="text/css">
+        
+        
+        <script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.js')}}"> </script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.time.js')}}"></script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.axislabels.js')}}"></script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.navigate.js')}}"></script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.threshold.js')}}"></script>
+        <script language="javascript" type="text/javascript" src="{{asset('js/jquery.flot.selection.js')}}"></script>
     
 	<style>
  		body { padding-right: 0 !important }
@@ -128,7 +134,7 @@
                             </li>
                             
                             <li class="">
-                            	<a href="" style="background-color:inherit !important"><i class="fa-solid fa-location-dot"></i> Historial<span class="fa arrow"></span></a>
+                            	<a href="" style="background-color:inherit !important"><i class="fa-solid fa-location-dot"></i>  Mapas<span class="fa arrow"></span></a>
                             	<ul class="nav nav-second-level">
                                     <li @if ($menu == "mapa") class="activo" @endif>
                                         <a href="{{ Route('mapa.index') }}"><i class="fa-solid fa-font-awesome"></i> Interno</a>
@@ -186,7 +192,7 @@
     </div>
    
             
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script> --}}
     
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ asset('js/bootstrap.min.js')}}"></script>
@@ -203,7 +209,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="{{ asset('js/sb-admin-2.js')}}"></script>
    
-   
+    
     <!-- Autocomplete --> 
 <!--    <script src="js/jquery-1.10.2.js"></script>-->
     <script src="{{ asset('js/jquery-ui.js')}}"></script>
@@ -223,56 +229,36 @@
     <script src="{{ asset('js/tableExport.js')}}"></script>
     <script src="{{ asset('js/bootstrap-table-export.js')}}"></script>
 
-    <!--  
-    <script src="{{ asset('js/dateFormat.js')}}"></script>
-    <script src="{{ asset('js/jquery.dateFormat.js')}}"></script>
-    <script src="{{ asset('js/bootstrap3-typeahead.js')}}"></script>
-    <script src="{{ asset('js/standalone/selectize.js')}}"></script>
-    <script src="{{ asset('js/bootstrap-select.js')}}"></script>
-    <script src="{{ asset('js/chosen.jquery.js')}}"></script>-->
+   
     
     
     <script src="{{ asset('js/bootstrap-progressbar.min.js')}}"></script>
     
     <script type="text/javascript" src="{{ asset('js/bootstrap-multiselect.js')}}"></script>
 
-    <!--<script src="{{ asset('chartjs/jquery.sparkline.min.js')}}"></script>
-     <script src="{{ asset('js/exif.js')}}"></script>-->
+   
     <script src="{{ asset('js/gauge.min.js')}}"></script>
     
     
     <script src="{{asset('js/jquery-ui.js')}}"></script>
     
     
-    
-    <!--<script src="{{ asset('js/jquery.canvasResize.js')}}"></script>
-    <script src="{{ asset('js/canvasResize.js')}}"></script>
-    <script src="{{ asset('js/binaryajax.js')}}"></script>
-    <script src="{{ asset('js/exif.js')}}"></script>
-    
-     <script src="{{ asset('js/jquery.imageresize.js')}}"></script>-->
-     
-    
+    <script type="text/javascript" src="{{asset('js/bootstrap-slider.js')}}"></script>
+        
     
     
     
      <script src="https://kit.fontawesome.com/4d137a4b1a.js" crossorigin="anonymous"></script>
     
-	<!-- Canvas -->
-    <script src="{{ asset('js/jspdf.min.js')}}"></script>
+	
 	
     <!-- Switch button -->
   	<script type="text/javascript" src="{{ asset('js/lc_switch.js')}}"></script>
      
-      <script src="{{asset('js/jquery.multi-select.js')}}" type="text/javascript"></script>
+    <script src="{{asset('js/jquery.multi-select.js')}}" type="text/javascript"></script>
      
      
-	<script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.js')}}"> </script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.time.js')}}"></script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.axislabels.js')}}"></script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.navigate.js')}}"></script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.threshold.js')}}"></script>
-    <script language="javascript" type="text/javascript" src="{{ asset('js/jquery.flot.selection.js')}}"></script>
+	<script src="{{asset('js/jquery.twbs-toggle-buttons.min.js')}}"></script>
     
     
 

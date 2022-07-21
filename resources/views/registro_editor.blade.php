@@ -101,7 +101,7 @@
 					  </div>
 					  <div class="row" style="padding-top:9px;">
 						  <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-xs-10 col-xs-offset-1">
-							  <select id="opcionescentros" class="form-control">
+							  <select id="opcionescentros" class="form-control multipleselect_single" size="1" style="display:inline; width:100%">
 							  		@foreach ($centros as $c)
 											@foreach ($permisos as $p)
 												@if ($p->IDcentro == $c->IDcentro)
@@ -1580,9 +1580,7 @@
 
 
 
-  <!-- Bootstrap Core JavaScript -->
-  <script src="{{asset('js/bootstrap.min.js')}}"></script>
-
+  
   @endsection
   @section('javascript')
 

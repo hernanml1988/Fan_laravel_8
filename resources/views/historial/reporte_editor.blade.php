@@ -651,49 +651,13 @@
 
     </div>
 
-	<script language="javascript" src="{{ asset('js/jquery.js') }}"> </script>
-    <!-- Bootstrap Core JavaScript -->
-   <script src="{{asset('js/bootstrap.min.js')}}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    {{-- <script src="{{asset ('js/metisMenu.min.js')}}"></script> --}}
-    {{-- <script src="js/bootstrap-table.js')}}"></script> --}}
- {{-- 
-    <!-- DatetimePicker -->
-   <script src="{{asset('js/moment-with-locales.js')}}"></script>
-   <script src="{{asset('js/bootstrap-datetimepicker.js')}}"></script>
+@endsection
 
 
-    <!-- Custom Theme JavaScript -->
-    <script src="js/sb-admin-2.js"></script>
+@section('javascript')
 
 
-   	<!-- Autocomplete -->
-<!--    <script src="js/jquery-1.10.2.js"></script>-->
-    <script src="js/jquery-ui.js"></script>
-
-
-     <!-- Alertas -->
-    <script src="js/sweetalert.min.js"></script>
-
-	<!-- Incluye los colores para los estados -->
-    <script src="js/color-estados.js"></script>
-
-   
-
-    <!-- Edit table -->
-    <script src="js/bootstrap-editable.js"></script>
-    <script src="js/bootstrap-table-editable.js"></script>
-
-    <!-- Export table -->
-    <script src="js/tableExport.js"></script>
-    <script src="js/bootstrap-table-export.js"></script>  --}}
-
-
-
-
-
-<script>
+	<script>
 	var user_id =  {!!$currentUser->id!!}//php echo $currentUser->id; ?>;
 	var id_empresa = {!!$currentUser->IDempresa!!}//php echo $currentUser->IDempresa; ?>;
 	var user_role_fan = {!!$currentUser->user_role_fan!!}

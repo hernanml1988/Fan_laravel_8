@@ -1359,9 +1359,11 @@
 
     <script>
 
-	var user_id = <?php echo $currentUser->id; ?>;
-	var id_empresa = <?php echo $currentUser->IDempresa; ?>;
-	//roles(<?php echo '"'.$currentUser->role.'"';?>);
+		var user_id = {!!$currentUser->id!!} //<?php echo $currentUser->id; ?>;  
+		var id_empresa = {!!$currentUser->IDempresa!!}//<?php echo $currentUser->IDempresa; ?>;
+		var user_role_fan = {!!$currentUser->user_role_fan!!}
+		var role = <?php echo '"'.$currentUser->role.'"';?>;
+	
 
 
 	function sticky_relocate() {
@@ -1395,7 +1397,7 @@ $( document ).ready(function() {
 
 	//Load opciones profundidad
 	$.ajax({
-			url: "load_options_prof.php",
+			url: "{{Route('informe.load.option.prof')}}",//load_options_prof.php",
 			type: 'post',
 			dataType: 'json',
 			data: {

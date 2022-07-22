@@ -5,6 +5,7 @@ use App\Http\Controllers\DeclaracionController;
 use App\Http\Controllers\EXCELLController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\InformeController;
+use App\Http\Controllers\MapaColabController;
 use App\Http\Controllers\MapaController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\RegistroController;
@@ -104,7 +105,7 @@ Route::get('historial/reporte_editor/alarma_generar_registro', 'alarmaGenerarExc
 
 
 
-// ==============Rutas Mapas=====================//
+// ==============Rutas Mapa=====================//
 Route::controller(MapaController::class)->group(function(){
     Route::post('mapas/load_ubicacion_centro', 'loadUbicacionCentro')->name('mapas.load.ubicacion.centro');
     Route::post('mapas/load_options_prof', 'loadOptionsProf')->name('mapas.load.options.prof');
@@ -113,13 +114,15 @@ Route::controller(MapaController::class)->group(function(){
     Route::post('mapas/load_resumen_reporte', 'loadResumenReporte')->name('mapas.load.resumen.reporte');
     Route::post('mapas/load_pambientales.reporte', 'loadPambientalesReporte')->name('mapas.load.pambientales.reporte');
     Route::post('mapas/send_reporte', 'sendReporte')->name('mapas.send.reporte');
-    //====Rutas Mapa colab ===
+    });
+
+// ==============Rutas Mapa colaborativo=====================//
+Route::controller(MapaColabController::class)->group(function(){
     Route::post('mapas/load_historial_centros_pdf_colab', 'loadHistorialCentrosPdfColab')->name('mapas.load.historial.centros.pdf.colab');
     Route::post('mapas/load_ubicacion_centros_colab', 'loadUbicacionCentrosColab')->name('mapas.load.ubicacion.centros.colab');
     Route::post('mapas/load_ubicacion_barrios_colab', 'loadUbicacionBarriosColab')->name('mapas.load.ubicacion.barrios.colab');
     Route::post('mapas/load_resumen_reporte_colab', 'loadResumenReporteColab')->name('mapas.load.resumen.reporte.colab');
     });
-
 
 // ==============Rutas Informe=====================//
 

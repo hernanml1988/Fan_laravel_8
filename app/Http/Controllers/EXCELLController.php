@@ -2437,22 +2437,22 @@ class EXCELLController extends Controller
 						return Excel::download($export, 'Archivo.xlsx');
 
 						
-						Excel::create('GTR fan - Historial', function($excel) use($Resultado,$titulos) {
-							// header('Content-Encoding: UTF-8');
-					// header('Content-type: text/csv; charset=UTF-8');
-					// header('Content-Disposition: attachment; filename=GTR fan - Historial.csv');
+					// 	Excel::create('GTR fan - Historial', function($excel) use($Resultado,$titulos) {
+					// 		// header('Content-Encoding: UTF-8');
+					// // header('Content-type: text/csv; charset=UTF-8');
+					// // header('Content-Disposition: attachment; filename=GTR fan - Historial.csv');
 
-							$excel->sheet('Mediciones', function($sheet) use($Resultado,$titulos){
-								// $sheet->fromArray($Resultado);
-									$sheet->row(1,$titulos);
-									$sheet->row(1, function($row) { $row->setBackground('#CCCCCC');$row->setAlignment('left');$row->setFontWeight('bold'); });
-									$sheet->freezeFirstRow();
-									foreach($Resultado as $index => $val) {
-									$sheet->row($index+2, $val);
-										$sheet->row($index+2, function($row) { $row->setAlignment('left'); });
-									}
-						});
-						})->export('xlsx');
+					// 		$excel->sheet('Mediciones', function($sheet) use($Resultado,$titulos){
+					// 			// $sheet->fromArray($Resultado);
+					// 				$sheet->row(1,$titulos);
+					// 				$sheet->row(1, function($row) { $row->setBackground('#CCCCCC');$row->setAlignment('left');$row->setFontWeight('bold'); });
+					// 				$sheet->freezeFirstRow();
+					// 				foreach($Resultado as $index => $val) {
+					// 				$sheet->row($index+2, $val);
+					// 					$sheet->row($index+2, function($row) { $row->setAlignment('left'); });
+					// 				}
+					// 	});
+					// 	})->export('xlsx');
 
 					}
 

@@ -303,7 +303,7 @@
                         <div class="modal-content">
                           <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+                            <img src="{{ asset('img/GtrFan-MonitoreoAlgasNocivas2.png') }}" class="logo_gtr_modal pull-left">
                     		<h4 class="modal-title text-center" id="myModalLabel" style=" margin-right:180px;margin-top:9px;">DETALLES <output id="modalnombrecentro" style="display:inline; text-transform:uppercase; font-size:20px;"></output></h4>
                           </div>
                           <div class="modal-body">
@@ -498,7 +498,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GtrFan-MonitoreoAlgasNocivas2.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style=" margin-right:180px;margin-top:9px;">REGISTRO DIARIO </h4>
                   </div>
                   <div class="modal-body">
@@ -885,7 +885,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left">
+                    <img src="{{ asset('img/GtrFan-MonitoreoAlgasNocivas2.png') }}" class="logo_gtr_modal pull-left">
                     <h4 class="modal-title text-center" id="myModalLabel" style=" margin-right:180px;margin-top:9px;">REGISTRO DIARIO  </h4>
                   </div>
                   <div class="modal-body">
@@ -1115,7 +1115,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <img src="GtrFan-MonitoreoAlgasNocivas.png" class="logo_gtr_modal pull-left"/>
+                    <img src="{{ asset('img/GtrFan-MonitoreoAlgasNocivas2.png') }}" class="logo_gtr_modal pull-left"/>
                     <h4 class="modal-title text-center" id="myModalLabel" style="margin-top:14px;"> <output id="nombreespecieimagen" style="display:inline; text-transform:uppercase; font-size:20px !important;"></output></h4>
                   </div>
                   <div class="modal-body">
@@ -1162,7 +1162,7 @@
             </div>
 
                     <div class="modal fade" id="modalloading" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
-                        <div class="modal-dialog " role="document" >
+                        <div class="modal-dialog " role="document" style="margin-right: 190px; margin-top: 220px">
                             <div class="modal-content" style="height:100px; width:400px; alignment-adjust:central">
                             	<div class="modal-body center-block text-center">
                                 	 <img src="{{ asset('img/loader.gif') }}"/><h5> Loading... Please Wait </h5>
@@ -1445,6 +1445,7 @@
 	function asdfa(position,nombrecentro,idcentro,classindicador,espinfo,nocivainfo,encontradasinfo,nivelnocivoinfo,alarmarojoinfo,alarmaamarilloinfo){
 		//map.getZoom() <= 10
 
+		//console.log("{{asset('img/')}}/"+ classindicador);
 		if( !$('#nombreswitch').is(':checked') ){nombrecentro = ' ';}
 		 var  mi_marker = new google.maps.Marker({
 			  position: position,
@@ -1457,7 +1458,7 @@
 			  title: nombrecentro,
 			  id:idcentro,
 			  icon: {
-				url: classindicador,
+				url: "{{asset('img/')}}/"+ classindicador,
 				size: new google.maps.Size(20, 20),
 				anchor: new google.maps.Point(8,8),
 				labelOrigin: new google.maps.Point(10,23)
@@ -1636,7 +1637,8 @@
 
 	$(".tabledetalle").on('click-cell.bs.table', function (field, value, row, $element) {
 		if($element['Imagen'] != "" && value == 1){
-			$("#detalleimagen").attr("src",$element['Imagen']);
+			$("#detalleimagen").attr("src",'{{Route("registro.get.imagen.especie")}}/'+ $element['IDespecie']+'/1'+' "');
+			//$("#detalleimagen").attr("src",$element['Imagen']);
 			$('#nombreespecieimagen').text($element['Nombre']);
 			if($element['Alarma_Rojo'] > 0){
 				$('#especienivelrojo').text($element['Alarma_Rojo']+" [cel/ml]");
@@ -2576,7 +2578,7 @@
 			return (index + 1);
 		}
 		function runningFormatterfoto(value, row, index) {
-			return '<img href="'+row['Imagen']+'" src="'+row['Imagen']+'" class="img-circle center-block" />';
+			return '<img src="{{Route("registro.get.imagen.especie")}}/'+ row['IDespecie']+'/1'+' " class="img-circle center-block" />';
 		}
 
 
@@ -2807,7 +2809,7 @@
 					success: function(dato)
 					{
 
-						var myobjaux = dato;//JSON.parse(dato);
+						var myobjaux = dato;
 
 						var myobj = myobjaux['Resultado'];
 						tablacompleta = myobj;
